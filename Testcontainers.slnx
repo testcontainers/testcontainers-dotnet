@@ -2,6 +2,8 @@
     <Folder Name="/Solution Items/">
         <File Path="CODE_OF_CONDUCT.md"/>
         <File Path="CONTRIBUTING.md"/>
+        <File Path="Directory.Build.props"/>
+        <File Path="Directory.Packages.props"/>
         <File Path="README.md"/>
     </Folder>
     <Folder Name="/Solution Items/Workflows/">
@@ -13,6 +15,7 @@
     <Folder Name="/src/">
         <Project Path="src/Testcontainers.ActiveMq/Testcontainers.ActiveMq.csproj"/>
         <Project Path="src/Testcontainers.ArangoDb/Testcontainers.ArangoDb.csproj"/>
+        <Project Path="src/Testcontainers.AspireDashboard/Testcontainers.AspireDashboard.csproj"/>
         <Project Path="src/Testcontainers.Azurite/Testcontainers.Azurite.csproj"/>
         <Project Path="src/Testcontainers.BigQuery/Testcontainers.BigQuery.csproj"/>
         <Project Path="src/Testcontainers.Bigtable/Testcontainers.Bigtable.csproj"/>
@@ -30,6 +33,7 @@
         <Project Path="src/Testcontainers.FakeGcsServer/Testcontainers.FakeGcsServer.csproj"/>
         <Project Path="src/Testcontainers.FirebirdSql/Testcontainers.FirebirdSql.csproj"/>
         <Project Path="src/Testcontainers.Firestore/Testcontainers.Firestore.csproj"/>
+        <Project Path="src/Testcontainers.Floci/Testcontainers.Floci.csproj"/>
         <Project Path="src/Testcontainers.GCloud/Testcontainers.GCloud.csproj"/>
         <Project Path="src/Testcontainers.Grafana/Testcontainers.Grafana.csproj"/>
         <Project Path="src/Testcontainers.InfluxDb/Testcontainers.InfluxDb.csproj"/>
@@ -78,6 +82,7 @@
     <Folder Name="/tests/">
         <Project Path="tests/Testcontainers.ActiveMq.Tests/Testcontainers.ActiveMq.Tests.csproj"/>
         <Project Path="tests/Testcontainers.ArangoDb.Tests/Testcontainers.ArangoDb.Tests.csproj"/>
+        <Project Path="tests/Testcontainers.AspireDashboard.Tests/Testcontainers.AspireDashboard.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Azurite.Tests/Testcontainers.Azurite.Tests.csproj"/>
         <Project Path="tests/Testcontainers.BigQuery.Tests/Testcontainers.BigQuery.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Bigtable.Tests/Testcontainers.Bigtable.Tests.csproj"/>
@@ -97,6 +102,7 @@
         <Project Path="tests/Testcontainers.FakeGcsServer.Tests/Testcontainers.FakeGcsServer.Tests.csproj"/>
         <Project Path="tests/Testcontainers.FirebirdSql.Tests/Testcontainers.FirebirdSql.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Firestore.Tests/Testcontainers.Firestore.Tests.csproj"/>
+        <Project Path="tests/Testcontainers.Floci.Tests/Testcontainers.Floci.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Grafana.Tests/Testcontainers.Grafana.Tests.csproj"/>
         <Project Path="tests/Testcontainers.InfluxDb.Tests/Testcontainers.InfluxDb.Tests.csproj"/>
         <Project Path="tests/Testcontainers.JanusGraph.Tests/Testcontainers.JanusGraph.Tests.csproj"/>
