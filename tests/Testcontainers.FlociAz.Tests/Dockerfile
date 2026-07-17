@@ -1,0 +1,1 @@
+FROM floci/floci-az:0.9.0@sha256:5e403a7d788c24ab2d1dc03d4803ef2d3962ca01522abba65ed86f221ae87ac0
