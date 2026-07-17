@@ -12,6 +12,9 @@
         <File Path=".github/workflows/scorecard-analysis.yml"/>
         <File Path=".github/workflows/test-report.yml"/>
     </Folder>
+    <Folder Name="/build/">
+        <Project Path="build/Build.csproj" />
+    </Folder>
     <Folder Name="/src/">
         <Project Path="src/Testcontainers.ActiveMq/Testcontainers.ActiveMq.csproj"/>
         <Project Path="src/Testcontainers.ArangoDb/Testcontainers.ArangoDb.csproj"/>
