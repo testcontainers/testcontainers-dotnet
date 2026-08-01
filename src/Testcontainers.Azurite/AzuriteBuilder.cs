@@ -44,7 +44,7 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
     /// (e.g., <c>mcr.microsoft.com/azure-storage/azurite:3.28.0</c>).
     /// </param>
     /// <remarks>
-    /// Docker image tags available at <see href="https://hub.docker.com/r/microsoft/azure-storage-azurite/tags" />.
+    /// Docker image tags available at <see href="https://hub.docker.com/r/microsoft/azure-storage-azurite" />.
     /// </remarks>
     public AzuriteBuilder(string image)
         : this(new DockerImage(image))
@@ -57,7 +57,7 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
     /// An <see cref="IImage" /> instance that specifies the Docker image to be used
     /// for the container builder configuration.
     /// <remarks>
-    /// Docker image tags available at <see href="https://hub.docker.com/r/microsoft/azure-storage-azurite/tags" />.
+    /// Docker image tags available at <see href="https://hub.docker.com/r/microsoft/azure-storage-azurite" />.
     /// </remarks>
     public AzuriteBuilder(IImage image)
         : this(new AzuriteConfiguration())

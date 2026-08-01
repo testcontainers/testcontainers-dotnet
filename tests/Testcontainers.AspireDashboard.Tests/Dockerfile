@@ -1,0 +1,1 @@
+FROM mcr.microsoft.com/dotnet/aspire-dashboard:13@sha256:cb04a30c7b815476474184564635f60c206d78855261731d8d99a6549bbf483a

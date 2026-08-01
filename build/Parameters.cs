@@ -31,7 +31,7 @@ internal sealed class BuildParameters
     public static BuildParameters Instance(ICakeContext context)
     {
         const string propertiesFilePath = "Directory.Build.props";
-        const string solutionFilePath = "Testcontainers.sln";
+        const string solutionFilePath = "Testcontainers.slnx";
 
         var buildInformation = BuildInformation.Instance(context, propertiesFilePath);
 

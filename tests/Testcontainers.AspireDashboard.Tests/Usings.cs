@@ -1,0 +1,12 @@
+global using System;
+global using System.Diagnostics;
+global using System.Net;
+global using System.Net.Http;
+global using System.Text.Json;
+global using System.Threading.Tasks;
+global using DotNet.Testcontainers.Commons;
+global using OpenTelemetry;
+global using OpenTelemetry.Exporter;
+global using OpenTelemetry.Resources;
+global using OpenTelemetry.Trace;
+global using Xunit;

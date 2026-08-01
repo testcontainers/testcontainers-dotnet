@@ -4,6 +4,8 @@ updates:
     directory: /
     schedule:
       interval: monthly
+    cooldown:
+      default-days: 7      
     labels:
       - dependencies
     groups:
@@ -17,6 +19,8 @@ updates:
     open-pull-requests-limit: 3
     schedule:
       interval: monthly
+    cooldown:
+      default-days: 7      
     labels:
       - dependencies
     ignore:
