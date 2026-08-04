@@ -36,7 +36,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           lfs: true
 
@@ -69,7 +69,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           lfs: true
 
@@ -80,7 +80,7 @@ jobs:
           path: ~/.nuget/packages
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@9a946fdbd5fb07b82b2f5a4466058b876ab72bb2 # v5.3.0
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
 
       # Windows runners often report the Docker service as started before the
       # engine accepts connections, causing flaky npipe timeouts.
@@ -139,7 +139,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           lfs: true
           fetch-depth: 0
@@ -161,13 +161,13 @@ jobs:
           path: ~/.nuget/packages
 
       - name: Setup Java
-        uses: actions/setup-java@1bcf9fb12cf4aa7d266a90ae39939e61372fe520 # v5.4.0
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
         with:
           distribution: temurin
           java-version: 21
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@9a946fdbd5fb07b82b2f5a4466058b876ab72bb2 # v5.3.0
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
 
       - name: Restore NuGet Packages
         run: ./build.sh --target=Restore-NuGet-Packages
@@ -191,13 +191,13 @@ jobs:
 
       - name: Attest
         if: ${{ env.PUBLISH_NUGET_PACKAGE == 'true' }}
-        uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26 # v4.1.0
+        uses: actions/attest@f7c74d28b9d84cb8768d0b8ca14a4bac6ef463e6 # v4.2.0
         with:
           subject-path: artifacts/**/nuget/Testcontainers*.nupkg
 
       # Cake sets the semVer environment variable.
       - name: Draft Release
-        uses: release-drafter/release-drafter@ed4bc48ec97379be2258e7b7ac2624a3e26ab809 # v7.4.0
+        uses: release-drafter/release-drafter@eada3c96a64734dd381cfbda23511034e328ddb0 # v7.6.0
         with:
           version: ${{ env.semVer }}
         env:
