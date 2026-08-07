@@ -204,7 +204,11 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
         // with custom configurations as needed.
         var options = new WaitStrategy();
 
-        var scriptContent = $"var r=rs.initiate({{_id:\"{configuration.ReplicaSetName}\",members:[{{_id:0,host:\"127.0.0.1:27017\"}}]}});quit(r.ok===1?0:1);";
+        // The startup callback runs on every start, so a container that is restarted or reused
+        // already holds an initiated replica set. Initiating it again throws instead of returning
+        // a result, which would otherwise be retried until the wait strategy times out:
+        // https://github.com/testcontainers/testcontainers-dotnet/issues/1722.
+        var scriptContent = $"try{{var r=rs.initiate({{_id:\"{configuration.ReplicaSetName}\",members:[{{_id:0,host:\"127.0.0.1:27017\"}}]}});quit(r.ok===1?0:1);}}catch(e){{quit(e.codeName===\"AlreadyInitialized\"?0:1);}}";
 
         var initiate = async () =>
         {
