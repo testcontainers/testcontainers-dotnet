@@ -70,7 +70,10 @@ namespace DotNet.Testcontainers.Clients
         IdentityToken = dockerRegistryAuthConfig.IdentityToken,
       };
 
-      await DockerClient.Images.CreateImageAsync(createParameters, authConfig, traceProgress, ct)
+      await DockerImagePullRetryPolicy.ExecuteAsync(
+          token => DockerClient.Images.CreateImageAsync(createParameters, authConfig, traceProgress, token),
+          (attempt, delay, reason) => Logger.RetryDockerImagePull(image, attempt, DockerImagePullRetryPolicy.MaxAttempts, delay, reason),
+          ct)
         .ConfigureAwait(false);
 
       Logger.DockerImageCreated(image);
