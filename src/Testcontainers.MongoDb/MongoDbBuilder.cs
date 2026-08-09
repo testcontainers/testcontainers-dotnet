@@ -198,7 +198,7 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
             return;
         }
 
-        var readiness = new WaitIndicateReadiness(configuration);
+        var readiness = new WaitReplicationEnabled();
 
         // This is a simple workaround to use the default options, which can be configured
         // with custom configurations as needed.
@@ -227,6 +227,32 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
     }
 
     /// <inheritdoc cref="IWaitUntil" />
+    /// <inheritdoc cref="IWaitUntil" />
+    private sealed class WaitReplicationEnabled : IWaitUntil
+    {
+        // rs.status() only answers once the final mongod is serving. The official image forks a
+        // temporary mongod during first-time initialization to create the root user, and that
+        // process is not started with --replSet, so it never reports NotYetInitialized. This
+        // preserves the handover guarantee from #1636 without counting log messages, whose
+        // number depends on log content the module does not control: #1732.
+        private const string ScriptContent = "try{rs.status();quit(0);}catch(e){quit(e.codeName===\"NotYetInitialized\"?0:1);}";
+
+        /// <inheritdoc />
+        public Task<bool> UntilAsync(IContainer container)
+        {
+            return UntilAsync(container as MongoDbContainer);
+        }
+
+        /// <inheritdoc cref="IWaitUntil.UntilAsync" />
+        private static async Task<bool> UntilAsync(MongoDbContainer container)
+        {
+            var execResult = await container.ExecScriptAsync(ScriptContent)
+                .ConfigureAwait(false);
+
+            return 0L.Equals(execResult.ExitCode);
+        }
+    }
+
     private sealed class WaitIndicateReadiness : IWaitUntil
     {
         private static readonly string[] LineEndings = { "\r\n", "\n" };
