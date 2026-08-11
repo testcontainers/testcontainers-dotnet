@@ -204,7 +204,7 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
         // with custom configurations as needed.
         var options = new WaitStrategy();
 
-        // The startup callback runs on every start, so a container that is restarted or reused
+        // The startup callback runs on every start, a container that is restarted or reused
         // already holds an initiated replica set. Initiating it again throws instead of returning
         // a result, which would otherwise be retried until the wait strategy times out:
         // https://github.com/testcontainers/testcontainers-dotnet/issues/1722.
