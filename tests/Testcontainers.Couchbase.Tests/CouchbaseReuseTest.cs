@@ -51,7 +51,7 @@ public sealed class CouchbaseReuseTest : IAsyncLifetime
         clusterOptions.Password = CouchbaseBuilder.DefaultPassword;
 
         // When
-        var cluster = await Cluster.ConnectAsync(clusterOptions, TestContext.Current.CancellationToken)
+        await using var cluster = await Cluster.ConnectAsync(clusterOptions, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         var ping = await cluster.PingAsync()
