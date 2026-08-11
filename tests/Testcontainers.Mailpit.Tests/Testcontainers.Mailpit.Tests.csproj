@@ -10,7 +10,7 @@
         <PackageReference Include="coverlet.collector"/>
         <PackageReference Include="xunit.runner.visualstudio"/>
         <PackageReference Include="xunit.v3"/>
-        <PackageReference Include="MailKitLite" />
+        <PackageReference Include="MailKitLite"/>
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="../../src/Testcontainers.Mailpit/Testcontainers.Mailpit.csproj"/>

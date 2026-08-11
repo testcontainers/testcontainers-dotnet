@@ -2,8 +2,7 @@ namespace Testcontainers.Mailpit;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
-public sealed class MailpitBuilder
-    : ContainerBuilder<MailpitBuilder, MailpitContainer, MailpitConfiguration>
+public sealed class MailpitBuilder : ContainerBuilder<MailpitBuilder, MailpitContainer, MailpitConfiguration>
 {
     [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string MailpitImage = "axllent/mailpit:v1.30";
@@ -24,7 +23,10 @@ public sealed class MailpitBuilder
     /// <summary>
     /// Initializes a new instance of the <see cref="MailpitBuilder" /> class.
     /// </summary>
-    /// <param name="image">The full Docker image name, including the image repository and tag (e.g., <c>axllent/mailpit:v1.30</c>).</param>
+    /// <param name="image">
+    /// The full Docker image name, including the image repository and tag
+    /// (e.g., <c>axllent/mailpit:v1.30</c>).
+    /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/axllent/mailpit/tags" />.
     /// </remarks>
@@ -36,7 +38,10 @@ public sealed class MailpitBuilder
     /// <summary>
     /// Initializes a new instance of the <see cref="MailpitBuilder" /> class.
     /// </summary>
-    /// <param name="image">An <see cref="IImage" /> instance that specifies the Docker image to be used for the container builder configuration.</param>
+    /// <param name="image">
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the container builder configuration.
+    /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/axllent/mailpit/tags" />.
     /// </remarks>
@@ -60,14 +65,21 @@ public sealed class MailpitBuilder
     protected override MailpitConfiguration DockerResourceConfiguration { get; }
 
     /// <summary>
-    /// Sets the Mailpit MP_SMTP_AUTH config.
+    /// Sets the Mailpit <c>MP_SMTP_AUTH</c> configuration.
     /// </summary>
-    /// <param name="credentials">The credentials to be used in SMTP authentication.</param>
+    /// <param name="credentials">The credentials to use for SMTP authentication.</param>
     /// <param name="allowInsecure">
-    /// When <see langword="true"/>, the MP_SMTP_AUTH_ALLOW_INSECURE config is set to true to allow insecure PLAIN and LOGIN SMTP authentication.
-    /// When <see langword="false"/>, a self-signed certificate is used. Its subject and issuer are <c>CN=localhost, O=Mailpit self-signed certificate</c>.
+    /// When <see langword="true" />, sets the Mailpit <c>MP_SMTP_AUTH_ALLOW_INSECURE</c>
+    /// configuration to allow insecure PLAIN and LOGIN SMTP authentication.
+    /// When <see langword="false" />, configures Mailpit to use a self-signed
+    /// certificate by setting <c>MP_SMTP_TLS_CERT</c> and <c>MP_SMTP_TLS_KEY</c>
+    /// to <c>sans:localhost</c>. The certificate subject and issuer are
+    /// <c>CN=localhost, O=Mailpit self-signed certificate</c>.
     /// </param>
-    /// <returns>A configured instance of <see cref="MailpitBuilder" />.</returns>
+    /// <remarks>
+    /// See <see href="https://mailpit.axllent.org/docs/configuration/certificates/#auto-generate-self-signed-certificates" />.
+    /// </remarks>
+    /// <returns>A configured <see cref="MailpitBuilder" /> instance.</returns>
     public MailpitBuilder WithSmtpAuthCredentials(NetworkCredential credentials, bool allowInsecure)
     {
         if (credentials == null)
@@ -80,25 +92,31 @@ public sealed class MailpitBuilder
             throw new ArgumentException("The UserName cannot contain a colon (:) character.", nameof(credentials));
         }
 
-        // https://mailpit.axllent.org/docs/configuration/smtp/#adding-smtp-authentication
+        // https://mailpit.axllent.org/docs/configuration/smtp/#adding-smtp-authentication.
         var builder = Merge(DockerResourceConfiguration, new MailpitConfiguration(smtpAuthCredentials: credentials, smtpAuthAllowInsecure: allowInsecure))
             .WithEnvironment("MP_SMTP_AUTH", $"{credentials.UserName}:{credentials.Password}");
 
-        return allowInsecure
-            ? builder
-                .WithEnvironment("MP_SMTP_AUTH_ALLOW_INSECURE", "1")
-            : builder
-                 // https://mailpit.axllent.org/docs/configuration/certificates/#auto-generate-self-signed-certificates
+        if (allowInsecure)
+        {
+            return builder
+                .WithEnvironment("MP_SMTP_AUTH_ALLOW_INSECURE", "1");
+        }
+        else
+        {
+            return builder
                 .WithEnvironment("MP_SMTP_TLS_CERT", "sans:localhost")
                 .WithEnvironment("MP_SMTP_TLS_KEY", "sans:localhost");
+        }
     }
 
     /// <summary>
-    /// Sets the Mailpit MP_MAX_MESSAGES config.
-    /// Maximum number of messages to store. Mailpit will periodically delete the oldest messages if greater than this. Set to 0 to disable auto-deletion.
+    /// Sets the Mailpit <c>MP_MAX_MESSAGES</c> configuration.
+    /// Specifies the maximum number of messages to store. Mailpit periodically
+    /// deletes the oldest messages when this limit is exceeded.
+    /// Set to <c>0</c> to disable automatic deletion.
     /// </summary>
-    /// <param name="maxMessages">The maximum number of messages to set.</param>
-    /// <returns>A configured instance of <see cref="MailpitBuilder" />.</returns>
+    /// <param name="maxMessages">The maximum number of messages to store.</param>
+    /// <returns>A configured <see cref="MailpitBuilder" /> instance.</returns>
     public MailpitBuilder WithMaxMessages(uint maxMessages)
     {
         return Merge(DockerResourceConfiguration, new MailpitConfiguration(maxMessages: maxMessages))
@@ -119,8 +137,7 @@ public sealed class MailpitBuilder
             .WithPortBinding(SmtpPort, true)
             .WithPortBinding(WebPort, true)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
-                // https://mailpit.axllent.org/docs/integration/healthcheck/
-                request.ForPort(WebPort).ForPath("/readyz")));
+                request.ForPath("/readyz").ForPort(WebPort)));
     }
 
     /// <inheritdoc />
