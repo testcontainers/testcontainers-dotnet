@@ -130,7 +130,7 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
         }
         else
         {
-            waitUntil = new WaitInitiateReplicaSet();
+            waitUntil = new WaitReplicaSetPrimary();
         }
 
         // If the user does not provide a custom waiting strategy, append the default MongoDb waiting strategy.
@@ -198,7 +198,7 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
             return;
         }
 
-        var readiness = new WaitIndicateReadiness(configuration);
+        var readiness = new WaitReplicaSetEnabled();
 
         // This is a simple workaround to use the default options, which can be configured
         // with custom configurations as needed.
@@ -260,9 +260,9 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
     }
 
     /// <inheritdoc cref="IWaitUntil" />
-    private sealed class WaitInitiateReplicaSet : IWaitUntil
+    private abstract class WaitUntilScriptBase : IWaitUntil
     {
-        private const string ScriptContent = "var r=db.runCommand({hello:1}).isWritablePrimary;quit(r===true?0:1);";
+        protected abstract string ScriptContent { get; }
 
         /// <inheritdoc />
         public Task<bool> UntilAsync(IContainer container)
@@ -271,12 +271,28 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
         }
 
         /// <inheritdoc cref="IWaitUntil.UntilAsync" />
-        private static async Task<bool> UntilAsync(MongoDbContainer container)
+        private async Task<bool> UntilAsync(MongoDbContainer container)
         {
             var execResult = await container.ExecScriptAsync(ScriptContent)
                 .ConfigureAwait(false);
 
             return 0L.Equals(execResult.ExitCode);
         }
+    }
+
+    /// <inheritdoc cref="IWaitUntil" />
+    private sealed class WaitReplicaSetEnabled : WaitUntilScriptBase
+    {
+        // rs.status() only answers once the final mongod is serving. The official image
+        // forks a temporary mongod during first-time initialization to create the root
+        // user. That process is not started with --replSet, so it never reports
+        // NotYetInitialized.
+        protected override string ScriptContent => "try{rs.status();quit(0);}catch(e){quit(e.codeName===\"NotYetInitialized\"?0:1);}";
+    }
+
+    /// <inheritdoc cref="IWaitUntil" />
+    private sealed class WaitReplicaSetPrimary : WaitUntilScriptBase
+    {
+        protected override string ScriptContent => "var r=db.runCommand({hello:1}).isWritablePrimary;quit(r===true?0:1);";
     }
 }
