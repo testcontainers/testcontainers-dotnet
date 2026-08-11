@@ -44,7 +44,22 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
 
     private static readonly KeyValuePair<string, string> BasicAuthenticationHeader = new KeyValuePair<string, string>("Authorization", "Basic " + Convert.ToBase64String(Encoding.GetEncoding("ISO-8859-1").GetBytes(string.Join(":", DefaultUsername, DefaultPassword))));
 
-    private static readonly IWaitUntil WaitUntilNodeIsReady = new HttpWaitStrategy().ForPath("/pools").ForPort(MgmtPort);
+    // An unprovisioned node answers /pools without credentials, but once the cluster is
+    // provisioned the same request is 401. Sending the credentials keeps this probe a test of
+    // "is the management API up" in both states instead of stalling on a reused container:
+    // https://github.com/testcontainers/testcontainers-dotnet/issues/1337.
+    private static readonly IWaitUntil WaitUntilNodeIsReady = new HttpWaitStrategy()
+        .ForPath("/pools")
+        .ForPort(MgmtPort)
+        .WithHeader(BasicAuthenticationHeader.Key, BasicAuthenticationHeader.Value);
+
+    // /pools/default does not exist until the cluster has been provisioned, so an authenticated
+    // 200 here means the startup callback has already run against this container.
+    private static readonly IWaitUntil WaitUntilClusterIsProvisioned = new HttpWaitStrategy()
+        .ForPath("/pools/default")
+        .ForPort(MgmtPort)
+        .ForStatusCode(HttpStatusCode.OK)
+        .WithHeader(BasicAuthenticationHeader.Key, BasicAuthenticationHeader.Value);
 
     private static readonly ISet<CouchbaseService> EnabledServices = new HashSet<CouchbaseService>();
 
@@ -216,6 +231,17 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
     {
         await WaitStrategy.WaitUntilAsync(() => WaitUntilNodeIsReady.UntilAsync(container), TimeSpan.FromSeconds(2), TimeSpan.FromMinutes(5), -1, ct)
             .ConfigureAwait(false);
+
+        // The startup callback runs on every start, so a restarted or reused container already
+        // holds a provisioned cluster. The requests below are unauthenticated by design, which
+        // an already-provisioned node rejects, so running them again cannot succeed.
+        var provisioned = await WaitUntilClusterIsProvisioned.UntilAsync(container)
+            .ConfigureAwait(false);
+
+        if (provisioned)
+        {
+            return;
+        }
 
         using (var httpClient = new HttpClient(new RetryHandler()))
         {
