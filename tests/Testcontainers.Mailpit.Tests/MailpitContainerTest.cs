@@ -8,97 +8,103 @@ public abstract partial class MailpitContainerTest(MailpitContainerTest.MailpitF
     {
         // Given
         var from = new MailboxAddress("The Sender", "sender@mailpit-testcontainers.com");
+
         var to = new MailboxAddress("The Receiver", "receiver@mailpit-testcontainers.com");
-        var message = new MimeMessage
-        {
-            From = { from },
-            To = { to },
-            Subject = "Hey there from Mailpit!",
-            Body = new TextPart { Text = "This is just a test message, it doesn't have much going on.\n\nCheers,\n\nSender" },
-        };
+
+        using var mimePart = new TextPart();
+        mimePart.Text = "This is just a test message, it doesn't have much going on.\n\nCheers,\n\nSender";
+
+        using var mimeMessage = new MimeMessage();
+        mimeMessage.From.Add(from);
+        mimeMessage.To.Add(to);
+        mimeMessage.Subject = "Hey there from Mailpit!";
+        mimeMessage.Body = mimePart;
 
         // When
-        var messageId = await fixture.SendMessageAsync(message, TestContext.Current.CancellationToken);
+        var messageId = await fixture.SendMessageAsync(mimeMessage, TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        var response = await fixture.ReadMessageAsync(messageId, TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
 
         // Then
-        var response = await fixture.GetMessageAsync(messageId, TestContext.Current.CancellationToken);
-        Assert.Equal(message.Subject, response.Subject);
+        var recipient = Assert.Single(response.To);
+        Assert.Equal(mimeMessage.Subject, response.Subject);
         Assert.Equal(from.Address, response.From.Address);
         Assert.Equal(from.Name, response.From.Name);
-        Assert.Equal(to.Address, response.To[0].Address);
-        Assert.Equal(to.Name, response.To[0].Name);
+        Assert.Equal(to.Address, recipient.Address);
+        Assert.Equal(to.Name, recipient.Name);
     }
 
-    public partial class MailpitFixture(IMessageSink messageSink)
+    public class MailpitFixture(IMessageSink messageSink)
         : ContainerFixture<MailpitBuilder, MailpitContainer>(messageSink)
     {
-        protected override MailpitBuilder Configure()
-            => new(TestSession.GetImageFromDockerfile());
-
-        [GeneratedRegex("queued as (.+)")]
-        private static partial Regex QueuedMessage();
-
         [CanBeNull]
-        protected virtual ICredentials Credentials => null;
+        protected virtual ICredentials Credentials
+            => null;
 
-        public async Task<string> SendMessageAsync(MimeMessage message, CancellationToken cancellationToken)
+        protected override MailpitBuilder Configure()
+            => new MailpitBuilder(TestSession.GetImageFromDockerfile());
+
+        public async Task<string> SendMessageAsync(MimeMessage message, CancellationToken cancellationToken = default)
         {
             using var smtpClient = new SmtpClient();
             smtpClient.ServerCertificateValidationCallback = (_, certificate, _, _) => certificate?.Issuer == "CN=localhost, O=Mailpit self-signed certificate";
-            await smtpClient.ConnectAsync(Container.Hostname, Container.SmtpPort, SecureSocketOptions.Auto, cancellationToken);
+
+            await smtpClient.ConnectAsync(Container.Hostname, Container.SmtpPort, SecureSocketOptions.Auto, cancellationToken)
+                .ConfigureAwait(false);
+
             if (Credentials != null)
             {
-                await smtpClient.AuthenticateAsync(Credentials, cancellationToken);
+                await smtpClient.AuthenticateAsync(Credentials, cancellationToken)
+                    .ConfigureAwait(false);
             }
 
-            var result = await smtpClient.SendAsync(message, cancellationToken);
+            var response = await smtpClient.SendAsync(message, cancellationToken)
+                .ConfigureAwait(false);
 
-            var messageId = QueuedMessage().Match(result).Groups[1].Value;
+            var messageId = MailpitRegexes.QueuedMessage().Match(response).Groups[1].Value;
             Assert.NotEmpty(messageId);
             return messageId;
         }
 
-        public async Task<MailpitMessage> GetMessageAsync(string messageId, CancellationToken cancellationToken)
+        public async Task<MailpitMessage> ReadMessageAsync(string messageId, CancellationToken cancellationToken = default)
         {
             using var client = new HttpClient();
             client.BaseAddress = new Uri(Container.GetWebAddress());
-            return await client.GetFromJsonAsync<MailpitMessage>($"/api/v1/message/{messageId}", cancellationToken);
-        }
 
-        public class MailpitMessage
-        {
-            public string Subject { get; init; }
-            public Mailbox From { get; init; }
-            public Mailbox[] To { get; init; } = [];
-
-            public class Mailbox
-            {
-                public string Address { get; init; }
-                public string Name { get; init; }
-            }
+            return await client.GetFromJsonAsync<MailpitMessage>($"/api/v1/message/{messageId}", cancellationToken)
+                .ConfigureAwait(false);
         }
     }
 
-    public abstract class AuthenticationMailpitFixture(IMessageSink messageSink) : MailpitFixture(messageSink)
+    [UsedImplicitly]
+    public abstract class AuthenticationMailpitFixture(IMessageSink messageSink)
+        : MailpitFixture(messageSink)
     {
-        protected override NetworkCredential Credentials { get; } = new NetworkCredential("user", "p@ssw0rd");
-
         protected abstract bool AllowInsecure { get; }
+
+        protected override NetworkCredential Credentials { get; }
+            = new NetworkCredential("user", "p@ssw0rd");
 
         protected override MailpitBuilder Configure()
             => base.Configure().WithSmtpAuthCredentials(Credentials, AllowInsecure);
     }
 
     [UsedImplicitly]
-    public class AuthenticationSecureMailpitFixture(IMessageSink messageSink) : AuthenticationMailpitFixture(messageSink)
+    public sealed class AuthenticationSecureMailpitFixture(IMessageSink messageSink)
+        : AuthenticationMailpitFixture(messageSink)
     {
-        protected override bool AllowInsecure => false;
+        protected override bool AllowInsecure
+            => false;
     }
 
     [UsedImplicitly]
-    public class AuthenticationInsecureMailpitFixture(IMessageSink messageSink) : AuthenticationMailpitFixture(messageSink)
+    public sealed class AuthenticationInsecureMailpitFixture(IMessageSink messageSink)
+        : AuthenticationMailpitFixture(messageSink)
     {
-        protected override bool AllowInsecure => true;
+        protected override bool AllowInsecure
+            => true;
     }
 
     [UsedImplicitly]
@@ -112,4 +118,46 @@ public abstract partial class MailpitContainerTest(MailpitContainerTest.MailpitF
     [UsedImplicitly]
     public sealed class SmtpAuthInsecure(AuthenticationInsecureMailpitFixture fixture)
         : MailpitContainerTest(fixture), IClassFixture<AuthenticationInsecureMailpitFixture>;
+
+    [UsedImplicitly]
+    public sealed record MailpitMailbox
+    {
+        public MailpitMailbox(
+            string address,
+            string name)
+        {
+            Address = address;
+            Name = name;
+        }
+
+        public string Address { get; }
+
+        public string Name { get; }
+    }
+
+    [UsedImplicitly]
+    public sealed record MailpitMessage
+    {
+        public MailpitMessage(
+            string subject,
+            MailpitMailbox from,
+            MailpitMailbox[] to)
+        {
+            Subject = subject;
+            From = from;
+            To = to;
+        }
+
+        public string Subject { get; }
+
+        public MailpitMailbox From { get; }
+
+        public MailpitMailbox[] To { get; }
+    }
+
+    private static partial class MailpitRegexes
+    {
+        [GeneratedRegex("queued as (.+)")]
+        public static partial Regex QueuedMessage();
+    }
 }
