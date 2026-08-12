@@ -65,15 +65,16 @@ public abstract partial class MailpitContainerTest(MailpitContainerTest.MailpitF
 
             var messageId = MailpitRegexes.QueuedMessage().Match(response).Groups[1].Value;
             Assert.NotEmpty(messageId);
+
             return messageId;
         }
 
         public async Task<MailpitMessage> ReadMessageAsync(string messageId, CancellationToken cancellationToken = default)
         {
-            using var client = new HttpClient();
-            client.BaseAddress = new Uri(Container.GetWebAddress());
+            using var httpClient = new HttpClient();
+            httpClient.BaseAddress = new Uri(Container.GetWebAddress());
 
-            return await client.GetFromJsonAsync<MailpitMessage>($"/api/v1/message/{messageId}", cancellationToken)
+            return await httpClient.GetFromJsonAsync<MailpitMessage>($"/api/v1/message/{messageId}", cancellationToken)
                 .ConfigureAwait(false);
         }
     }
