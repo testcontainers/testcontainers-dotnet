@@ -63,6 +63,9 @@ public abstract partial class MailpitContainerTest(MailpitContainerTest.MailpitF
             var response = await smtpClient.SendAsync(message, cancellationToken)
                 .ConfigureAwait(false);
 
+            await smtpClient.DisconnectAsync(true, cancellationToken)
+                .ConfigureAwait(false);
+
             var messageId = MailpitRegexes.QueuedMessage().Match(response).Groups[1].Value;
             Assert.NotEmpty(messageId);
 
