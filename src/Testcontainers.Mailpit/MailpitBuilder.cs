@@ -92,21 +92,29 @@ public sealed class MailpitBuilder : ContainerBuilder<MailpitBuilder, MailpitCon
             throw new ArgumentException("The UserName cannot contain a colon (:) character.", nameof(credentials));
         }
 
+        // TODO:
+        // This prepares a full environment replacement once dictionary composition
+        // supports ComposableDictionary for environments. Until that, stale keys
+        // are still preserved by the current IReadOnlyDictionary merge behavior.
+        var environments = DockerResourceConfiguration.Environments.ToDictionary(item => item.Key, item => item.Value);
+        environments.Remove("MP_SMTP_AUTH_ALLOW_INSECURE");
+        environments.Remove("MP_SMTP_TLS_CERT");
+        environments.Remove("MP_SMTP_TLS_KEY");
+
         // https://mailpit.axllent.org/docs/configuration/smtp/#adding-smtp-authentication.
-        var builder = Merge(DockerResourceConfiguration, new MailpitConfiguration(smtpAuthCredentials: credentials, smtpAuthAllowInsecure: allowInsecure))
-            .WithEnvironment("MP_SMTP_AUTH", $"{credentials.UserName}:{credentials.Password}");
+        environments["MP_SMTP_AUTH"] = $"{credentials.UserName}:{credentials.Password}";
 
         if (allowInsecure)
         {
-            return builder
-                .WithEnvironment("MP_SMTP_AUTH_ALLOW_INSECURE", "1");
+            environments["MP_SMTP_AUTH_ALLOW_INSECURE"] = "1";
         }
         else
         {
-            return builder
-                .WithEnvironment("MP_SMTP_TLS_CERT", "sans:localhost")
-                .WithEnvironment("MP_SMTP_TLS_KEY", "sans:localhost");
+            environments["MP_SMTP_TLS_CERT"] = "sans:localhost";
+            environments["MP_SMTP_TLS_KEY"] = "sans:localhost";
         }
+
+        return WithEnvironment(new OverwriteDictionary<string, string>(environments));
     }
 
     /// <summary>
@@ -119,8 +127,7 @@ public sealed class MailpitBuilder : ContainerBuilder<MailpitBuilder, MailpitCon
     /// <returns>A configured <see cref="MailpitBuilder" /> instance.</returns>
     public MailpitBuilder WithMaxMessages(uint maxMessages)
     {
-        return Merge(DockerResourceConfiguration, new MailpitConfiguration(maxMessages: maxMessages))
-            .WithEnvironment("MP_MAX_MESSAGES", maxMessages.ToString());
+        return WithEnvironment("MP_MAX_MESSAGES", maxMessages.ToString());
     }
 
     /// <inheritdoc />
