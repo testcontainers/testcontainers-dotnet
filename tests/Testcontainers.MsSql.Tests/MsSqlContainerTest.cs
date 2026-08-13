@@ -59,14 +59,14 @@ public abstract class MsSqlContainerTest(MsSqlContainerTest.MsSqlDefaultFixture 
     public class MsSqlDefaultFixture(IMessageSink messageSink)
         : DbContainerFixture<MsSqlBuilder, MsSqlContainer>(messageSink)
     {
-        public virtual string Database
-            => MsSqlBuilder.DefaultDatabase;
-
         protected override MsSqlBuilder Configure()
             => new MsSqlBuilder(TestSession.GetImageFromDockerfile());
 
         public override DbProviderFactory DbProviderFactory
             => SqlClientFactory.Instance;
+
+        public virtual string Database
+            => MsSqlBuilder.DefaultDatabase;
     }
 
     [UsedImplicitly]
@@ -81,11 +81,22 @@ public abstract class MsSqlContainerTest(MsSqlContainerTest.MsSqlDefaultFixture 
     public class MsSqlCustomDatabaseFixture(IMessageSink messageSink)
         : MsSqlDefaultFixture(messageSink)
     {
-        public override string Database
-            => "MyDatabase";
-
         protected override MsSqlBuilder Configure()
             => base.Configure().WithDatabase(Database);
+
+        public override string Database
+            => "MyDatabase";
+    }
+
+    [UsedImplicitly]
+    public class MsSqlWaitForCustomDatabaseFixture(IMessageSink messageSink)
+        : MsSqlDefaultFixture(messageSink)
+    {
+        protected override MsSqlBuilder Configure()
+            => base.Configure().WithDatabase(Database).WithWaitStrategy(Wait.ForUnixContainer().UntilDatabaseIsAvailable(DbProviderFactory));
+
+        public override string Database
+            => "MyDatabase";
     }
 
     [UsedImplicitly]
@@ -99,4 +110,8 @@ public abstract class MsSqlContainerTest(MsSqlContainerTest.MsSqlDefaultFixture 
     [UsedImplicitly]
     public sealed class MsSqlCustomDatabaseConfiguration(MsSqlCustomDatabaseFixture fixture)
         : MsSqlContainerTest(fixture), IClassFixture<MsSqlCustomDatabaseFixture>;
+
+    [UsedImplicitly]
+    public sealed class MsSqlWaitForCustomDatabaseConfiguration(MsSqlWaitForCustomDatabaseFixture fixture)
+        : MsSqlContainerTest(fixture), IClassFixture<MsSqlWaitForCustomDatabaseFixture>;
 }

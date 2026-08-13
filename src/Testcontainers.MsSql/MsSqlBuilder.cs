@@ -73,9 +73,8 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
     /// Sets the MsSql database.
     /// </summary>
     /// <remarks>
-    /// The Docker image does not create the database. It is created as part of the
-    /// readiness check, which runs before any caller-defined wait strategy. Ideally,
-    /// creating the database is moved from the readiness check into the startup.
+    /// The Docker image does not allow to configure the database. It is created
+    /// as part of the startup callback, which runs before any wait strategy.
     /// </remarks>
     /// <param name="database">The MsSql database.</param>
     /// <returns>A configured instance of <see cref="MsSqlBuilder" />.</returns>
@@ -114,7 +113,8 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
             .WithConnectionStringProvider(new MsSqlConnectionStringProvider())
-            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
+            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()))
+            .WithStartupCallback(CreateDatabaseAsync);
     }
 
     /// <inheritdoc />
@@ -163,6 +163,47 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
             .WithEnvironment("SQLCMDUSER", username);
     }
 
+    /// <summary>
+    /// Creates the configured MsSql database.
+    /// </summary>
+    /// <remarks>
+    /// The configured database is resolved by <c>sqlcmd</c> itself, substituting
+    /// the <c>SQLCMDDBNAME</c> scripting variable that <see cref="WithDatabase" />
+    /// sets. Creating the default database is skipped, since it always exists.
+    /// </remarks>
+    /// <param name="container">The container instance.</param>
+    /// <param name="configuration">The container configuration.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the database has been created.</returns>
+    private static async Task CreateDatabaseAsync(MsSqlContainer container, MsSqlConfiguration configuration, CancellationToken ct)
+    {
+        if (DefaultDatabase.Equals(configuration.Database))
+        {
+            return;
+        }
+
+        const string sqlStatement = "IF DB_ID('$(SQLCMDDBNAME)') IS NULL BEGIN CREATE DATABASE [$(SQLCMDDBNAME)] END";
+
+        var sqlCmdFilePath = await container.GetSqlCmdFilePathAsync(ct)
+            .ConfigureAwait(false);
+
+        var readiness = new WaitUntil();
+
+        // This is a simple workaround to use the default options, which can be configured
+        // with custom configurations as needed.
+        var options = new WaitStrategy();
+
+        // The startup callback runs before any wait strategy. Waiting here prevents creating the
+        // database while the MsSql instance is not accepting connections yet, which would
+        // otherwise cause the container start to fail.
+        await WaitStrategy.WaitUntilAsync(() => readiness.UntilAsync(container), options.Interval, options.Timeout, options.Retries, ct)
+            .ConfigureAwait(false);
+
+        _ = await container.ExecAsync(new[] { sqlCmdFilePath, "-C", "-b", "-r", "1", "-d", DefaultDatabase, "-Q", sqlStatement }, ct)
+            .ThrowOnFailure()
+            .ConfigureAwait(false);
+    }
+
     /// <inheritdoc cref="IWaitUntil" />
     /// <remarks>
     /// Uses the <c>sqlcmd</c> utility scripting variables to detect readiness of the MsSql container:
@@ -177,7 +218,7 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
         }
 
         /// <inheritdoc cref="IWaitUntil.UntilAsync" />
-        private async Task<bool> UntilAsync(MsSqlContainer container)
+        private static async Task<bool> UntilAsync(MsSqlContainer container)
         {
             var sqlCmdFilePath = await container.GetSqlCmdFilePathAsync()
                 .ConfigureAwait(false);
@@ -185,25 +226,7 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
             var execResult = await container.ExecAsync(new[] { sqlCmdFilePath, "-C", "-b", "-r", "1", "-d", DefaultDatabase, "-Q", "SELECT 1;" })
                 .ConfigureAwait(false);
 
-            if (!0L.Equals(execResult.ExitCode))
-            {
-                return false;
-            }
-
-            // The configured database is resolved by sqlcmd itself, substituting the SQLCMDDBNAME
-            // scripting variable that WithDatabase(string) sets. Creating the default database
-            // is a noop, since it always exists.
-            const string sqlStatement = "IF DB_ID('$(SQLCMDDBNAME)') IS NULL BEGIN CREATE DATABASE [$(SQLCMDDBNAME)] END";
-
-            var createDatabaseExecResult = await container.ExecAsync(new[] { sqlCmdFilePath, "-C", "-b", "-r", "1", "-d", DefaultDatabase, "-Q", sqlStatement })
-                .ConfigureAwait(false);
-
-            if (!0L.Equals(createDatabaseExecResult.ExitCode))
-            {
-                throw new InvalidOperationException("The database could not be created: " + createDatabaseExecResult.Stderr.Trim());
-            }
-
-            return true;
+            return 0L.Equals(execResult.ExitCode);
         }
     }
 }
