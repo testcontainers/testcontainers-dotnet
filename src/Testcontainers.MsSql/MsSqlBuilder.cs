@@ -180,6 +180,14 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
             return;
         }
 
+        var readiness = new WaitStrategy(new WaitUntil());
+
+        // The startup callback runs before any wait strategy. Waiting here prevents creating the
+        // database while the MsSql instance is not accepting connections yet, which would
+        // otherwise cause the container start to fail.
+        await WaitStrategy.WaitUntilAsync(() => readiness.UntilAsync(container, ct), readiness.Interval, readiness.Timeout, readiness.Retries, ct)
+            .ConfigureAwait(false);
+
         // The database name cannot be passed as the SQLCMDDBNAME scripting variable that
         // WithDatabase(string) sets. The -d option below overrides it with the default
         // database, which would resolve the statement against the wrong database.
@@ -188,18 +196,6 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
         var sqlStatement = $"IF DB_ID('{database}') IS NULL BEGIN CREATE DATABASE [{database}] END";
 
         var sqlCmdFilePath = await container.GetSqlCmdFilePathAsync(ct)
-            .ConfigureAwait(false);
-
-        var readiness = new WaitUntil();
-
-        // This is a simple workaround to use the default options, which can be configured
-        // with custom configurations as needed.
-        var options = new WaitStrategy();
-
-        // The startup callback runs before any wait strategy. Waiting here prevents creating the
-        // database while the MsSql instance is not accepting connections yet, which would
-        // otherwise cause the container start to fail.
-        await WaitStrategy.WaitUntilAsync(() => readiness.UntilAsync(container), options.Interval, options.Timeout, options.Retries, ct)
             .ConfigureAwait(false);
 
         _ = await container.ExecAsync(new[] { sqlCmdFilePath, "-C", "-b", "-r", "1", "-d", DefaultDatabase, "-Q", sqlStatement }, ct)
