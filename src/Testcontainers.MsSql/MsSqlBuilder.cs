@@ -72,6 +72,11 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
     /// <summary>
     /// Sets the MsSql database.
     /// </summary>
+    /// <remarks>
+    /// The Docker image does not create the database. It is created as part of the
+    /// readiness check, which runs before any caller-defined wait strategy. Ideally,
+    /// creating the database is moved from the readiness check into the startup.
+    /// </remarks>
     /// <param name="database">The MsSql database.</param>
     /// <returns>A configured instance of <see cref="MsSqlBuilder" />.</returns>
     public MsSqlBuilder WithDatabase(string database)

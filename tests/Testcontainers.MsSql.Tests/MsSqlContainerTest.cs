@@ -40,25 +40,28 @@ public abstract class MsSqlContainerTest(MsSqlContainerTest.MsSqlDefaultFixture 
     public async Task CreatesTableInConfiguredDatabase()
     {
         // Given
-        using DbConnection connection = fixture.CreateConnection();
+        const string scriptContent = "CREATE TABLE dbo.Employee (EmployeeID INT PRIMARY KEY CLUSTERED);";
+
+        using var command = fixture.CreateCommand("SELECT DB_NAME() FROM sys.Tables WHERE Name = 'Employee' AND SCHEMA_ID = SCHEMA_ID('dbo');");
 
         // When
-        await fixture.Container.ExecScriptAsync("CREATE TABLE dbo.Employee (EmployeeID INT PRIMARY KEY CLUSTERED);", TestContext.Current.CancellationToken)
+        var execResult = await fixture.Container.ExecScriptAsync(scriptContent, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        using var command = fixture.CreateCommand();
-        command.CommandText = "SELECT DB_NAME() FROM sys.Tables WHERE Name = 'Employee' AND SCHEMA_ID = SCHEMA_ID('dbo');";
-
-        using var dataReader = command.ExecuteReader();
+        var database = await command.ExecuteScalarAsync(TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
 
         // Then
-        Assert.True(dataReader.Read());
-        Assert.Equal(connection.Database, dataReader.GetString(0));
+        Assert.True(0L.Equals(execResult.ExitCode), execResult.Stderr);
+        Assert.Equal(fixture.Database, database);
     }
 
     public class MsSqlDefaultFixture(IMessageSink messageSink)
         : DbContainerFixture<MsSqlBuilder, MsSqlContainer>(messageSink)
     {
+        public virtual string Database
+            => MsSqlBuilder.DefaultDatabase;
+
         protected override MsSqlBuilder Configure()
             => new MsSqlBuilder(TestSession.GetImageFromDockerfile());
 
@@ -78,8 +81,11 @@ public abstract class MsSqlContainerTest(MsSqlContainerTest.MsSqlDefaultFixture 
     public class MsSqlCustomDatabaseFixture(IMessageSink messageSink)
         : MsSqlDefaultFixture(messageSink)
     {
+        public override string Database
+            => "MyDatabase";
+
         protected override MsSqlBuilder Configure()
-            => base.Configure().WithDatabase("MyDatabase");
+            => base.Configure().WithDatabase(Database);
     }
 
     [UsedImplicitly]
