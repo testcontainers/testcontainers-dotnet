@@ -70,6 +70,17 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
     protected override MsSqlConfiguration DockerResourceConfiguration { get; }
 
     /// <summary>
+    /// Sets the MsSql database.
+    /// </summary>
+    /// <param name="database">The MsSql database.</param>
+    /// <returns>A configured instance of <see cref="MsSqlBuilder" />.</returns>
+    public MsSqlBuilder WithDatabase(string database)
+    {
+        return Merge(DockerResourceConfiguration, new MsSqlConfiguration(database: database))
+            .WithEnvironment("SQLCMDDBNAME", database);
+    }
+
+    /// <summary>
     /// Sets the MsSql password.
     /// </summary>
     /// <param name="password">The MsSql password.</param>
@@ -87,7 +98,7 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
         Validate();
 
         // By default, the base builder waits until the container is running. However, for MsSql, a more advanced waiting strategy is necessary that requires access to the configured database, username and password.
-        // Always append the default MsSql waiting strategy because that's where the custom database is created.
+        // Always append the default MsSql waiting strategy, since that's where the custom database is created.
         var msSqlBuilder = WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration)));
         return new MsSqlContainer(msSqlBuilder.DockerResourceConfiguration);
     }
@@ -133,20 +144,6 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
     }
 
     /// <summary>
-    /// Sets the MsSql database.
-    /// </summary>
-    /// <remarks>
-    /// This is useful, for example, when the database needs to be set to single-user mode.
-    /// Typically, Entity Framework Core does it through the <c>EnsureDeleted</c> method.
-    /// </remarks>
-    /// <param name="database">The MsSql database.</param>
-    /// <returns>A configured instance of <see cref="MsSqlBuilder" />.</returns>
-    public MsSqlBuilder WithDatabase(string database)
-    {
-        return Merge(DockerResourceConfiguration, new MsSqlConfiguration(database: database));
-    }
-
-    /// <summary>
     /// Sets the MsSql username.
     /// </summary>
     /// <remarks>
@@ -165,8 +162,19 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
     /// Uses the <c>sqlcmd</c> utility scripting variables to detect readiness of the MsSql container:
     /// https://learn.microsoft.com/en-us/sql/tools/sqlcmd/sqlcmd-utility?view=sql-server-linux-ver15#sqlcmd-scripting-variables.
     /// </remarks>
-    private sealed class WaitUntil(MsSqlConfiguration configuration) : IWaitUntil
+    private sealed class WaitUntil : IWaitUntil
     {
+        private readonly string _configuredDatabase;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WaitUntil" /> class.
+        /// </summary>
+        /// <param name="configuration">The container configuration.</param>
+        public WaitUntil(MsSqlConfiguration configuration)
+        {
+            _configuredDatabase = configuration.Database;
+        }
+
         /// <inheritdoc />
         public Task<bool> UntilAsync(IContainer container)
         {
@@ -179,19 +187,20 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
             var sqlCmdFilePath = await container.GetSqlCmdFilePathAsync()
                 .ConfigureAwait(false);
 
-            var execResult = await container.ExecAsync([sqlCmdFilePath, "-C", "-Q", "SELECT 1;"])
+            var execResult = await container.ExecAsync(new[] { sqlCmdFilePath, "-C", "-d", DefaultDatabase, "-Q", "SELECT 1;" })
                 .ConfigureAwait(false);
 
-            if (execResult.ExitCode == 0 && configuration.Database != DefaultDatabase)
-            {
-                var createDbScript = $"IF DB_ID('{configuration.Database}') IS NULL " +
-                                     $"BEGIN CREATE DATABASE [{configuration.Database}] END";
+            var isSuccessful = 0L.Equals(execResult.ExitCode);
 
-                var masterConfiguration = new MsSqlConfiguration(DefaultDatabase, DefaultUsername, configuration.Password);
-                await container.ExecScriptAsync(createDbScript, masterConfiguration);
+            if (isSuccessful && !DefaultDatabase.Equals(_configuredDatabase, StringComparison.OrdinalIgnoreCase))
+            {
+                var sqlStatement = $"IF DB_ID('{_configuredDatabase}') IS NULL BEGIN CREATE DATABASE [{_configuredDatabase}] END";
+
+                _ = await container.ExecAsync(new[] { sqlCmdFilePath, "-C", "-d", DefaultDatabase, "-Q", sqlStatement })
+                    .ConfigureAwait(false);
             }
 
-            return 0L.Equals(execResult.ExitCode);
+            return isSuccessful;
         }
     }
 }

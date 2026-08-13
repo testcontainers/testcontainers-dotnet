@@ -37,17 +37,23 @@ public abstract class MsSqlContainerTest(MsSqlContainerTest.MsSqlDefaultFixture 
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public async Task CreatesTableOnTheConfiguredDatabase()
+    public async Task CreatesTableInConfiguredDatabase()
     {
         // Given
         using DbConnection connection = fixture.CreateConnection();
 
         // When
-        await fixture.Container.ExecScriptAsync("CREATE TABLE dbo.Employee (EmployeeID INT PRIMARY KEY CLUSTERED);", TestContext.Current.CancellationToken);
+        await fixture.Container.ExecScriptAsync("CREATE TABLE dbo.Employee (EmployeeID INT PRIMARY KEY CLUSTERED);", TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        using var command = fixture.CreateCommand();
+        command.CommandText = "SELECT DB_NAME() FROM sys.Tables WHERE Name = 'Employee' AND SCHEMA_ID = SCHEMA_ID('dbo');";
+
+        using var dataReader = command.ExecuteReader();
 
         // Then
-        using var command = fixture.CreateCommand("SELECT COUNT(*) FROM dbo.Employee;");
-        Assert.Equal(0, await command.ExecuteScalarAsync(TestContext.Current.CancellationToken));
+        Assert.True(dataReader.Read());
+        Assert.Equal(connection.Database, dataReader.GetString(0));
     }
 
     public class MsSqlDefaultFixture(IMessageSink messageSink)

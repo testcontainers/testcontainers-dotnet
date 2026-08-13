@@ -57,18 +57,6 @@ public sealed class MsSqlContainer : DockerContainer, IDatabaseContainer
     /// <returns>Task that completes when the SQL script has been executed.</returns>
     public async Task<ExecResult> ExecScriptAsync(string scriptContent, CancellationToken ct = default)
     {
-        return await ExecScriptAsync(scriptContent, _configuration, ct);
-    }
-
-    /// <summary>
-    /// Executes the SQL script in the MsSql container on the specified database.
-    /// </summary>
-    /// <param name="scriptContent">The content of the SQL script to execute.</param>
-    /// <param name="configuration">The database configuration used to execute the SQL script.</param>
-    /// <param name="ct">Cancellation token.</param>
-    /// <returns>Task that completes when the SQL script has been executed.</returns>
-    internal async Task<ExecResult> ExecScriptAsync(string scriptContent, MsSqlConfiguration configuration, CancellationToken ct = default)
-    {
         var scriptFilePath = string.Join("/", string.Empty, "tmp", Guid.NewGuid().ToString("D"), Path.GetRandomFileName());
 
         var sqlCmdFilePath = await GetSqlCmdFilePathAsync(ct)
@@ -77,7 +65,7 @@ public sealed class MsSqlContainer : DockerContainer, IDatabaseContainer
         await CopyAsync(Encoding.Default.GetBytes(scriptContent), scriptFilePath, fileMode: Unix.FileMode644, ct: ct)
             .ConfigureAwait(false);
 
-        return await ExecAsync([sqlCmdFilePath, "-C", "-b", "-r", "1", "-U", configuration.Username, "-P", configuration.Password, "-d", configuration.Database, "-i", scriptFilePath], ct)
+        return await ExecAsync(new[] { sqlCmdFilePath, "-C", "-b", "-r", "1", "-U", _configuration.Username, "-P", _configuration.Password, "-d", _configuration.Database, "-i", scriptFilePath }, ct)
             .ConfigureAwait(false);
     }
 
