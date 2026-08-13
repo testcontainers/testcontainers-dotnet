@@ -167,9 +167,7 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
     /// Creates the configured MsSql database.
     /// </summary>
     /// <remarks>
-    /// The configured database is resolved by <c>sqlcmd</c> itself, substituting
-    /// the <c>SQLCMDDBNAME</c> scripting variable that <see cref="WithDatabase" />
-    /// sets. Creating the default database is skipped, since it always exists.
+    /// Creating the default database is skipped.
     /// </remarks>
     /// <param name="container">The container instance.</param>
     /// <param name="configuration">The container configuration.</param>
@@ -182,7 +180,12 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
             return;
         }
 
-        const string sqlStatement = "IF DB_ID('$(SQLCMDDBNAME)') IS NULL BEGIN CREATE DATABASE [$(SQLCMDDBNAME)] END";
+        // The database name cannot be passed as the SQLCMDDBNAME scripting variable that
+        // WithDatabase(string) sets. The -d option below overrides it with the default
+        // database, which would resolve the statement against the wrong database.
+        var database = configuration.Database;
+
+        var sqlStatement = $"IF DB_ID('{database}') IS NULL BEGIN CREATE DATABASE [{database}] END";
 
         var sqlCmdFilePath = await container.GetSqlCmdFilePathAsync(ct)
             .ConfigureAwait(false);
