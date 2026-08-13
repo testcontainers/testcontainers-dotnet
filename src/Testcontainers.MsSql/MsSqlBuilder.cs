@@ -120,6 +120,10 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
     {
         base.Validate();
 
+        _ = Guard.Argument(DockerResourceConfiguration.Database, nameof(DockerResourceConfiguration.Database))
+            .NotNull()
+            .NotEmpty();
+
         _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password))
             .NotNull()
             .NotEmpty();
