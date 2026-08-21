@@ -22,6 +22,10 @@ public sealed class K3sContainerTest : IAsyncLifetime
         // Given
         using var kubeconfigStream = new MemoryStream();
 
+        var kubernetesNamespace = new V1Namespace();
+        kubernetesNamespace.Metadata = new V1ObjectMeta();
+        kubernetesNamespace.Metadata.Name = Guid.NewGuid().ToString("D");
+
         var kubeconfig = await _k3sConainter.GetKubeconfigAsync()
             .ConfigureAwait(true);
 
@@ -34,7 +38,7 @@ public sealed class K3sContainerTest : IAsyncLifetime
         using var client = new Kubernetes(clientConfiguration);
 
         // When
-        using var response = await client.CoreV1.CreateNamespaceWithHttpMessagesAsync(new V1Namespace(metadata: new V1ObjectMeta(name: Guid.NewGuid().ToString("D"))), cancellationToken: TestContext.Current.CancellationToken)
+        using var response = await client.CoreV1.CreateNamespaceWithHttpMessagesAsync(kubernetesNamespace, cancellationToken: TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
