@@ -5,7 +5,7 @@ updates:
     schedule:
       interval: monthly
     cooldown:
-      default-days: 7      
+      default-days: 7
     labels:
       - dependencies
     groups:
@@ -13,20 +13,72 @@ updates:
         patterns:
           - '*'
   - package-ecosystem: nuget
-    directory: /
-    exclude-paths:
-      - examples/**
+    directory: /build
     open-pull-requests-limit: 3
     schedule:
       interval: monthly
     cooldown:
-      default-days: 7      
+      default-days: 7
     labels:
       - dependencies
     ignore:
       - dependency-name: Cake.*
         update-types:
           - version-update:semver-major
+      - dependency-name: Microsoft.Bcl.*
+        update-types:
+          - version-update:semver-major
+      - dependency-name: Microsoft.Extensions.*
+        update-types:
+          - version-update:semver-major
+      - dependency-name: xunit*
+        update-types:
+          - version-update:semver-major
+    groups:
+      nuget-patch-minor:
+        update-types:
+          - minor
+          - patch
+      nuget-major:
+        update-types:
+          - major
+  - package-ecosystem: nuget
+    directory: /src
+    open-pull-requests-limit: 3
+    schedule:
+      interval: monthly
+    cooldown:
+      default-days: 7
+    labels:
+      - dependencies
+    ignore:
+      - dependency-name: Microsoft.Bcl.*
+        update-types:
+          - version-update:semver-major
+      - dependency-name: Microsoft.Extensions.*
+        update-types:
+          - version-update:semver-major
+      - dependency-name: xunit*
+        update-types:
+          - version-update:semver-major
+    groups:
+      nuget-patch-minor:
+        update-types:
+          - minor
+          - patch
+      nuget-major:
+        update-types:
+          - major
+  - package-ecosystem: nuget
+    directory: /tests
+    open-pull-requests-limit: 3
+    schedule:
+      interval: monthly
+    cooldown:
+      default-days: 7
+    labels:
+      - dependencies
+    ignore:
       - dependency-name: Microsoft.Bcl.*
         update-types:
           - version-update:semver-major

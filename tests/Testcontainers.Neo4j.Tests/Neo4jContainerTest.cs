@@ -41,7 +41,7 @@ public abstract class Neo4jContainerTest : IAsyncLifetime
         var result = await session.RunAsync("CALL dbms.components() YIELD edition RETURN edition")
             .ConfigureAwait(true);
 
-        var record = await result.SingleAsync()
+        var record = await result.SingleAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         var edition = record["edition"].As<string>();
