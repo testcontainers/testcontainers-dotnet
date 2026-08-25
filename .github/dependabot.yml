@@ -1,4 +1,8 @@
 version: 2
+# No NuGet ecosystem here on purpose: versions are managed centrally in the root
+# Directory.Packages.props, so Dependabot cannot split updates by directory, and
+# grouping ~100 dependencies by pattern is not worth it. We bump them manually with
+# `dotnet list package --outdated|--vulnerable`. Security updates are unaffected.
 updates:
   - package-ecosystem: github-actions
     directory: /
@@ -12,87 +16,3 @@ updates:
       actions:
         patterns:
           - '*'
-  - package-ecosystem: nuget
-    directory: /build
-    open-pull-requests-limit: 3
-    schedule:
-      interval: monthly
-    cooldown:
-      default-days: 7
-    labels:
-      - dependencies
-    ignore:
-      - dependency-name: Cake.*
-        update-types:
-          - version-update:semver-major
-      - dependency-name: Microsoft.Bcl.*
-        update-types:
-          - version-update:semver-major
-      - dependency-name: Microsoft.Extensions.*
-        update-types:
-          - version-update:semver-major
-      - dependency-name: xunit*
-        update-types:
-          - version-update:semver-major
-    groups:
-      nuget-patch-minor:
-        update-types:
-          - minor
-          - patch
-      nuget-major:
-        update-types:
-          - major
-  - package-ecosystem: nuget
-    directory: /src
-    open-pull-requests-limit: 3
-    schedule:
-      interval: monthly
-    cooldown:
-      default-days: 7
-    labels:
-      - dependencies
-    ignore:
-      - dependency-name: Microsoft.Bcl.*
-        update-types:
-          - version-update:semver-major
-      - dependency-name: Microsoft.Extensions.*
-        update-types:
-          - version-update:semver-major
-      - dependency-name: xunit*
-        update-types:
-          - version-update:semver-major
-    groups:
-      nuget-patch-minor:
-        update-types:
-          - minor
-          - patch
-      nuget-major:
-        update-types:
-          - major
-  - package-ecosystem: nuget
-    directory: /tests
-    open-pull-requests-limit: 3
-    schedule:
-      interval: monthly
-    cooldown:
-      default-days: 7
-    labels:
-      - dependencies
-    ignore:
-      - dependency-name: Microsoft.Bcl.*
-        update-types:
-          - version-update:semver-major
-      - dependency-name: Microsoft.Extensions.*
-        update-types:
-          - version-update:semver-major
-      - dependency-name: xunit*
-        update-types:
-          - version-update:semver-major
-    groups:
-      nuget-patch-minor:
-        update-types:
-          - minor
-          - patch
-      nuget-major:
-        update-types:
-          - major
