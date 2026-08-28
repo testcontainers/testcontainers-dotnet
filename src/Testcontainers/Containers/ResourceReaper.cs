@@ -33,6 +33,11 @@ namespace DotNet.Testcontainers.Containers
     /// </summary>
     private const int RetryTimeoutInSeconds = 2;
 
+    /// <summary>
+    /// 512 bytes acknowledgement buffer size.
+    /// </summary>
+    private const int AcknowledgementBufferSizeInBytes = 512;
+
     private static readonly IImage RyukImage = new DockerImage("testcontainers/ryuk:0.14.0@sha256:7c1a8a9a47c780ed0f983770a662f80deb115d95cce3e2daa3d12115b8cd28f0");
 
     private static readonly SemaphoreSlim DefaultLock = new SemaphoreSlim(1, 1);
@@ -258,6 +263,173 @@ namespace DotNet.Testcontainers.Containers
       return resourceReaper;
     }
 
+    /// <summary>
+    /// Registers an additional Docker resource filter with Ryuk.
+    /// </summary>
+    /// <remarks>
+    /// Ryuk keeps received filters until it terminates. It is not necessary to keep
+    /// the connection that registered the filter open. On termination, Ryuk deletes
+    /// all Docker resources matching the filter.
+    /// </remarks>
+    /// <param name="filter">The Docker resource filter, e.g. <c>label=key=value</c>.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when Ryuk has acknowledged the filter.</returns>
+    /// <exception cref="ResourceReaperException">Ryuk did not acknowledge the filter within the connection timeout.</exception>
+    internal async Task RegisterFilterAsync(string filter, CancellationToken ct = default)
+    {
+      using (var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(ConnectionTimeoutInSeconds)))
+      {
+        using (var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, ct))
+        {
+          try
+          {
+            while (!await TryConnectAndRegisterFilterAsync(filter, linkedCts.Token).ConfigureAwait(false))
+            {
+              await Task.Delay(TimeSpan.FromSeconds(RetryTimeoutInSeconds), linkedCts.Token)
+                .ConfigureAwait(false);
+            }
+          }
+          catch (OperationCanceledException) when (!ct.IsCancellationRequested)
+          {
+            throw new ResourceReaperException($"The Resource Reaper did not acknowledge the filter '{filter}' within {ConnectionTimeoutInSeconds} seconds.");
+          }
+        }
+      }
+    }
+
+    /// <summary>
+    /// Connects to Ryuk, sends a Docker resource filter and awaits the
+    /// acknowledgement.
+    /// </summary>
+    /// <remarks>
+    /// A connection that is not ready yet does not fail the registration, just like
+    /// the connection that <see cref="MaintainRyukConnection" /> keeps open. The
+    /// caller retries until Ryuk acknowledges the filter.
+    /// </remarks>
+    /// <param name="filter">The Docker resource filter, e.g. <c>label=key=value</c>.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when Ryuk has acknowledged the filter, returning false if the connection was not ready; otherwise, true.</returns>
+    private async Task<bool> TryConnectAndRegisterFilterAsync(string filter, CancellationToken ct)
+    {
+      if (!TryGetEndpoint(out var host, out var port))
+      {
+        return false;
+      }
+
+      using (var tcpClient = new TcpClient())
+      {
+        tcpClient.LingerState = DiscardAllPendingData;
+
+        try
+        {
+#if NET6_0_OR_GREATER
+          await tcpClient.ConnectAsync(host, port, ct)
+            .ConfigureAwait(false);
+#else
+          // The overload that takes a cancellation token is not available. Disposing the
+          // client cancels a pending connection attempt.
+          using (ct.Register(tcpClient.Dispose))
+          {
+            await tcpClient.ConnectAsync(host, port)
+              .ConfigureAwait(false);
+          }
+#endif
+
+          return await TryRegisterFilterAsync(tcpClient.GetStream(), filter, ct)
+            .ConfigureAwait(false);
+        }
+        catch (Exception e) when (e is SocketException || e is IOException || e is ObjectDisposedException)
+        {
+          _resourceReaperContainer.Logger.CanNotConnectToResourceReaper(SessionId, host, port, e);
+          return false;
+        }
+      }
+    }
+
+    /// <summary>
+    /// Sends a Docker resource filter to Ryuk over an established connection and
+    /// awaits the acknowledgement.
+    /// </summary>
+    /// <param name="stream">The network stream of the established Ryuk connection.</param>
+    /// <param name="filter">The Docker resource filter, e.g. <c>label=key=value</c>.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when Ryuk has acknowledged the filter, returning false if the connection did not return any data; otherwise, true.</returns>
+    private static async Task<bool> TryRegisterFilterAsync(NetworkStream stream, string filter, CancellationToken ct)
+    {
+      var sendBytes = Encoding.ASCII.GetBytes(filter + "\n");
+
+      var readBytes = new byte[AcknowledgementBufferSizeInBytes];
+
+#if NETSTANDARD2_0
+      await stream.WriteAsync(sendBytes, 0, sendBytes.Length, ct)
+        .ConfigureAwait(false);
+#else
+      await stream.WriteAsync(sendBytes, ct)
+        .ConfigureAwait(false);
+#endif
+
+      await stream.FlushAsync(ct)
+        .ConfigureAwait(false);
+
+      using (var messageBuffer = new MemoryStream())
+      {
+        bool hasAcknowledge;
+
+        do
+        {
+#if NETSTANDARD2_0
+          var numberOfBytes = await stream.ReadAsync(readBytes, 0, readBytes.Length, ct)
+            .ConfigureAwait(false);
+#else
+          var numberOfBytes = await stream.ReadAsync(readBytes, ct)
+            .ConfigureAwait(false);
+#endif
+
+          if (numberOfBytes == 0)
+          {
+            // Even if there is no listening socket behind the bound port, the TcpClient
+            // establishes a connection. If we do not receive any data, the socket is not
+            // ready yet.
+            return false;
+          }
+
+          var indexOfNewLine = Array.IndexOf(readBytes, (byte)'\n', 0, numberOfBytes);
+
+          if (indexOfNewLine == -1)
+          {
+            // We have not received the entire message yet. Read from stream again.
+#if NETSTANDARD2_0
+            await messageBuffer.WriteAsync(readBytes, 0, numberOfBytes, ct)
+              .ConfigureAwait(false);
+#else
+            await messageBuffer.WriteAsync(readBytes.AsMemory(0, numberOfBytes), ct)
+              .ConfigureAwait(false);
+#endif
+
+            hasAcknowledge = false;
+          }
+          else
+          {
+#if NETSTANDARD2_0
+            await messageBuffer.WriteAsync(readBytes, 0, indexOfNewLine, ct)
+              .ConfigureAwait(false);
+#else
+            await messageBuffer.WriteAsync(readBytes.AsMemory(0, indexOfNewLine), ct)
+              .ConfigureAwait(false);
+#endif
+
+            var buffer = messageBuffer.GetBuffer();
+
+            hasAcknowledge = "ack".Equals(Encoding.ASCII.GetString(buffer, 0, (int)messageBuffer.Length), StringComparison.OrdinalIgnoreCase);
+            messageBuffer.SetLength(0);
+          }
+        }
+        while (!hasAcknowledge);
+      }
+
+      return true;
+    }
+
     private bool TryGetEndpoint(out string host, out ushort port)
     {
       try
@@ -321,88 +493,26 @@ namespace DotNet.Testcontainers.Containers
 
             var stream = tcpClient.GetStream();
 
-            var filter = $"label={ResourceReaperSessionLabel}={SessionId:D}\n";
-
-            var sendBytes = Encoding.ASCII.GetBytes(filter);
-
             var readBytes = new byte[tcpClient.ReceiveBufferSize];
 
             if (!ryukInitializedTaskSource.Task.IsCompleted)
             {
-              using (var messageBuffer = new MemoryStream())
+              var hasAcknowledge = await TryRegisterFilterAsync(stream, $"label={ResourceReaperSessionLabel}={SessionId:D}", ct)
+                .ConfigureAwait(false);
+
+              if (!hasAcknowledge)
               {
-#if NETSTANDARD2_0
-                await stream.WriteAsync(sendBytes, 0, sendBytes.Length, ct)
+                await Task.Delay(TimeSpan.FromSeconds(RetryTimeoutInSeconds), ct)
                   .ConfigureAwait(false);
-#else
-                await stream.WriteAsync(sendBytes, ct)
-                  .ConfigureAwait(false);
-#endif
-
-                await stream.FlushAsync(ct)
-                  .ConfigureAwait(false);
-
-                bool hasAcknowledge;
-
-                do
-                {
-#if NETSTANDARD2_0
-                  var numberOfBytes = await stream.ReadAsync(readBytes, 0, readBytes.Length, ct)
-                    .ConfigureAwait(false);
-#else
-                  var numberOfBytes = await stream.ReadAsync(readBytes, ct)
-                    .ConfigureAwait(false);
-#endif
-
-                  if (numberOfBytes == 0)
-                  {
-                    // Even if there is no listening socket behind the bound port, the TcpClient establishes a connection.
-                    // If we do not receive any data, the socket is not ready yet.
-                    await Task.Delay(TimeSpan.FromSeconds(RetryTimeoutInSeconds), ct)
-                      .ConfigureAwait(false);
 
 #pragma warning disable S907
 
-                    goto connect_to_ryuk;
+                goto connect_to_ryuk;
 
 #pragma warning restore S907
-                  }
-
-                  var indexOfNewLine = Array.IndexOf(readBytes, (byte)'\n', 0, numberOfBytes);
-
-                  if (indexOfNewLine == -1)
-                  {
-                    // We have not received the entire message yet. Read from stream again.
-#if NETSTANDARD2_0
-                    await messageBuffer.WriteAsync(readBytes, 0, numberOfBytes, ct)
-                      .ConfigureAwait(false);
-#else
-                    await messageBuffer.WriteAsync(readBytes.AsMemory(0, numberOfBytes), ct)
-                      .ConfigureAwait(false);
-#endif
-
-                    hasAcknowledge = false;
-                  }
-                  else
-                  {
-#if NETSTANDARD2_0
-                    await messageBuffer.WriteAsync(readBytes, 0, indexOfNewLine, ct)
-                      .ConfigureAwait(false);
-#else
-                    await messageBuffer.WriteAsync(readBytes.AsMemory(0, indexOfNewLine), ct)
-                      .ConfigureAwait(false);
-#endif
-
-                    var buffer = messageBuffer.GetBuffer();
-
-                    hasAcknowledge = "ack".Equals(Encoding.ASCII.GetString(buffer, 0, (int)messageBuffer.Length), StringComparison.OrdinalIgnoreCase);
-                    messageBuffer.SetLength(0);
-                  }
-                }
-                while (!hasAcknowledge);
-
-                ryukInitializedTaskSource.SetResult(true);
               }
+
+              ryukInitializedTaskSource.SetResult(true);
             }
 
             while (!_maintainConnectionCts.IsCancellationRequested)
@@ -451,41 +561,6 @@ namespace DotNet.Testcontainers.Containers
       else
       {
         ryukInitializedTaskSource.SetException(new ResourceReaperException("Initialization failed."));
-      }
-    }
-
-    private sealed class UnixSocketMount : IMount
-    {
-      private const string DockerSocketFilePath = "/var/run/docker.sock";
-
-      public UnixSocketMount([NotNull] Uri dockerEndpoint)
-      {
-        // If the Docker endpoint is a Unix socket, extract the socket path from the URI; otherwise, fallback to the default Unix socket path.
-        Source = "unix".Equals(dockerEndpoint.Scheme, StringComparison.OrdinalIgnoreCase) ? dockerEndpoint.AbsolutePath : DockerSocketFilePath;
-
-        // If the user has overridden the Docker socket path, use the user-specified path; otherwise, keep the previously determined source.
-        Source = !string.IsNullOrEmpty(TestcontainersSettings.DockerSocketOverride) ? TestcontainersSettings.DockerSocketOverride : Source;
-        Target = DockerSocketFilePath;
-      }
-
-      public MountType Type
-        => MountType.Bind;
-
-      public AccessMode AccessMode
-        => AccessMode.ReadOnly;
-
-      public string Source { get; }
-
-      public string Target { get; }
-
-      public Task CreateAsync(CancellationToken ct = default)
-      {
-        return Task.CompletedTask;
-      }
-
-      public Task DeleteAsync(CancellationToken ct = default)
-      {
-        return Task.CompletedTask;
       }
     }
   }

@@ -256,20 +256,20 @@ namespace DotNet.Testcontainers.Containers
     }
 
     /// <inheritdoc />
-    public ushort GetMappedPublicPort()
+    public virtual ushort GetMappedPublicPort()
     {
       using var enumerator = GetMappedPublicPorts().Values.GetEnumerator();
       return enumerator.MoveNext() ? enumerator.Current : throw new InvalidOperationException("No mapped port found.");
     }
 
     /// <inheritdoc />
-    public ushort GetMappedPublicPort(int containerPort)
+    public virtual ushort GetMappedPublicPort(int containerPort)
     {
       return GetMappedPublicPort(Convert.ToString(containerPort, CultureInfo.InvariantCulture));
     }
 
     /// <inheritdoc />
-    public ushort GetMappedPublicPort(string containerPort)
+    public virtual ushort GetMappedPublicPort(string containerPort)
     {
       ThrowIfResourceNotFound();
 
@@ -286,7 +286,7 @@ namespace DotNet.Testcontainers.Containers
     }
 
     /// <inheritdoc />
-    public IReadOnlyDictionary<ushort, ushort> GetMappedPublicPorts()
+    public virtual IReadOnlyDictionary<ushort, ushort> GetMappedPublicPorts()
     {
       ThrowIfResourceNotFound();
 
@@ -529,13 +529,13 @@ namespace DotNet.Testcontainers.Containers
         {
           Logger.ReusableResourceNotFound();
 
-          id = await _client.RunAsync(_configuration, ct)
+          id = await UnsafeCreateContainerAsync(ct)
             .ConfigureAwait(false);
         }
       }
       else
       {
-        id = await _client.RunAsync(_configuration, ct)
+        id = await UnsafeCreateContainerAsync(ct)
           .ConfigureAwait(false);
       }
 
@@ -544,6 +544,35 @@ namespace DotNet.Testcontainers.Containers
 
       CreatedTime = _container.Created;
       Created?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>
+    /// Creates the container and returns its id.
+    /// </summary>
+    /// <remarks>
+    /// Derived classes override this member to attach to an existing container
+    /// instead of creating a new one.
+    /// </remarks>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the container has been created, returning the container id.</returns>
+    protected virtual Task<string> UnsafeCreateContainerAsync(CancellationToken ct = default)
+    {
+      return _client.RunAsync(_configuration, ct);
+    }
+
+    /// <summary>
+    /// Starts the container.
+    /// </summary>
+    /// <remarks>
+    /// Derived classes override this member when another process manages the
+    /// lifecycle of the container, and only the readiness checks of
+    /// <see cref="UnsafeStartAsync" /> apply.
+    /// </remarks>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the container has been started.</returns>
+    protected virtual Task UnsafeStartContainerAsync(CancellationToken ct = default)
+    {
+      return _client.StartAsync(_container.ID, ct);
     }
 
     /// <inheritdoc />
@@ -586,7 +615,7 @@ namespace DotNet.Testcontainers.Containers
       await _client.AttachAsync(_container.ID, _configuration.OutputConsumer, ct)
         .ConfigureAwait(false);
 
-      await _client.StartAsync(_container.ID, ct)
+      await UnsafeStartContainerAsync(ct)
         .ConfigureAwait(false);
 
       _ = await CheckReadinessAsync(new[] { portBindingsMapped }, ct)

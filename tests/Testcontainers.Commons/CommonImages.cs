@@ -11,6 +11,8 @@ public static class CommonImages
 
     public static readonly IImage Socat = new DockerImage("alpine/socat:1.8.0.3");
 
+    public static readonly IImage DockerCli = new DockerImage("docker:28-cli");
+
     public static readonly IImage Curl = new DockerImage("curlimages/curl:8.00.1");
 
     public static readonly IImage Nginx = new DockerImage("nginx:1.26.3-alpine3.20");
