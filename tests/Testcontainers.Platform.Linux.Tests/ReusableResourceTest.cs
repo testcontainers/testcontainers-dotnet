@@ -219,7 +219,7 @@ public sealed class ReusableResourceTest : IAsyncLifetime
                 var containerBuilder = new ContainerBuilder().WithReuse(true).WithCleanUp(true);
 
                 // When
-                var exception = Assert.Throws<ArgumentException>(() => containerBuilder.Build());
+                var exception = Assert.Throws<ArgumentException>(containerBuilder.Build);
 
                 // Then
                 Assert.Equal(EnabledCleanUpExceptionMessage, exception.Message);
@@ -233,7 +233,7 @@ public sealed class ReusableResourceTest : IAsyncLifetime
                 var containerBuilder = new ContainerBuilder().WithReuse(true).WithAutoRemove(true);
 
                 // When
-                var exception = Assert.Throws<ArgumentException>(() => containerBuilder.Build());
+                var exception = Assert.Throws<ArgumentException>(containerBuilder.Build);
 
                 // Then
                 Assert.Equal(EnabledAutoRemoveExceptionMessage, exception.Message);
@@ -247,10 +247,10 @@ public sealed class ReusableResourceTest : IAsyncLifetime
             public void EnabledCleanUpThrowsException()
             {
                 // Given
-                var containerBuilder = new NetworkBuilder().WithReuse(true).WithCleanUp(true);
+                var networkBuilder = new NetworkBuilder().WithReuse(true).WithCleanUp(true);
 
                 // When
-                var exception = Assert.Throws<ArgumentException>(() => containerBuilder.Build());
+                var exception = Assert.Throws<ArgumentException>(networkBuilder.Build);
 
                 // Then
                 Assert.Equal(EnabledCleanUpExceptionMessage, exception.Message);
@@ -264,10 +264,10 @@ public sealed class ReusableResourceTest : IAsyncLifetime
             public void EnabledCleanUpThrowsException()
             {
                 // Given
-                var containerBuilder = new VolumeBuilder().WithReuse(true).WithCleanUp(true);
+                var volumeBuilder = new VolumeBuilder().WithReuse(true).WithCleanUp(true);
 
                 // When
-                var exception = Assert.Throws<ArgumentException>(() => containerBuilder.Build());
+                var exception = Assert.Throws<ArgumentException>(volumeBuilder.Build);
 
                 // Then
                 Assert.Equal(EnabledCleanUpExceptionMessage, exception.Message);

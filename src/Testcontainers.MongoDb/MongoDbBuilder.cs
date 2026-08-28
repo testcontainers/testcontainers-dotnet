@@ -198,11 +198,7 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
             return;
         }
 
-        var readiness = new WaitReplicaSetEnabled();
-
-        // This is a simple workaround to use the default options, which can be configured
-        // with custom configurations as needed.
-        var options = new WaitStrategy();
+        var readiness = new WaitStrategy(new WaitReplicaSetEnabled());
 
         // The startup callback runs on every start, a container that is restarted or reused
         // already holds an initiated replica set. Initiating it again throws instead of returning
@@ -223,10 +219,10 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
         // replica set from being initiated while this handover is in progress,
         // which could otherwise cause the container start to fail:
         // https://github.com/testcontainers/testcontainers-dotnet/issues/1636.
-        await WaitStrategy.WaitUntilAsync(() => readiness.UntilAsync(container), options.Interval, options.Timeout, options.Retries, ct)
+        await WaitStrategy.WaitUntilAsync(() => readiness.UntilAsync(container, ct), readiness.Interval, readiness.Timeout, readiness.Retries, ct)
             .ConfigureAwait(false);
 
-        await WaitStrategy.WaitUntilAsync(initiate, options.Interval, options.Timeout, options.Retries, ct)
+        await WaitStrategy.WaitUntilAsync(initiate, readiness.Interval, readiness.Timeout, readiness.Retries, ct)
             .ConfigureAwait(false);
     }
 

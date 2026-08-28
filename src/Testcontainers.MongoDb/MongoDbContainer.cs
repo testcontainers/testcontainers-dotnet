@@ -4,6 +4,10 @@ namespace Testcontainers.MongoDb;
 [PublicAPI]
 public sealed class MongoDbContainer : DockerContainer
 {
+    private static readonly string[] FindMongoDbShellFilePath = { "/bin/sh", "-c", "command -v mongosh || command -v mongo" };
+
+    private readonly Lazy<Task<string>> _lazyMongoDbShellFilePath;
+
     private readonly MongoDbConfiguration _configuration;
 
     /// <summary>
@@ -13,6 +17,7 @@ public sealed class MongoDbContainer : DockerContainer
     public MongoDbContainer(MongoDbConfiguration configuration)
         : base(configuration)
     {
+        _lazyMongoDbShellFilePath = new Lazy<Task<string>>(FindMongoDbShellFilePathAsync);
         _configuration = configuration;
     }
 
@@ -31,6 +36,21 @@ public sealed class MongoDbContainer : DockerContainer
     }
 
     /// <summary>
+    /// Gets the MongoDb shell file path.
+    /// </summary>
+    /// <remarks>
+    /// The file path represents the path from the container, not from the Docker or test host.
+    /// Resolves <c>mongosh</c>, falling back to the legacy <c>mongo</c> shell that ships in
+    /// images prior to MongoDB 6.0. The result is resolved once and reused.
+    /// </remarks>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the MongoDb shell file path has been found.</returns>
+    public Task<string> GetMongoDbShellFilePathAsync(CancellationToken ct = default)
+    {
+        return _lazyMongoDbShellFilePath.Value;
+    }
+
+    /// <summary>
     /// Executes the JavaScript script in the MongoDb container.
     /// </summary>
     /// <param name="scriptContent">The content of the JavaScript script to execute.</param>
@@ -40,15 +60,15 @@ public sealed class MongoDbContainer : DockerContainer
     {
         var scriptFilePath = string.Join("/", string.Empty, "tmp", Guid.NewGuid().ToString("D"), Path.GetRandomFileName());
 
-        await CopyAsync(Encoding.Default.GetBytes(scriptContent), scriptFilePath, fileMode: Unix.FileMode644, ct: ct)
+        var mongoDbShellFilePath = await GetMongoDbShellFilePathAsync(ct)
             .ConfigureAwait(false);
 
-        var whichMongoDbShell = await ExecAsync(new[] { "which", "mongosh" }, ct)
+        await CopyAsync(Encoding.Default.GetBytes(scriptContent), scriptFilePath, fileMode: Unix.FileMode644, ct: ct)
             .ConfigureAwait(false);
 
         var command = new[]
         {
-            whichMongoDbShell.ExitCode == 0 ? "mongosh" : "mongo",
+            mongoDbShellFilePath,
             "--username", _configuration.Username,
             "--password", _configuration.Password,
             "--quiet",
@@ -58,5 +78,18 @@ public sealed class MongoDbContainer : DockerContainer
 
         return await ExecAsync(command, ct)
             .ConfigureAwait(false);
+    }
+
+    private async Task<string> FindMongoDbShellFilePathAsync()
+    {
+        var findMongoDbShellFilePathExecResult = await ExecAsync(FindMongoDbShellFilePath)
+            .ConfigureAwait(false);
+
+        if (findMongoDbShellFilePathExecResult.ExitCode == 0)
+        {
+            return findMongoDbShellFilePathExecResult.Stdout.Trim();
+        }
+
+        throw new NotSupportedException("The mongosh or mongo binary could not be found.");
     }
 }

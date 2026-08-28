@@ -13,6 +13,10 @@
         <PackageReference Include="Microsoft.Azure.Cosmos"/>
     </ItemGroup>
     <ItemGroup>
+        <!-- Microsoft.Azure.Cosmos requires an explicit Newtonsoft.Json reference (>= 10.0.2). -->
+        <PackageReference Include="Newtonsoft.Json"/>
+    </ItemGroup>
+    <ItemGroup>
         <ProjectReference Include="../../src/Testcontainers.CosmosDb/Testcontainers.CosmosDb.csproj"/>
         <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
     </ItemGroup>

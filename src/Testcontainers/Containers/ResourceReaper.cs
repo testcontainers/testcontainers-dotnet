@@ -304,8 +304,9 @@ namespace DotNet.Testcontainers.Containers
 
         using (var tcpClient = new TcpClient())
         {
-          // On some plateform the connection fail with PlatformNotSupportedException: Sockets on this platform are invalid for use after a failed connection attempt.
-          // tcpClient.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);
+          // Do not configure socket-level KeepAlive here. This was previously done with
+          // SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true),
+          // but caused PlatformNotSupportedException on some platforms.
           tcpClient.LingerState = DiscardAllPendingData;
 
           try

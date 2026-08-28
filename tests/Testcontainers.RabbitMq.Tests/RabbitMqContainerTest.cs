@@ -18,14 +18,15 @@ public sealed class RabbitMqContainerTest : IAsyncLifetime
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public void IsOpenReturnsTrue()
+    public async Task IsOpenReturnsTrue()
     {
         // Given
         var connectionFactory = new ConnectionFactory();
         connectionFactory.Uri = new Uri(_rabbitMqContainer.GetConnectionString());
 
         // When
-        using var connection = connectionFactory.CreateConnection();
+        await using var connection = await connectionFactory.CreateConnectionAsync(TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
 
         // Then
         Assert.True(connection.IsOpen);
