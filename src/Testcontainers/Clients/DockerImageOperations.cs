@@ -14,6 +14,8 @@ namespace DotNet.Testcontainers.Clients
 
   internal sealed class DockerImageOperations : DockerApiClient, IDockerImageOperations
   {
+    private const int MaxCreateAttempts = 3;
+
     public DockerImageOperations(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, ILogger logger)
       : base(sessionId, dockerEndpointAuthConfig, logger)
     {
@@ -70,10 +72,12 @@ namespace DotNet.Testcontainers.Clients
         IdentityToken = dockerRegistryAuthConfig.IdentityToken,
       };
 
-      await DockerImagePullRetryPolicy.ExecuteAsync(
-          token => DockerClient.Images.CreateImageAsync(createParameters, authConfig, traceProgress, token),
-          (attempt, delay, reason) => Logger.RetryDockerImagePull(image, attempt, DockerImagePullRetryPolicy.MaxAttempts, delay, reason),
-          ct)
+      var createImageRetryStrategy = new RetryStrategy()
+        .WithMaxAttempts(MaxCreateAttempts)
+        .WithRetryOn(DockerApiError.IsTransient)
+        .WithOnRetry((attempt, delay, exception) => Logger.RetryCreateDockerImage(image, attempt, MaxCreateAttempts, delay, DockerApiError.GetReason(exception)));
+
+      await createImageRetryStrategy.ExecuteAsync(token => DockerClient.Images.CreateImageAsync(createParameters, authConfig, traceProgress, token), ct)
         .ConfigureAwait(false);
 
       Logger.DockerImageCreated(image);

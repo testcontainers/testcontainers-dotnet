@@ -69,8 +69,8 @@ namespace DotNet.Testcontainers
     [LoggerMessage(Level = LogLevel.Information, Message = "Docker image {FullName} created")]
     private static partial void DockerImageCreatedCore(ILogger logger, string fullName);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "Retry Docker image {FullName} pull, attempt {Attempt}/{MaxAttempts} in {Delay} due to {Reason}")]
-    private static partial void RetryDockerImagePullCore(ILogger logger, string fullName, int attempt, int maxAttempts, TimeSpan delay, string reason);
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Retry creating Docker image {FullName}, Attempt: {Attempt}/{MaxAttempts}, Delay: {Delay} ms, Reason: {Reason}")]
+    private static partial void RetryCreateDockerImageCore(ILogger logger, string fullName, int attempt, int maxAttempts, int delay, string reason);
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Docker image {FullName} built")]
     private static partial void DockerImageBuiltCore(ILogger logger, string fullName);
@@ -217,9 +217,9 @@ namespace DotNet.Testcontainers
       DockerImageCreatedCore(logger, image.FullName);
     }
 
-    public static void RetryDockerImagePull(this ILogger logger, IImage image, int attempt, int maxAttempts, TimeSpan delay, string reason)
+    public static void RetryCreateDockerImage(this ILogger logger, IImage image, int attempt, int maxAttempts, TimeSpan delay, string reason)
     {
-      RetryDockerImagePullCore(logger, image.FullName, attempt, maxAttempts, delay, reason);
+      RetryCreateDockerImageCore(logger, image.FullName, attempt, maxAttempts, (int)delay.TotalMilliseconds, reason);
     }
 
     public static void DockerImageBuilt(this ILogger logger, IImage image)
