@@ -381,31 +381,31 @@ namespace DotNet.Testcontainers.Builders
     {
       base.Validate();
 
-      const string reuseNotSupported = "Reuse is not supported in conjunction with the Docker Compose builder.";
+      const string reuseNotSupported = "Reuse cannot be used in conjunction with the Docker Compose builder.";
       _ = Guard.Argument(DockerResourceConfiguration, nameof(DockerResourceConfiguration.Reuse))
         .ThrowIf(argument => argument.Value.Reuse.HasValue && argument.Value.Reuse.Value, argument => new ArgumentException(reuseNotSupported, argument.Name));
 
       var composeFiles = GetComposeFilePaths();
 
-      const string composeFileNotSet = "Missing Docker Compose file. At least one Docker Compose file must be specified.";
+      const string composeFileNotSet = "At least one Docker Compose file must be set.";
       _ = Guard.Argument(composeFiles, nameof(DockerResourceConfiguration.ComposeFiles))
         .ThrowIf(argument => argument.Value.Length == 0, argument => new ArgumentException(composeFileNotSet, argument.Name));
 
-      const string composeFileNotFound = "Docker Compose file '{0}' was not found.";
+      const string composeFileDoesNotExist = "The Docker Compose file '{0}' does not exist.";
       _ = Guard.Argument(composeFiles, nameof(DockerResourceConfiguration.ComposeFiles))
-        .ThrowIf(argument => argument.Value.Any(filePath => !File.Exists(filePath)), argument => new FileNotFoundException(string.Format(composeFileNotFound, argument.Value.First(filePath => !File.Exists(filePath)))));
+        .ThrowIf(argument => argument.Value.Any(filePath => !File.Exists(filePath)), argument => new FileNotFoundException(string.Format(composeFileDoesNotExist, argument.Value.First(filePath => !File.Exists(filePath)))));
 
-      const string fileCopyInclusionNotFound = "The file or directory '{0}' was not found.";
-      _ = Guard.Argument(GetFileCopyInclusionPaths(), nameof(DockerResourceConfiguration.FileCopyInclusions))
-        .ThrowIf(argument => argument.Value.Any(FileCopyInclusionNotFound), argument => new FileNotFoundException(string.Format(fileCopyInclusionNotFound, argument.Value.First(FileCopyInclusionNotFound))));
-
-      const string composeFileNotOnLocalDrive = "The Docker Compose file '{0}' is on a UNC path. The Docker Compose files must be on a local drive, the Docker daemon cannot resolve a UNC path.";
+      const string composeFileOnUncPath = "The Docker Compose file '{0}' is on a UNC path. The Docker Compose files must be on a local drive because the Docker daemon cannot resolve a UNC path.";
       _ = Guard.Argument(composeFiles, nameof(DockerResourceConfiguration.ComposeFiles))
-        .ThrowIf(argument => argument.Value.Any(IsUncPath), argument => new ArgumentException(string.Format(composeFileNotOnLocalDrive, argument.Value.First(IsUncPath)), argument.Name));
+        .ThrowIf(argument => argument.Value.Any(IsUncPath), argument => new ArgumentException(string.Format(composeFileOnUncPath, argument.Value.First(IsUncPath)), argument.Name));
 
-      const string composeFilePathSeparatorNotFound = "The Docker Compose file paths contain every supported path separator character ({0}). At least one of them must be absent from the Docker Compose file paths, Docker Compose separates them with it.";
+      const string composeFilePathSeparatorNotFound = "The Docker Compose file paths contain every supported path separator character ({0}). At least one of these characters must not occur in any Docker Compose file path because Docker Compose separates the paths with it.";
       _ = Guard.Argument(composeFiles, nameof(DockerResourceConfiguration.ComposeFiles))
         .ThrowIf(argument => argument.Value.Length > 0 && GetPathSeparator(argument.Value.Select(GetContainerPath)) == null, argument => new ArgumentException(string.Format(composeFilePathSeparatorNotFound, string.Join(" ", PathSeparators)), argument.Name));
+
+      const string fileCopyInclusionDoesNotExist = "The file or directory '{0}' does not exist.";
+      _ = Guard.Argument(GetFileCopyInclusionPaths(), nameof(DockerResourceConfiguration.FileCopyInclusions))
+        .ThrowIf(argument => argument.Value.Any(IsFileCopyInclusionMissing), argument => new FileNotFoundException(string.Format(fileCopyInclusionDoesNotExist, argument.Value.First(IsFileCopyInclusionMissing))));
 
       const string projectNamePrefixInvalid = "The Docker Compose project name prefix must start with a lowercase letter or digit and can only contain lowercase letters, digits, dashes, and underscores.";
       _ = Guard.Argument(DockerResourceConfiguration.ProjectNamePrefix, nameof(DockerResourceConfiguration.ProjectNamePrefix))
@@ -461,23 +461,6 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <summary>
-    /// Gets the resource mapping that copies a file or directory into the container.
-    /// </summary>
-    /// <remarks>
-    /// A directory is copied into the container directory that corresponds to it, a
-    /// file into the container directory that corresponds to its parent directory.
-    /// Both keep the path they have on the test host (see
-    /// <see cref="GetContainerPath" />).
-    /// </remarks>
-    /// <param name="path">The absolute file or directory path on the test host.</param>
-    /// <returns>The resource mapping that copies the file or directory into the container.</returns>
-    private static IResourceMapping GetResourceMapping(string path)
-    {
-      var targetDirectoryPath = Directory.Exists(path) ? path : Path.GetDirectoryName(path);
-      return new FileResourceMapping(path, GetContainerPath(targetDirectoryPath), 0, 0, Unix.FileMode644);
-    }
-
-    /// <summary>
     /// Gets the path inside the container that corresponds to a path on the test
     /// host.
     /// </summary>
@@ -522,6 +505,23 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <summary>
+    /// Gets the resource mapping that copies a file or directory into the container.
+    /// </summary>
+    /// <remarks>
+    /// A directory is copied into the container directory that corresponds to it, a
+    /// file into the container directory that corresponds to its parent directory.
+    /// Both keep the path they have on the test host (see
+    /// <see cref="GetContainerPath" />).
+    /// </remarks>
+    /// <param name="path">The absolute file or directory path on the test host.</param>
+    /// <returns>The resource mapping that copies the file or directory into the container.</returns>
+    private static IResourceMapping GetResourceMapping(string path)
+    {
+      var targetDirectoryPath = Directory.Exists(path) ? path : Path.GetDirectoryName(path);
+      return new FileResourceMapping(path, GetContainerPath(targetDirectoryPath), 0, 0, Unix.FileMode644);
+    }
+
+    /// <summary>
     /// Checks whether a path on the test host is a UNC path, e.g.
     /// <c>\\wsl$\Ubuntu\home</c>.
     /// </summary>
@@ -537,11 +537,11 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <summary>
-    /// Checks whether the file copy inclusion does not exist on the test host.
+    /// Checks whether a file copy inclusion is missing on the test host.
     /// </summary>
     /// <param name="fileCopyInclusion">The absolute file copy inclusion path on the test host.</param>
-    /// <returns>True if the file copy inclusion does not exist; otherwise, false.</returns>
-    private static bool FileCopyInclusionNotFound(string fileCopyInclusion)
+    /// <returns>True if the file copy inclusion is missing; otherwise, false.</returns>
+    private static bool IsFileCopyInclusionMissing(string fileCopyInclusion)
     {
       return !File.Exists(fileCopyInclusion) && !Directory.Exists(fileCopyInclusion);
     }

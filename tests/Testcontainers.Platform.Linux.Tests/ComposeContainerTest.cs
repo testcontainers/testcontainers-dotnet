@@ -67,6 +67,225 @@ public sealed class ComposeContainerTest : IAsyncLifetime
     }
 }
 
+public sealed class ComposeContainerScaledServiceTest : IAsyncLifetime
+{
+    private const string ServiceName = "web";
+
+    private const ushort ServicePort = 80;
+
+    private const ushort Instances = 2;
+
+    private readonly ComposeContainer _composeContainer;
+
+    public ComposeContainerScaledServiceTest()
+    {
+        var composeFileDirectoryPath = Directory.CreateDirectory(Path.Combine(TestSession.TempDirectoryPath, Guid.NewGuid().ToString("D"))).FullName;
+
+        var composeFilePath = Path.Combine(composeFileDirectoryPath, "compose.yml");
+
+        File.WriteAllText(composeFilePath, $"services:\n  {ServiceName}:\n    image: \"{CommonImages.Nginx.FullName}\"\n");
+
+        var composeBuilder = new ComposeBuilder(CommonImages.DockerCli)
+            .WithComposeFile(composeFilePath)
+            .WithScaledService(ServiceName, Instances);
+
+        // Each instance gets its own ambassador port, and each instance runs its own
+        // readiness check.
+        for (ushort instance = 1; instance <= Instances; instance++)
+        {
+            composeBuilder = composeBuilder.WithExposedServiceInstance(ServiceName, instance, ServicePort);
+        }
+
+        _composeContainer = composeBuilder.Build();
+    }
+
+    public async ValueTask InitializeAsync()
+    {
+        await _composeContainer.StartAsync()
+            .ConfigureAwait(false);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await _composeContainer.DisposeAsync()
+            .ConfigureAwait(false);
+    }
+
+    [Fact]
+    public void ResolvesEachServiceInstanceIndividually()
+    {
+        // Given
+        var containerIds = Enumerable.Range(1, Instances)
+            .Select(instance => _composeContainer.GetServiceInstanceContainer(ServiceName, (ushort)instance).Id)
+            .ToArray();
+
+        // When
+        var servicePorts = Enumerable.Range(1, Instances)
+            .Select(instance => _composeContainer.GetServiceInstancePort(ServiceName, (ushort)instance, ServicePort))
+            .ToArray();
+
+        // Then
+        Assert.Equal(Instances, containerIds.Distinct().Count());
+        Assert.Equal(Instances, servicePorts.Distinct().Count());
+    }
+
+    [Fact]
+    public void ResolvesServiceNameToFirstInstance()
+    {
+        // Given
+        var serviceInstanceContainer = _composeContainer.GetServiceInstanceContainer(ServiceName, 1);
+        var serviceInstancePort = _composeContainer.GetServiceInstancePort(ServiceName, 1, ServicePort);
+
+        // When
+        var serviceContainer = _composeContainer.GetServiceContainer(ServiceName);
+        var servicePort = _composeContainer.GetServicePort(ServiceName, ServicePort);
+
+        // Then
+        Assert.Equal(serviceInstanceContainer.Id, serviceContainer.Id);
+        Assert.Equal(serviceInstancePort, servicePort);
+    }
+
+    [Theory]
+    [InlineData((ushort)1)]
+    [InlineData((ushort)2)]
+    public async Task EstablishesConnectionToEachServiceInstance(ushort instance)
+    {
+        // Given
+        using var httpClient = new HttpClient();
+        httpClient.BaseAddress = new UriBuilder(Uri.UriSchemeHttp, _composeContainer.GetServiceInstanceHost(ServiceName, instance, ServicePort), _composeContainer.GetServiceInstancePort(ServiceName, instance, ServicePort)).Uri;
+
+        // When
+        using var httpResponse = await httpClient.GetAsync("/", TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        // Then
+        Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);
+    }
+}
+
+public sealed class ComposeContainerServiceNameWithInstanceSuffixTest : IAsyncLifetime
+{
+    // A Docker Compose service name may end with a dash and a number. It addresses
+    // the service that carries the name, not the second instance of a service that
+    // is named "web".
+    private const string ServiceName = "web-2";
+
+    private readonly ComposeContainer _composeContainer;
+
+    public ComposeContainerServiceNameWithInstanceSuffixTest()
+    {
+        var composeFileDirectoryPath = Directory.CreateDirectory(Path.Combine(TestSession.TempDirectoryPath, Guid.NewGuid().ToString("D"))).FullName;
+
+        var composeFilePath = Path.Combine(composeFileDirectoryPath, "compose.yml");
+
+        File.WriteAllText(composeFilePath, $"services:\n  {ServiceName}:\n    image: \"{CommonImages.Alpine.FullName}\"\n    command: [\"/bin/sh\", \"-c\", \"echo Ready; sleep infinity\"]\n");
+
+        _composeContainer = new ComposeBuilder(CommonImages.DockerCli)
+            .WithComposeFile(composeFilePath)
+            .WaitingFor(ServiceName, Wait.ForUnixContainer().UntilMessageIsLogged("Ready"))
+            .Build();
+    }
+
+    public async ValueTask InitializeAsync()
+    {
+        await _composeContainer.StartAsync()
+            .ConfigureAwait(false);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await _composeContainer.DisposeAsync()
+            .ConfigureAwait(false);
+    }
+
+    [Fact]
+    public void ResolvesServiceNameThatEndsWithInstanceNumber()
+    {
+        // Given
+        var serviceContainer = _composeContainer.GetServiceContainer(ServiceName);
+
+        // When
+        var state = serviceContainer.State;
+
+        // Then
+        Assert.Equal(TestcontainersStates.Running, state);
+    }
+}
+
+public sealed class ComposeContainerServiceNotFoundTest
+{
+    [Fact]
+    public async Task ThrowsWhenWaitStrategyReferencesUnknownService()
+    {
+        // Given
+        var composeFileDirectoryPath = Directory.CreateDirectory(Path.Combine(TestSession.TempDirectoryPath, Guid.NewGuid().ToString("D"))).FullName;
+
+        var composeFilePath = Path.Combine(composeFileDirectoryPath, "compose.yml");
+
+        File.WriteAllText(composeFilePath, $"services:\n  app:\n    image: \"{CommonImages.Alpine.FullName}\"\n    command: [\"/bin/sh\", \"-c\", \"sleep infinity\"]\n");
+
+        await using var composeContainer = new ComposeBuilder(CommonImages.DockerCli)
+            .WithComposeFile(composeFilePath)
+            .WaitingFor("aap", Wait.ForUnixContainer().UntilMessageIsLogged("Ready"))
+            .Build();
+
+        // When
+        var exception = await Assert.ThrowsAsync<ComposeServiceNotFoundException>(() => composeContainer.StartAsync(TestContext.Current.CancellationToken))
+            .ConfigureAwait(true);
+
+        // Then
+        Assert.Contains("'aap-1'", exception.Message);
+    }
+}
+
+public sealed class ComposeContainerWaitingForTest : IAsyncLifetime
+{
+    private readonly ComposeContainer _composeContainer;
+
+    public ComposeContainerWaitingForTest()
+    {
+        var composeFileDirectoryPath = Directory.CreateDirectory(Path.Combine(TestSession.TempDirectoryPath, Guid.NewGuid().ToString("D"))).FullName;
+
+        var composeFilePath = Path.Combine(composeFileDirectoryPath, "compose.yml");
+
+        // The service does not publish or expose a port. Its readiness is only
+        // observable through its log message.
+        File.WriteAllText(composeFilePath, $"services:\n  app:\n    image: \"{CommonImages.Alpine.FullName}\"\n    command: [\"/bin/sh\", \"-c\", \"sleep 1; echo Ready; sleep infinity\"]\n");
+
+        _composeContainer = new ComposeBuilder(CommonImages.DockerCli)
+            .WithComposeFile(composeFilePath)
+            .WaitingFor("app", Wait.ForUnixContainer().UntilMessageIsLogged("Ready"))
+            .Build();
+    }
+
+    public async ValueTask InitializeAsync()
+    {
+        await _composeContainer.StartAsync()
+            .ConfigureAwait(false);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await _composeContainer.DisposeAsync()
+            .ConfigureAwait(false);
+    }
+
+    [Fact]
+    public async Task WaitsForServiceWithoutExposedPort()
+    {
+        // Given
+        var serviceContainer = _composeContainer.GetServiceContainer("app");
+
+        // When
+        var (stdout, _) = await serviceContainer.GetLogsAsync(ct: TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        // Then
+        Assert.Contains("Ready", stdout);
+        Assert.Throws<ComposeServiceNotExposedException>(() => _composeContainer.GetServicePort("app", 80));
+    }
+}
+
 public sealed class ComposeContainerExitedServiceTest
 {
     private static ComposeContainer BuildComposeContainer(int exitCode)
@@ -218,7 +437,7 @@ public sealed class ComposeContainerRelativeBindMountTest : IAsyncLifetime
     }
 }
 
-public sealed class ComposeContainerPathContainingPathSeparatorTest : IAsyncLifetime
+public sealed class ComposeContainerPathSeparatorTest : IAsyncLifetime
 {
     private const string ServiceName = "app";
 
@@ -229,7 +448,7 @@ public sealed class ComposeContainerPathContainingPathSeparatorTest : IAsyncLife
 
     private readonly ComposeContainer _composeContainer;
 
-    public ComposeContainerPathContainingPathSeparatorTest()
+    public ComposeContainerPathSeparatorTest()
     {
         var composeFileDirectoryPath = Directory.CreateDirectory(Path.Combine(TestSession.TempDirectoryPath, Guid.NewGuid().ToString("D") + DirectoryNameSuffix)).FullName;
 
@@ -265,122 +484,6 @@ public sealed class ComposeContainerPathContainingPathSeparatorTest : IAsyncLife
 
         // Then
         Assert.Equal(TestcontainersStates.Running, state);
-    }
-}
-
-public sealed class ComposeContainerWaitingForTest : IAsyncLifetime
-{
-    private readonly ComposeContainer _composeContainer;
-
-    public ComposeContainerWaitingForTest()
-    {
-        var composeFileDirectoryPath = Directory.CreateDirectory(Path.Combine(TestSession.TempDirectoryPath, Guid.NewGuid().ToString("D"))).FullName;
-
-        var composeFilePath = Path.Combine(composeFileDirectoryPath, "compose.yml");
-
-        // The service does not publish or expose a port. Its readiness is only
-        // observable through its log message.
-        File.WriteAllText(composeFilePath, $"services:\n  app:\n    image: \"{CommonImages.Alpine.FullName}\"\n    command: [\"/bin/sh\", \"-c\", \"sleep 1; echo Ready; sleep infinity\"]\n");
-
-        _composeContainer = new ComposeBuilder(CommonImages.DockerCli)
-            .WithComposeFile(composeFilePath)
-            .WaitingFor("app", Wait.ForUnixContainer().UntilMessageIsLogged("Ready"))
-            .Build();
-    }
-
-    public async ValueTask InitializeAsync()
-    {
-        await _composeContainer.StartAsync()
-            .ConfigureAwait(false);
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        await _composeContainer.DisposeAsync()
-            .ConfigureAwait(false);
-    }
-
-    [Fact]
-    public async Task WaitsForServiceWithoutExposedPort()
-    {
-        // Given
-        var serviceContainer = _composeContainer.GetServiceContainer("app");
-
-        // When
-        var (stdout, _) = await serviceContainer.GetLogsAsync(ct: TestContext.Current.CancellationToken)
-            .ConfigureAwait(true);
-
-        // Then
-        Assert.Contains("Ready", stdout);
-        Assert.Throws<ComposeServiceNotExposedException>(() => _composeContainer.GetServicePort("app", 80));
-    }
-}
-
-public sealed class ComposeContainerServiceNameWithInstanceSuffixTest : IAsyncLifetime
-{
-    // A Docker Compose service name may end with a dash and a number. It addresses
-    // the service that carries the name, not the second instance of a service that
-    // is named "web".
-    private const string ServiceName = "web-2";
-
-    private readonly ComposeContainer _composeContainer;
-
-    public ComposeContainerServiceNameWithInstanceSuffixTest()
-    {
-        var composeFileDirectoryPath = Directory.CreateDirectory(Path.Combine(TestSession.TempDirectoryPath, Guid.NewGuid().ToString("D"))).FullName;
-
-        var composeFilePath = Path.Combine(composeFileDirectoryPath, "compose.yml");
-
-        File.WriteAllText(composeFilePath, $"services:\n  {ServiceName}:\n    image: \"{CommonImages.Alpine.FullName}\"\n    command: [\"/bin/sh\", \"-c\", \"echo Ready; sleep infinity\"]\n");
-
-        _composeContainer = new ComposeBuilder(CommonImages.DockerCli)
-            .WithComposeFile(composeFilePath)
-            .WaitingFor(ServiceName, Wait.ForUnixContainer().UntilMessageIsLogged("Ready"))
-            .Build();
-    }
-
-    public async ValueTask InitializeAsync()
-    {
-        await _composeContainer.StartAsync()
-            .ConfigureAwait(false);
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        await _composeContainer.DisposeAsync()
-            .ConfigureAwait(false);
-    }
-
-    [Fact]
-    public void ResolvesTheServiceNameThatEndsWithAnInstanceNumber()
-    {
-        Assert.Equal(TestcontainersStates.Running, _composeContainer.GetServiceContainer(ServiceName).State);
-    }
-}
-
-public sealed class ComposeContainerServiceNotFoundTest
-{
-    [Fact]
-    public async Task ThrowsWhenWaitStrategyReferencesUnknownService()
-    {
-        // Given
-        var composeFileDirectoryPath = Directory.CreateDirectory(Path.Combine(TestSession.TempDirectoryPath, Guid.NewGuid().ToString("D"))).FullName;
-
-        var composeFilePath = Path.Combine(composeFileDirectoryPath, "compose.yml");
-
-        File.WriteAllText(composeFilePath, $"services:\n  app:\n    image: \"{CommonImages.Alpine.FullName}\"\n    command: [\"/bin/sh\", \"-c\", \"sleep infinity\"]\n");
-
-        await using var composeContainer = new ComposeBuilder(CommonImages.DockerCli)
-            .WithComposeFile(composeFilePath)
-            .WaitingFor("aap", Wait.ForUnixContainer().UntilMessageIsLogged("Ready"))
-            .Build();
-
-        // When
-        var exception = await Assert.ThrowsAsync<ComposeServiceNotFoundException>(() => composeContainer.StartAsync(TestContext.Current.CancellationToken))
-            .ConfigureAwait(true);
-
-        // Then
-        Assert.Contains("'aap-1'", exception.Message);
     }
 }
 
@@ -432,92 +535,5 @@ public sealed class ComposeContainerPullTest : IAsyncLifetime
         // Then
         Assert.True(pullImageFailed, "Expected a warning about the image that cannot be pulled.");
         Assert.Equal(TestcontainersStates.Running, _composeContainer.GetServiceContainer("app").State);
-    }
-}
-
-public sealed class ComposeContainerScaledServiceTest : IAsyncLifetime
-{
-    private const string ServiceName = "web";
-
-    private const ushort ServicePort = 80;
-
-    private const ushort Instances = 2;
-
-    private readonly ComposeContainer _composeContainer;
-
-    public ComposeContainerScaledServiceTest()
-    {
-        var composeFileDirectoryPath = Directory.CreateDirectory(Path.Combine(TestSession.TempDirectoryPath, Guid.NewGuid().ToString("D"))).FullName;
-
-        var composeFilePath = Path.Combine(composeFileDirectoryPath, "compose.yml");
-
-        File.WriteAllText(composeFilePath, $"services:\n  {ServiceName}:\n    image: \"{CommonImages.Nginx.FullName}\"\n");
-
-        var composeBuilder = new ComposeBuilder(CommonImages.DockerCli)
-            .WithComposeFile(composeFilePath)
-            .WithScaledService(ServiceName, Instances);
-
-        // Each instance gets its own ambassador port, and each instance runs its own
-        // readiness check.
-        for (ushort instance = 1; instance <= Instances; instance++)
-        {
-            composeBuilder = composeBuilder.WithExposedServiceInstance(ServiceName, instance, ServicePort);
-        }
-
-        _composeContainer = composeBuilder.Build();
-    }
-
-    public async ValueTask InitializeAsync()
-    {
-        await _composeContainer.StartAsync()
-            .ConfigureAwait(false);
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        await _composeContainer.DisposeAsync()
-            .ConfigureAwait(false);
-    }
-
-    [Fact]
-    public void ResolvesEachServiceInstanceIndividually()
-    {
-        // Given
-        var containerIds = Enumerable.Range(1, Instances)
-            .Select(instance => _composeContainer.GetServiceInstanceContainer(ServiceName, (ushort)instance).Id)
-            .ToArray();
-
-        // When
-        var servicePorts = Enumerable.Range(1, Instances)
-            .Select(instance => _composeContainer.GetServiceInstancePort(ServiceName, (ushort)instance, ServicePort))
-            .ToArray();
-
-        // Then
-        Assert.Equal(Instances, containerIds.Distinct().Count());
-        Assert.Equal(Instances, servicePorts.Distinct().Count());
-    }
-
-    [Fact]
-    public void ResolvesTheServiceNameToTheFirstInstance()
-    {
-        Assert.Equal(_composeContainer.GetServiceInstanceContainer(ServiceName, 1).Id, _composeContainer.GetServiceContainer(ServiceName).Id);
-        Assert.Equal(_composeContainer.GetServiceInstancePort(ServiceName, 1, ServicePort), _composeContainer.GetServicePort(ServiceName, ServicePort));
-    }
-
-    [Theory]
-    [InlineData((ushort)1)]
-    [InlineData((ushort)2)]
-    public async Task EstablishesConnectionToEachServiceInstance(ushort instance)
-    {
-        // Given
-        using var httpClient = new HttpClient();
-        httpClient.BaseAddress = new UriBuilder(Uri.UriSchemeHttp, _composeContainer.GetServiceInstanceHost(ServiceName, instance, ServicePort), _composeContainer.GetServiceInstancePort(ServiceName, instance, ServicePort)).Uri;
-
-        // When
-        using var httpResponse = await httpClient.GetAsync("/", TestContext.Current.CancellationToken)
-            .ConfigureAwait(true);
-
-        // Then
-        Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);
     }
 }
