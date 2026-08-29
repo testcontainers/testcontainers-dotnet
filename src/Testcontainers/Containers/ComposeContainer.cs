@@ -691,35 +691,6 @@ namespace DotNet.Testcontainers.Containers
     }
 
     /// <summary>
-    /// Gets the failure of an operation that a Docker Compose service ran.
-    /// </summary>
-    /// <remarks>
-    /// An operation that starts or attaches a container reports its failure by
-    /// throwing. Capture it, so that the failures of all services can be gathered
-    /// before one of them is reported.
-    /// </remarks>
-    /// <param name="service">The Docker Compose service instance.</param>
-    /// <param name="operation">The operation that the Docker Compose service ran.</param>
-    /// <param name="ct">Cancellation token.</param>
-    /// <returns>Task that completes when the operation has run, returning its failure, or <c>null</c> if the operation succeeded.</returns>
-    private static async Task<KeyValuePair<string, Exception>> GetOperationFailureAsync((string ServiceName, ushort Instance) service, Task operation, CancellationToken ct = default)
-    {
-      var serviceName = ComposeServiceName.GetDisplayName(service.ServiceName, service.Instance);
-
-      try
-      {
-        await operation
-          .ConfigureAwait(false);
-
-        return new KeyValuePair<string, Exception>(serviceName, null);
-      }
-      catch (Exception e) when (!ct.IsCancellationRequested)
-      {
-        return new KeyValuePair<string, Exception>(serviceName, e);
-      }
-    }
-
-    /// <summary>
     /// Throws an exception when a Docker Compose service that the configuration
     /// references does not belong to the Docker Compose project.
     /// </summary>
@@ -761,6 +732,35 @@ namespace DotNet.Testcontainers.Containers
       if (_ambassadorContainer == null)
       {
         throw new ComposeServiceNotFoundException(ComposeServiceName.GetDisplayName(serviceName, instance), ProjectName);
+      }
+    }
+
+    /// <summary>
+    /// Gets the failure of an operation that a Docker Compose service ran.
+    /// </summary>
+    /// <remarks>
+    /// An operation that starts or attaches a container reports its failure by
+    /// throwing. Capture it, so that the failures of all services can be gathered
+    /// before one of them is reported.
+    /// </remarks>
+    /// <param name="service">The Docker Compose service instance.</param>
+    /// <param name="operation">The operation that the Docker Compose service ran.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the operation has run, returning its failure, or <c>null</c> if the operation succeeded.</returns>
+    private static async Task<KeyValuePair<string, Exception>> GetOperationFailureAsync((string ServiceName, ushort Instance) service, Task operation, CancellationToken ct = default)
+    {
+      var serviceName = ComposeServiceName.GetDisplayName(service.ServiceName, service.Instance);
+
+      try
+      {
+        await operation
+          .ConfigureAwait(false);
+
+        return new KeyValuePair<string, Exception>(serviceName, null);
+      }
+      catch (Exception e) when (!ct.IsCancellationRequested)
+      {
+        return new KeyValuePair<string, Exception>(serviceName, e);
       }
     }
 
