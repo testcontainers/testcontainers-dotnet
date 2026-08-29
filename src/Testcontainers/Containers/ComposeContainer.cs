@@ -401,9 +401,25 @@ namespace DotNet.Testcontainers.Containers
       // removes. Set the flag before running the command.
       _isComposeUp = true;
 
-      _ = await ExecAsync(upCommand, ct)
-        .ThrowOnFailure()
+      var execResult = await ExecAsync(upCommand, ct)
         .ConfigureAwait(false);
+
+      if (0L.Equals(execResult.ExitCode))
+      {
+        return;
+      }
+
+      // Docker Compose fails the command if a service that another service depends on
+      // did not complete successfully. It reports the exit code of the service, but
+      // not its logs. Report the service that caused the failure instead of the
+      // Docker Compose command that failed.
+      var composeContainers = await GetComposeContainersAsync(ct)
+        .ConfigureAwait(false);
+
+      await ThrowIfServiceExitedUnsuccessfullyAsync(composeContainers.Values, ct)
+        .ConfigureAwait(false);
+
+      throw new ExecFailedException(execResult);
     }
 
     /// <summary>
@@ -512,11 +528,7 @@ namespace DotNet.Testcontainers.Containers
       {
         // An exposed service that exited unsuccessfully is the actual cause. Report its
         // exit code and logs instead of the ambassador container that cannot reach it.
-        var exitedContainers = unreachableServices
-          .Select(service => composeContainers[service])
-          .Where(container => nameof(TestcontainersStates.Exited).Equals(container.State, StringComparison.OrdinalIgnoreCase));
-
-        await Task.WhenAll(exitedContainers.Select(container => ThrowIfContainerExitedUnsuccessfullyAsync(container.ID, ct)))
+        await ThrowIfServiceExitedUnsuccessfullyAsync(unreachableServices.Select(service => composeContainers[service]), ct)
           .ConfigureAwait(false);
 
         var serviceNames = unreachableServices
@@ -606,6 +618,22 @@ namespace DotNet.Testcontainers.Containers
         containerConfiguration);
 
       return new ComposeServiceContainer(serviceConfiguration, container.ID, _ambassadorContainer, ambassadorPorts);
+    }
+
+    /// <summary>
+    /// Throws an exception when a Docker Compose service that already exited has an
+    /// unsuccessful exit code.
+    /// </summary>
+    /// <param name="composeContainers">The Docker Compose containers.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the exit codes have been checked.</returns>
+    /// <exception cref="ContainerNotRunningException">A Docker Compose service exited unexpectedly.</exception>
+    private Task ThrowIfServiceExitedUnsuccessfullyAsync(IEnumerable<ContainerListResponse> composeContainers, CancellationToken ct = default)
+    {
+      var exitedContainers = composeContainers
+        .Where(container => nameof(TestcontainersStates.Exited).Equals(container.State, StringComparison.OrdinalIgnoreCase));
+
+      return Task.WhenAll(exitedContainers.Select(container => ThrowIfContainerExitedUnsuccessfullyAsync(container.ID, ct)));
     }
 
     /// <summary>

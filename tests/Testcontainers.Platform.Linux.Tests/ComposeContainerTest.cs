@@ -294,7 +294,10 @@ public sealed class ComposeContainerExitedServiceTest
 
         var composeFilePath = Path.Combine(composeFileDirectoryPath, "compose.yml");
 
-        File.WriteAllText(composeFilePath, $"services:\n  migration:\n    image: \"{CommonImages.Alpine.FullName}\"\n    command: [\"/bin/sh\", \"-c\", \"exit {exitCode}\"]\n");
+        // The app service depends on the completion of the migration service. Docker
+        // Compose does not wait for a service that no other service depends on. It
+        // returns before a service that exits immediately has exited.
+        File.WriteAllText(composeFilePath, $"services:\n  migration:\n    image: \"{CommonImages.Alpine.FullName}\"\n    command: [\"/bin/sh\", \"-c\", \"exit {exitCode}\"]\n  app:\n    image: \"{CommonImages.Alpine.FullName}\"\n    command: [\"/bin/sh\", \"-c\", \"sleep infinity\"]\n    depends_on:\n      migration:\n        condition: service_completed_successfully\n");
 
         return new ComposeBuilder(CommonImages.DockerCli)
             .WithComposeFile(composeFilePath)
@@ -313,6 +316,7 @@ public sealed class ComposeContainerExitedServiceTest
 
         // Then
         Assert.Equal(TestcontainersStates.Exited, composeContainer.GetServiceContainer("migration").State);
+        Assert.Equal(TestcontainersStates.Running, composeContainer.GetServiceContainer("app").State);
     }
 
     [Fact]
