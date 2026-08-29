@@ -304,6 +304,21 @@ public sealed class ComposeContainerExitedServiceTest
             .Build();
     }
 
+    private static ComposeContainer BuildComposeContainer(int migrationExitCode, int seedingExitCode)
+    {
+        var composeFileDirectoryPath = Directory.CreateDirectory(Path.Combine(TestSession.TempDirectoryPath, Guid.NewGuid().ToString("D"))).FullName;
+
+        var composeFilePath = Path.Combine(composeFileDirectoryPath, "compose.yml");
+
+        // The app service depends on the completion of both services. Docker Compose
+        // starts them at the same time, which lets both of them fail.
+        File.WriteAllText(composeFilePath, $"services:\n  migration:\n    image: \"{CommonImages.Alpine.FullName}\"\n    command: [\"/bin/sh\", \"-c\", \"exit {migrationExitCode}\"]\n  seeding:\n    image: \"{CommonImages.Alpine.FullName}\"\n    command: [\"/bin/sh\", \"-c\", \"exit {seedingExitCode}\"]\n  app:\n    image: \"{CommonImages.Alpine.FullName}\"\n    command: [\"/bin/sh\", \"-c\", \"sleep infinity\"]\n    depends_on:\n      migration:\n        condition: service_completed_successfully\n      seeding:\n        condition: service_completed_successfully\n");
+
+        return new ComposeBuilder(CommonImages.DockerCli)
+            .WithComposeFile(composeFilePath)
+            .Build();
+    }
+
     [Fact]
     public async Task StartsWhenServiceRanToCompletion()
     {
@@ -326,11 +341,29 @@ public sealed class ComposeContainerExitedServiceTest
         await using var composeContainer = BuildComposeContainer(1);
 
         // When
-        var exception = await Assert.ThrowsAsync<ContainerNotRunningException>(() => composeContainer.StartAsync(TestContext.Current.CancellationToken))
+        var exception = await Assert.ThrowsAsync<ComposeServiceFailedException>(() => composeContainer.StartAsync(TestContext.Current.CancellationToken))
             .ConfigureAwait(true);
 
         // Then
+        Assert.Contains("'migration-1'", exception.Message);
         Assert.Contains("exited with code 1", exception.Message);
+    }
+
+    [Fact]
+    public async Task ThrowsWhenMultipleServicesExitedUnsuccessfully()
+    {
+        // Given
+        await using var composeContainer = BuildComposeContainer(1, 2);
+
+        // When
+        var exception = await Assert.ThrowsAsync<ComposeServiceFailedException>(() => composeContainer.StartAsync(TestContext.Current.CancellationToken))
+            .ConfigureAwait(true);
+
+        // Then
+        Assert.Contains("'migration-1'", exception.Message);
+        Assert.Contains("'seeding-1'", exception.Message);
+        Assert.Contains("exited with code 1", exception.Message);
+        Assert.Contains("exited with code 2", exception.Message);
     }
 }
 
