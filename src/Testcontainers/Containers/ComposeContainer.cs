@@ -587,17 +587,6 @@ namespace DotNet.Testcontainers.Containers
         .Concat(serviceReadinessWaitStrategies)
         .ToArray();
 
-      // Docker Compose already published the service ports. Mirror them in the
-      // configuration, otherwise the readiness check that waits until the port
-      // bindings are mapped does not pass. A service that does not declare any port
-      // does not contain a port list at all. Docker reports one entry per published
-      // address, so the same port shows up for IPv4 and IPv6.
-      var portBindings = (container.Ports ?? Array.Empty<PortSummary>())
-        .Where(port => port.PublicPort > 0)
-        .Select(port => $"{port.PrivatePort}/{port.Type}")
-        .Distinct()
-        .ToDictionary(containerPort => containerPort, _ => string.Empty);
-
       // The cast selects the constructor overload that copies the resource
       // configuration (Docker endpoint, session id, logger) and intentionally drops
       // the Docker Compose container configuration. Inheriting it would create the
@@ -608,7 +597,6 @@ namespace DotNet.Testcontainers.Containers
 
       var containerConfiguration = new ContainerConfiguration(
         image: GetServiceImage(container),
-        portBindings: portBindings,
         outputConsumer: Consume.DoNotConsumeStdoutAndStderr(),
         waitStrategies: waitStrategies,
         startupCallback: (_, _, _) => Task.CompletedTask);
