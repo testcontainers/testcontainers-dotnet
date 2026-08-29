@@ -46,11 +46,11 @@ namespace DotNet.Testcontainers.Containers
 
     private const ushort FirstAmbassadorPort = 2000;
 
-    private static readonly string[] ComposeConfigCommand = new[] { "docker", "compose", "config", "--images" };
+    private static readonly string[] ComposeConfigCommand = { "docker", "compose", "config", "--images" };
 
-    private static readonly string[] ComposeUpCommand = new[] { "docker", "compose", "up", "--detach" };
+    private static readonly string[] ComposeUpCommand = { "docker", "compose", "up", "--detach" };
 
-    private static readonly string[] ComposeDownCommand = new[] { "docker", "compose", "down", "--volumes" };
+    private static readonly string[] ComposeDownCommand = { "docker", "compose", "down", "--volumes" };
 
     private static readonly IImage AmbassadorImage = new DockerImage("alpine/socat:1.8.0.3");
 

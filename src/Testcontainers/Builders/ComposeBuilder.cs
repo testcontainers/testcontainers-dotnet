@@ -36,6 +36,18 @@ namespace DotNet.Testcontainers.Builders
     /// </summary>
     private const int ProjectNameSuffixLength = 8;
 
+    /// <summary>
+    /// The path separator characters that separate the Docker Compose file paths in
+    /// <c>COMPOSE_FILE</c>, in the order they are considered.
+    /// </summary>
+    /// <remarks>
+    /// A Unix path may contain the default path separator (colon). The path
+    /// separator that Docker Compose uses is configurable, so that a path that
+    /// contains one of them can still be passed (see
+    /// <see cref="GetPathSeparator" />).
+    /// </remarks>
+    private static readonly string[] PathSeparators = { ":", ";", "|", "," };
+
     private static readonly Regex ProjectNameRegex = new Regex("^[a-z0-9][a-z0-9_-]*$", RegexOptions.None, TimeSpan.FromSeconds(1));
 
     /// <summary>
@@ -319,7 +331,14 @@ namespace DotNet.Testcontainers.Builders
 
       var composeFiles = GetComposeFilePaths();
 
-      var composeFile = string.Join(":", composeFiles.Select(GetContainerPath));
+      var containerComposeFilePaths = composeFiles.Select(GetContainerPath).ToArray();
+
+      // Docker Compose splits COMPOSE_FILE on the path separator. Use a path
+      // separator that none of the Docker Compose file paths contains, otherwise
+      // Docker Compose reads a single path as multiple Docker Compose files.
+      var pathSeparator = GetPathSeparator(containerComposeFilePaths);
+
+      var composeFile = string.Join(pathSeparator, containerComposeFilePaths);
 
       // Docker Compose resolves relative references, such as bind mount sources,
       // against the directory of the first Docker Compose file.
@@ -337,6 +356,7 @@ namespace DotNet.Testcontainers.Builders
 
       var composeBuilder = Merge(DockerResourceConfiguration, new ComposeConfiguration(projectName: projectName))
         .WithEnvironment("COMPOSE_PROJECT_NAME", projectName)
+        .WithEnvironment("COMPOSE_PATH_SEPARATOR", pathSeparator)
         .WithEnvironment("COMPOSE_FILE", composeFile)
         .WithWorkingDirectory(projectDirectoryPath)
         .WithMount(new UnixSocketMount(DockerResourceConfiguration.DockerEndpointAuthConfig.Endpoint));
@@ -382,6 +402,10 @@ namespace DotNet.Testcontainers.Builders
       const string composeFileNotOnLocalDrive = "The Docker Compose file '{0}' is on a UNC path. The Docker Compose files must be on a local drive, the Docker daemon cannot resolve a UNC path.";
       _ = Guard.Argument(composeFiles, nameof(DockerResourceConfiguration.ComposeFiles))
         .ThrowIf(argument => argument.Value.Any(IsUncPath), argument => new ArgumentException(string.Format(composeFileNotOnLocalDrive, argument.Value.First(IsUncPath)), argument.Name));
+
+      const string composeFilePathSeparatorNotFound = "The Docker Compose file paths contain every supported path separator character ({0}). At least one of them must be absent from the Docker Compose file paths, Docker Compose separates them with it.";
+      _ = Guard.Argument(composeFiles, nameof(DockerResourceConfiguration.ComposeFiles))
+        .ThrowIf(argument => argument.Value.Length > 0 && GetPathSeparator(argument.Value.Select(GetContainerPath)) == null, argument => new ArgumentException(string.Format(composeFilePathSeparatorNotFound, string.Join(" ", PathSeparators)), argument.Name));
 
       const string projectNamePrefixInvalid = "The Docker Compose project name prefix must start with a lowercase letter or digit and can only contain lowercase letters, digits, dashes, and underscores.";
       _ = Guard.Argument(DockerResourceConfiguration.ProjectNamePrefix, nameof(DockerResourceConfiguration.ProjectNamePrefix))
@@ -471,12 +495,30 @@ namespace DotNet.Testcontainers.Builders
 
       // Convert a Windows drive letter to the path notation that the Docker daemon
       // understands, e.g. C:/Users/Default to /c/Users/Default.
-      if (containerPath.Length > 1 && ':'.Equals(containerPath[1]))
+      if (containerPath.Length > 1 && char.IsLetter(containerPath[0]) && ':'.Equals(containerPath[1]))
       {
         containerPath = "/" + char.ToLowerInvariant(containerPath[0]) + containerPath.Substring(2);
       }
 
       return containerPath;
+    }
+
+    /// <summary>
+    /// Gets the path separator that separates the Docker Compose file paths in
+    /// <c>COMPOSE_FILE</c>.
+    /// </summary>
+    /// <remarks>
+    /// Docker Compose splits <c>COMPOSE_FILE</c> on the path separator that
+    /// <c>COMPOSE_PATH_SEPARATOR</c> configures. A path that contains the path
+    /// separator is read as multiple Docker Compose files, which is why the path
+    /// separator must not occur in any of the paths.
+    /// </remarks>
+    /// <param name="containerPaths">The Docker Compose file paths inside the container.</param>
+    /// <returns>The first supported path separator that none of the paths contains; otherwise, null.</returns>
+    [CanBeNull]
+    private static string GetPathSeparator(IEnumerable<string> containerPaths)
+    {
+      return PathSeparators.FirstOrDefault(pathSeparator => !containerPaths.Any(containerPath => containerPath.Contains(pathSeparator)));
     }
 
     /// <summary>

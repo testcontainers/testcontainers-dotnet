@@ -218,6 +218,56 @@ public sealed class ComposeContainerRelativeBindMountTest : IAsyncLifetime
     }
 }
 
+public sealed class ComposeContainerPathContainingPathSeparatorTest : IAsyncLifetime
+{
+    private const string ServiceName = "app";
+
+    // A colon is a valid character in a Unix path, but it is the default path
+    // separator that Docker Compose splits COMPOSE_FILE on. Windows does not allow
+    // it in a path, there a Docker Compose file path cannot contain it.
+    private static readonly string DirectoryNameSuffix = OperatingSystem.IsWindows() ? string.Empty : ":1";
+
+    private readonly ComposeContainer _composeContainer;
+
+    public ComposeContainerPathContainingPathSeparatorTest()
+    {
+        var composeFileDirectoryPath = Directory.CreateDirectory(Path.Combine(TestSession.TempDirectoryPath, Guid.NewGuid().ToString("D") + DirectoryNameSuffix)).FullName;
+
+        var composeFilePath = Path.Combine(composeFileDirectoryPath, "compose.yml");
+
+        File.WriteAllText(composeFilePath, $"services:\n  {ServiceName}:\n    image: \"{CommonImages.Alpine.FullName}\"\n    command: [\"/bin/sh\", \"-c\", \"sleep infinity\"]\n");
+
+        _composeContainer = new ComposeBuilder(CommonImages.DockerCli)
+            .WithComposeFile(composeFilePath)
+            .Build();
+    }
+
+    public async ValueTask InitializeAsync()
+    {
+        await _composeContainer.StartAsync()
+            .ConfigureAwait(false);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await _composeContainer.DisposeAsync()
+            .ConfigureAwait(false);
+    }
+
+    [Fact]
+    public void StartsWhenComposeFilePathContainsPathSeparator()
+    {
+        // Given
+        var serviceContainer = _composeContainer.GetServiceContainer(ServiceName);
+
+        // When
+        var state = serviceContainer.State;
+
+        // Then
+        Assert.Equal(TestcontainersStates.Running, state);
+    }
+}
+
 public sealed class ComposeContainerWaitingForTest : IAsyncLifetime
 {
     private readonly ComposeContainer _composeContainer;

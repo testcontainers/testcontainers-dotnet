@@ -17,6 +17,14 @@ namespace DotNet.Testcontainers.Tests.Unit
       File.WriteAllText(ComposeFilePath, "services:\n  web:\n    image: \"" + CommonImages.Nginx.FullName + "\"\n");
     }
 
+    public static bool IsNotWindows
+    {
+      get
+      {
+        return !OperatingSystem.IsWindows();
+      }
+    }
+
     [Fact]
     public void ShouldThrowArgumentExceptionWhenComposeFileIsNotSet()
     {
@@ -67,6 +75,20 @@ namespace DotNet.Testcontainers.Tests.Unit
       File.Copy(ComposeFilePath, composeFilePath);
 
       _ = new ComposeBuilder(CommonImages.DockerCli).WithComposeFile(ComposeFilePath, composeFilePath).Build();
+    }
+
+    [Fact(SkipUnless = nameof(IsNotWindows), Skip = "A Windows path cannot contain the path separator characters.")]
+    public void ShouldThrowArgumentExceptionWhenComposeFilePathContainsEveryPathSeparator()
+    {
+      // Docker Compose separates the Docker Compose file paths in COMPOSE_FILE with a
+      // path separator character. A path that contains every supported separator
+      // cannot be passed to Docker Compose.
+      var composeFilePath = Path.Combine(TestSession.TempDirectoryPath, Guid.NewGuid().ToString("D") + ":;|,", Path.GetFileName(ComposeFilePath));
+      _ = Directory.CreateDirectory(Path.GetDirectoryName(composeFilePath)!);
+      File.Copy(ComposeFilePath, composeFilePath);
+
+      var exception = Assert.Throws<ArgumentException>(() => new ComposeBuilder(CommonImages.DockerCli).WithComposeFile(composeFilePath).Build());
+      Assert.StartsWith("The Docker Compose file paths contain every supported path separator character", exception.Message);
     }
 
     [Fact]

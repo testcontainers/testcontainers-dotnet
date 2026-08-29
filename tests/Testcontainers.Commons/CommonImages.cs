@@ -7,11 +7,13 @@ public static class CommonImages
 
     public static readonly IImage HelloWorld = new DockerImage("testcontainers/helloworld:1.3.0");
 
+    public static readonly IImage DockerCli = new DockerImage("docker:29.7-cli");
+
+    public static readonly IImage DockerDind = new DockerImage("docker:29.7-dind");
+
     public static readonly IImage Alpine = new DockerImage("alpine:3.20.0");
 
     public static readonly IImage Socat = new DockerImage("alpine/socat:1.8.0.3");
-
-    public static readonly IImage DockerCli = new DockerImage("docker:28-cli");
 
     public static readonly IImage Curl = new DockerImage("curlimages/curl:8.00.1");
 
