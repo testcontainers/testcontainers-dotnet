@@ -426,6 +426,13 @@ namespace DotNet.Testcontainers.Builders
       const string projectNamePrefixTooLong = "The Docker Compose project name prefix must not exceed {0} characters, keeping the project name Docker Compose derives from it within the 63-character DNS label limit.";
       _ = Guard.Argument(DockerResourceConfiguration.ProjectNamePrefix, nameof(DockerResourceConfiguration.ProjectNamePrefix))
         .ThrowIf(argument => argument.Value != null && argument.Value.Length > ProjectNamePrefixMaxLength, argument => new ArgumentException(string.Format(projectNamePrefixTooLong, ProjectNamePrefixMaxLength), argument.Name));
+
+      const string serviceInstanceInvalid = "The Docker Compose service instance must be {0} or greater.";
+      _ = Guard.Argument(DockerResourceConfiguration.ExposedServices, nameof(DockerResourceConfiguration.ExposedServices))
+        .ThrowIf(argument => argument.Value != null && argument.Value.Any(exposedService => exposedService.Instance < ComposeServiceName.FirstInstance), argument => new ArgumentException(string.Format(serviceInstanceInvalid, ComposeServiceName.FirstInstance), argument.Name));
+
+      _ = Guard.Argument(DockerResourceConfiguration.ServiceReadiness, nameof(DockerResourceConfiguration.ServiceReadiness))
+        .ThrowIf(argument => argument.Value != null && argument.Value.Any(serviceReadiness => serviceReadiness.Instance < ComposeServiceName.FirstInstance), argument => new ArgumentException(string.Format(serviceInstanceInvalid, ComposeServiceName.FirstInstance), argument.Name));
     }
 
     /// <inheritdoc />

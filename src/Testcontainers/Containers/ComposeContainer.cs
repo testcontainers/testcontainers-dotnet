@@ -439,8 +439,6 @@ namespace DotNet.Testcontainers.Containers
         return;
       }
 
-      _isComposeUp = false;
-
       _serviceContainers = new Dictionary<(string, ushort), ComposeServiceContainer>();
 
       try
@@ -467,6 +465,11 @@ namespace DotNet.Testcontainers.Containers
         _ = await ExecAsync(ComposeDownCommand, ct)
           .ThrowOnFailure()
           .ConfigureAwait(false);
+
+        // Only clear the flag once `docker compose down` actually succeeds. Keeping
+        // it set on failure lets a later Stop or Dispose call retry the cleanup
+        // instead of silently leaving the Docker Compose resources running.
+        _isComposeUp = false;
       }
       catch (Exception e)
       {
