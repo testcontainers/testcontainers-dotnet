@@ -402,12 +402,8 @@ namespace DotNet.Testcontainers.Clients
       return configuration.Image.FullName;
     }
 
-    /// <summary>
-    /// Pulls an image from a registry.
-    /// </summary>
-    /// <param name="image">The image to pull.</param>
-    /// <param name="ct">Cancellation token.</param>
-    private async Task PullImageAsync(IImage image, CancellationToken ct = default)
+    /// <inheritdoc />
+    public async Task PullImageAsync(IImage image, CancellationToken ct = default)
     {
       var dockerRegistryServerAddress = image.GetHostname();
 
