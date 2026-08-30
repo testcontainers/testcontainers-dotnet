@@ -155,6 +155,50 @@ namespace DotNet.Testcontainers.Containers
       }
     }
 
+    /// <summary>
+    /// Registers an additional Docker resource filter with Ryuk.
+    /// </summary>
+    /// <remarks>
+    /// Ryuk keeps received filters until it terminates. It is not necessary to keep
+    /// the connection that registered the filter open. On termination, Ryuk deletes
+    /// all Docker resources matching the filter.
+    /// </remarks>
+    /// <param name="filter">The Docker resource filter, e.g. <c>label=key=value</c>.</param>
+    /// <param name="ct">The cancellation token to cancel the filter registration.</param>
+    /// <returns>Task that completes when Ryuk has acknowledged the filter.</returns>
+    /// <exception cref="ResourceReaperException">Ryuk did not acknowledge the filter within the connection timeout.</exception>
+    [PublicAPI]
+    public async Task RegisterFilterAsync(string filter, CancellationToken ct = default)
+    {
+      using (var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(ConnectionTimeoutInSeconds)))
+      {
+        using (var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, ct))
+        {
+          try
+          {
+            bool hasAcknowledge;
+
+            do
+            {
+              hasAcknowledge = await TryConnectAndRegisterFilterAsync(filter, linkedCts.Token)
+                .ConfigureAwait(false);
+
+              if (!hasAcknowledge)
+              {
+                await Task.Delay(TimeSpan.FromSeconds(RetryTimeoutInSeconds), linkedCts.Token)
+                  .ConfigureAwait(false);
+              }
+            }
+            while (!hasAcknowledge);
+          }
+          catch (OperationCanceledException) when (!ct.IsCancellationRequested)
+          {
+            throw new ResourceReaperException($"The Resource Reaper did not acknowledge the filter '{filter}' within {ConnectionTimeoutInSeconds} seconds.");
+          }
+        }
+      }
+    }
+
     /// <inheritdoc />
     [PublicAPI]
     public async ValueTask DisposeAsync()
@@ -264,95 +308,11 @@ namespace DotNet.Testcontainers.Containers
     }
 
     /// <summary>
-    /// Registers an additional Docker resource filter with Ryuk.
-    /// </summary>
-    /// <remarks>
-    /// Ryuk keeps received filters until it terminates. It is not necessary to keep
-    /// the connection that registered the filter open. On termination, Ryuk deletes
-    /// all Docker resources matching the filter.
-    /// </remarks>
-    /// <param name="filter">The Docker resource filter, e.g. <c>label=key=value</c>.</param>
-    /// <param name="ct">Cancellation token.</param>
-    /// <returns>Task that completes when Ryuk has acknowledged the filter.</returns>
-    /// <exception cref="ResourceReaperException">Ryuk did not acknowledge the filter within the connection timeout.</exception>
-    internal async Task RegisterFilterAsync(string filter, CancellationToken ct = default)
-    {
-      using (var timeoutCts = new CancellationTokenSource(TimeSpan.FromSeconds(ConnectionTimeoutInSeconds)))
-      {
-        using (var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(timeoutCts.Token, ct))
-        {
-          try
-          {
-            while (!await TryConnectAndRegisterFilterAsync(filter, linkedCts.Token).ConfigureAwait(false))
-            {
-              await Task.Delay(TimeSpan.FromSeconds(RetryTimeoutInSeconds), linkedCts.Token)
-                .ConfigureAwait(false);
-            }
-          }
-          catch (OperationCanceledException) when (!ct.IsCancellationRequested)
-          {
-            throw new ResourceReaperException($"The Resource Reaper did not acknowledge the filter '{filter}' within {ConnectionTimeoutInSeconds} seconds.");
-          }
-        }
-      }
-    }
-
-    /// <summary>
-    /// Connects to Ryuk, sends a Docker resource filter and awaits the
-    /// acknowledgement.
-    /// </summary>
-    /// <remarks>
-    /// A connection that is not ready yet does not fail the registration, just like
-    /// the connection that <see cref="MaintainRyukConnection" /> keeps open. The
-    /// caller retries until Ryuk acknowledges the filter.
-    /// </remarks>
-    /// <param name="filter">The Docker resource filter, e.g. <c>label=key=value</c>.</param>
-    /// <param name="ct">Cancellation token.</param>
-    /// <returns>Task that completes when Ryuk has acknowledged the filter, returning false if the connection was not ready; otherwise, true.</returns>
-    private async Task<bool> TryConnectAndRegisterFilterAsync(string filter, CancellationToken ct)
-    {
-      if (!TryGetEndpoint(out var host, out var port))
-      {
-        return false;
-      }
-
-      using (var tcpClient = new TcpClient())
-      {
-        tcpClient.LingerState = DiscardAllPendingData;
-
-        try
-        {
-#if NET6_0_OR_GREATER
-          await tcpClient.ConnectAsync(host, port, ct)
-            .ConfigureAwait(false);
-#else
-          // The overload that takes a cancellation token is not available. Disposing the
-          // client cancels a pending connection attempt.
-          using (ct.Register(tcpClient.Dispose))
-          {
-            await tcpClient.ConnectAsync(host, port)
-              .ConfigureAwait(false);
-          }
-#endif
-
-          return await TryRegisterFilterAsync(tcpClient.GetStream(), filter, ct)
-            .ConfigureAwait(false);
-        }
-        catch (Exception e) when (e is SocketException || e is IOException || e is ObjectDisposedException)
-        {
-          _resourceReaperContainer.Logger.CanNotConnectToResourceReaper(SessionId, host, port, e);
-          return false;
-        }
-      }
-    }
-
-    /// <summary>
-    /// Sends a Docker resource filter to Ryuk over an established connection and
-    /// awaits the acknowledgement.
+    /// Sends a Docker resource filter to Ryuk and awaits the acknowledgement.
     /// </summary>
     /// <param name="stream">The network stream of the established Ryuk connection.</param>
     /// <param name="filter">The Docker resource filter, e.g. <c>label=key=value</c>.</param>
-    /// <param name="ct">Cancellation token.</param>
+    /// <param name="ct">The cancellation token to cancel the filter registration.</param>
     /// <returns>Task that completes when Ryuk has acknowledged the filter, returning false if the connection did not return any data; otherwise, true.</returns>
     private static async Task<bool> TryRegisterFilterAsync(NetworkStream stream, string filter, CancellationToken ct)
     {
@@ -428,6 +388,54 @@ namespace DotNet.Testcontainers.Containers
       }
 
       return true;
+    }
+
+    /// <summary>
+    /// Connects to Ryuk, sends a Docker resource filter and awaits the acknowledgement.
+    /// </summary>
+    /// <remarks>
+    /// A connection that is not ready yet does not fail the registration, just like
+    /// the connection that <see cref="MaintainRyukConnection" /> keeps open.
+    /// The caller retries until Ryuk acknowledges the filter.
+    /// </remarks>
+    /// <param name="filter">The Docker resource filter, e.g. <c>label=key=value</c>.</param>
+    /// <param name="ct">The cancellation token to cancel the filter registration.</param>
+    /// <returns>Task that completes when Ryuk has acknowledged the filter, returning false if the connection was not ready; otherwise, true.</returns>
+    private async Task<bool> TryConnectAndRegisterFilterAsync(string filter, CancellationToken ct)
+    {
+      if (!TryGetEndpoint(out var host, out var port))
+      {
+        return false;
+      }
+
+      using (var tcpClient = new TcpClient())
+      {
+        tcpClient.LingerState = DiscardAllPendingData;
+
+        try
+        {
+#if NET6_0_OR_GREATER
+          await tcpClient.ConnectAsync(host, port, ct)
+            .ConfigureAwait(false);
+#else
+          // The overload that takes a cancellation token is not available.
+          // Disposing the client cancels a pending connection attempt.
+          using (ct.Register(tcpClient.Dispose))
+          {
+            await tcpClient.ConnectAsync(host, port)
+              .ConfigureAwait(false);
+          }
+#endif
+
+          return await TryRegisterFilterAsync(tcpClient.GetStream(), filter, ct)
+            .ConfigureAwait(false);
+        }
+        catch (Exception e) when (e is SocketException or IOException or ObjectDisposedException)
+        {
+          _resourceReaperContainer.Logger.CanNotConnectToResourceReaper(SessionId, host, port, e);
+          return false;
+        }
+      }
     }
 
     private bool TryGetEndpoint(out string host, out ushort port)

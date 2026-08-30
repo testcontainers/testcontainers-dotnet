@@ -99,14 +99,14 @@ namespace DotNet.Testcontainers
     [LoggerMessage(Level = LogLevel.Information, Message = "Add file to tar archive: Source file: \"{Source}\", Target file: \"{Target}\", UID: {Uid}, GID: {Gid}, Mode: {Mode}")]
     private static partial void AddFileToTarArchiveCore(ILogger logger, string source, string target, int uid, int gid, string mode);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "Docker Compose down failed for project {ProjectName}")]
-    private static partial void DockerComposeDownFailedCore(ILogger logger, string projectName, Exception exception);
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Cannot resolve Compose service images for project {ProjectName}")]
+    private static partial void CanNotResolveComposeServiceImagesCore(ILogger logger, string projectName, Exception exception);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "Cannot pull the Docker Compose image {FullName}. The start continues, but Docker Compose may fail to pull the image itself")]
-    private static partial void DockerComposePullImageFailedCore(ILogger logger, string fullName, Exception exception);
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Cannot pull Compose service image {FullName}")]
+    private static partial void CanNotPullComposeServiceImageCore(ILogger logger, string fullName, Exception exception);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "Cannot resolve the Docker Compose images of project {ProjectName}. The start continues without pulling them")]
-    private static partial void DockerComposeResolveImagesFailedCore(ILogger logger, string projectName, Exception exception);
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Cannot clean up Compose project {ProjectName}")]
+    private static partial void CanNotCleanUpComposeProjectCore(ILogger logger, string projectName, Exception exception);
 
     [LoggerMessage(Level = LogLevel.Debug, Message = "Cannot get resource reaper {Id} endpoint")]
     private static partial void CanNotGetResourceReaperEndpointCore(ILogger logger, Guid id, Exception exception);
@@ -276,19 +276,19 @@ namespace DotNet.Testcontainers
       AddFileToTarArchiveCore(logger, source, target, uid, gid, mode);
     }
 
-    public static void DockerComposeDownFailed(this ILogger logger, string projectName, Exception e)
+    public static void CanNotResolveComposeServiceImages(this ILogger logger, string projectName, Exception e)
     {
-      DockerComposeDownFailedCore(logger, projectName, e);
+      CanNotResolveComposeServiceImagesCore(logger, projectName, e);
     }
 
-    public static void DockerComposePullImageFailed(this ILogger logger, string fullName, Exception e)
+    public static void CanNotPullComposeServiceImage(this ILogger logger, string fullName, Exception e)
     {
-      DockerComposePullImageFailedCore(logger, fullName, e);
+      CanNotPullComposeServiceImageCore(logger, fullName, e);
     }
 
-    public static void DockerComposeResolveImagesFailed(this ILogger logger, string projectName, Exception e)
+    public static void CanNotCleanUpComposeProject(this ILogger logger, string projectName, Exception e)
     {
-      DockerComposeResolveImagesFailedCore(logger, projectName, e);
+      CanNotCleanUpComposeProjectCore(logger, projectName, e);
     }
 
     public static void CanNotGetResourceReaperEndpoint(this ILogger logger, Guid id, Exception e)

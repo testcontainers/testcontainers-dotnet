@@ -336,7 +336,7 @@ namespace DotNet.Testcontainers.Containers
       {
         // Do not fail the start. Resolving the images is best-effort, the Docker
         // Compose up command reports an invalid configuration itself.
-        Logger.DockerComposeResolveImagesFailed(ProjectName, e);
+        Logger.CanNotResolveComposeServiceImages(ProjectName, e);
         return;
       }
 
@@ -370,7 +370,7 @@ namespace DotNet.Testcontainers.Containers
       {
         // A service that Docker Compose builds does not have an image to pull yet. Do
         // not fail the start, Docker Compose reports a missing image itself.
-        Logger.DockerComposePullImageFailed(image, e);
+        Logger.CanNotPullComposeServiceImage(image, e);
       }
     }
 
@@ -434,7 +434,7 @@ namespace DotNet.Testcontainers.Containers
       }
       catch (Exception e)
       {
-        Logger.DockerComposeDownFailed(ProjectName, e);
+        Logger.CanNotCleanUpComposeProject(ProjectName, e);
       }
       finally
       {
@@ -451,7 +451,7 @@ namespace DotNet.Testcontainers.Containers
       {
         // Do not throw if the cleanup fails. The Resource Reaper removes the remaining
         // Docker resources that belong to the project.
-        Logger.DockerComposeDownFailed(ProjectName, e);
+        Logger.CanNotCleanUpComposeProject(ProjectName, e);
       }
     }
 
