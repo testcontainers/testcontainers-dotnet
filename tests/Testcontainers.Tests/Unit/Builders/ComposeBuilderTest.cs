@@ -28,19 +28,30 @@ namespace DotNet.Testcontainers.Tests.Unit
     [Fact]
     public void BuildsWhenComposeFilesInDifferentDirectoriesShareTheirName()
     {
-      // The Docker Compose files keep the path they have on the test host, which
-      // allows Docker Compose files to share their name.
+      // Given
+      // The Docker Compose files keep the path they have on the test host,
+      // which allows Docker Compose files to share their name.
       var composeFilePath = Path.Combine(TestSession.TempDirectoryPath, Guid.NewGuid().ToString("D"), Path.GetFileName(ComposeFilePath));
       _ = Directory.CreateDirectory(Path.GetDirectoryName(composeFilePath)!);
       File.Copy(ComposeFilePath, composeFilePath);
 
-      _ = new ComposeBuilder(CommonImages.DockerCli).WithComposeFile(ComposeFilePath, composeFilePath).Build();
+      // When
+      var exception = Record.Exception(() => new ComposeBuilder(CommonImages.DockerCli).WithComposeFile(ComposeFilePath, composeFilePath).Build());
+
+      // Then
+      Assert.Null(exception);
     }
 
     [Fact]
     public void ThrowsArgumentExceptionWhenComposeFileIsNotSet()
     {
-      var exception = Assert.Throws<ArgumentException>(() => new ComposeBuilder(CommonImages.DockerCli).Build());
+      // Given
+      var composeBuilder = new ComposeBuilder(CommonImages.DockerCli);
+
+      // When
+      var exception = Assert.Throws<ArgumentException>(composeBuilder.Build);
+
+      // Then
       Assert.StartsWith("At least one Docker Compose file must be set.", exception.Message);
     }
 
@@ -53,6 +64,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     [Fact(SkipUnless = nameof(IsNotWindows), Skip = "A Windows path cannot contain the path separator characters.")]
     public void ThrowsArgumentExceptionWhenComposeFilePathContainsEveryPathSeparator()
     {
+      // Given
       // Docker Compose separates the Docker Compose file paths in COMPOSE_FILE with a
       // path separator character. A path that contains every supported separator
       // cannot be passed to Docker Compose.
@@ -60,7 +72,12 @@ namespace DotNet.Testcontainers.Tests.Unit
       _ = Directory.CreateDirectory(Path.GetDirectoryName(composeFilePath)!);
       File.Copy(ComposeFilePath, composeFilePath);
 
-      var exception = Assert.Throws<ArgumentException>(() => new ComposeBuilder(CommonImages.DockerCli).WithComposeFile(composeFilePath).Build());
+      var composeBuilder = new ComposeBuilder(CommonImages.DockerCli).WithComposeFile(composeFilePath);
+
+      // When
+      var exception = Assert.Throws<ArgumentException>(composeBuilder.Build);
+
+      // Then
       Assert.StartsWith("The Docker Compose file paths contain every supported path separator character", exception.Message);
     }
 
@@ -73,8 +90,13 @@ namespace DotNet.Testcontainers.Tests.Unit
     [Fact]
     public void AppendsRandomSuffixToProjectNamePrefix()
     {
+      // Given
       const string projectNamePrefix = "unit-test";
+
+      // When
       var composeContainer = new ComposeBuilder(CommonImages.DockerCli).WithComposeFile(ComposeFilePath).WithProjectNamePrefix(projectNamePrefix).Build();
+
+      // Then
       Assert.StartsWith(projectNamePrefix + "-", composeContainer.ProjectName);
       Assert.NotEqual(projectNamePrefix, composeContainer.ProjectName);
     }
@@ -86,30 +108,54 @@ namespace DotNet.Testcontainers.Tests.Unit
     [InlineData("invalid name")]
     public void ThrowsArgumentExceptionWhenProjectNamePrefixIsInvalid(string projectNamePrefix)
     {
-      var exception = Assert.Throws<ArgumentException>(() => new ComposeBuilder(CommonImages.DockerCli).WithComposeFile(ComposeFilePath).WithProjectNamePrefix(projectNamePrefix).Build());
+      // Given
+      var composeBuilder = new ComposeBuilder(CommonImages.DockerCli).WithComposeFile(ComposeFilePath).WithProjectNamePrefix(projectNamePrefix);
+
+      // When
+      var exception = Assert.Throws<ArgumentException>(composeBuilder.Build);
+
+      // Then
       Assert.StartsWith("The Docker Compose project name prefix", exception.Message);
     }
 
     [Fact]
     public void ThrowsArgumentExceptionWhenProjectNamePrefixIsTooLong()
     {
+      // Given
       var projectNamePrefix = new string('a', 55);
-      var exception = Assert.Throws<ArgumentException>(() => new ComposeBuilder(CommonImages.DockerCli).WithComposeFile(ComposeFilePath).WithProjectNamePrefix(projectNamePrefix).Build());
+      var composeBuilder = new ComposeBuilder(CommonImages.DockerCli).WithComposeFile(ComposeFilePath).WithProjectNamePrefix(projectNamePrefix);
+
+      // When
+      var exception = Assert.Throws<ArgumentException>(composeBuilder.Build);
+
+      // Then
       Assert.StartsWith("The Docker Compose project name prefix", exception.Message);
     }
 
     [Fact]
     public void ThrowsArgumentExceptionWhenReuseIsEnabled()
     {
-      var exception = Assert.Throws<ArgumentException>(() => new ComposeBuilder(CommonImages.DockerCli).WithComposeFile(ComposeFilePath).WithReuse(true).Build());
+      // Given
+      var composeBuilder = new ComposeBuilder(CommonImages.DockerCli).WithComposeFile(ComposeFilePath).WithReuse(true);
+
+      // When
+      var exception = Assert.Throws<ArgumentException>(composeBuilder.Build);
+
+      // Then
       Assert.StartsWith("Reuse cannot be used", exception.Message);
     }
 
     [Fact]
     public void ThrowsComposeServiceNotExposedExceptionWhenServiceIsNotExposed()
     {
+      // Given
       var composeContainer = new ComposeBuilder(CommonImages.DockerCli).WithComposeFile(ComposeFilePath).Build();
-      Assert.Throws<ComposeServiceNotExposedException>(() => composeContainer.GetServicePort("web", 80));
+
+      // When
+      var exception = Assert.Throws<ComposeServiceNotExposedException>(() => composeContainer.GetServicePort("web", 80));
+
+      // Then
+      Assert.Contains("'web-1'", exception.Message);
     }
   }
 }

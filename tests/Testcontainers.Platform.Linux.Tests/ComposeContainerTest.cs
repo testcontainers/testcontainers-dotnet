@@ -91,10 +91,8 @@ public sealed class ComposeContainerScaledServiceTest : IAsyncLifetime
 
         // Each instance gets its own ambassador port, and each instance runs its own
         // readiness check.
-        for (ushort instance = 1; instance <= Instances; instance++)
-        {
-            composeBuilder = composeBuilder.WithExposedServiceInstance(ServiceName, instance, ServicePort);
-        }
+        composeBuilder = Enumerable.Range(1, Instances)
+            .Aggregate(composeBuilder, (builder, instance) => builder.WithExposedServiceInstance(ServiceName, (ushort)instance, ServicePort));
 
         _composeContainer = composeBuilder.Build();
     }
@@ -116,13 +114,11 @@ public sealed class ComposeContainerScaledServiceTest : IAsyncLifetime
     {
         // Given
         var containerIds = Enumerable.Range(1, Instances)
-            .Select(instance => _composeContainer.GetServiceInstanceContainer(ServiceName, (ushort)instance).Id)
-            .ToArray();
+            .Select(instance => _composeContainer.GetServiceInstanceContainer(ServiceName, (ushort)instance).Id);
 
         // When
         var servicePorts = Enumerable.Range(1, Instances)
-            .Select(instance => _composeContainer.GetServiceInstancePort(ServiceName, (ushort)instance, ServicePort))
-            .ToArray();
+            .Select(instance => _composeContainer.GetServiceInstancePort(ServiceName, (ushort)instance, ServicePort));
 
         // Then
         Assert.Equal(Instances, containerIds.Distinct().Count());
