@@ -16,7 +16,13 @@ public sealed class ComposeContainerTest : IAsyncLifetime
 
         // The service publishes its port to a random host port to cover the readiness
         // check that waits until the port bindings are mapped.
-        File.WriteAllText(composeFilePath, $"services:\n  {ServiceName}:\n    image: \"{CommonImages.Nginx.FullName}\"\n    ports:\n      - \"{ServicePort}\"\n");
+        File.WriteAllText(composeFilePath, $"""
+            services:
+              {ServiceName}:
+                image: "{CommonImages.Nginx.FullName}"
+                ports:
+                  - "{ServicePort}"
+            """);
 
         _composeContainer = new ComposeBuilder(CommonImages.DockerCli)
             .WithComposeFile(composeFilePath)
@@ -83,7 +89,11 @@ public sealed class ComposeContainerScaledServiceTest : IAsyncLifetime
 
         var composeFilePath = Path.Combine(composeFileDirectoryPath, "compose.yml");
 
-        File.WriteAllText(composeFilePath, $"services:\n  {ServiceName}:\n    image: \"{CommonImages.Nginx.FullName}\"\n");
+        File.WriteAllText(composeFilePath, $"""
+            services:
+              {ServiceName}:
+                image: "{CommonImages.Nginx.FullName}"
+            """);
 
         var composeBuilder = new ComposeBuilder(CommonImages.DockerCli)
             .WithComposeFile(composeFilePath)
@@ -174,7 +184,12 @@ public sealed class ComposeContainerServiceNameWithInstanceSuffixTest : IAsyncLi
 
         var composeFilePath = Path.Combine(composeFileDirectoryPath, "compose.yml");
 
-        File.WriteAllText(composeFilePath, $"services:\n  {ServiceName}:\n    image: \"{CommonImages.Alpine.FullName}\"\n    command: [\"/bin/sh\", \"-c\", \"echo Ready; sleep infinity\"]\n");
+        File.WriteAllText(composeFilePath, $"""
+            services:
+              {ServiceName}:
+                image: "{CommonImages.Alpine.FullName}"
+                command: ["/bin/sh", "-c", "echo Ready; sleep infinity"]
+            """);
 
         _composeContainer = new ComposeBuilder(CommonImages.DockerCli)
             .WithComposeFile(composeFilePath)
@@ -218,7 +233,12 @@ public sealed class ComposeContainerServiceNotFoundTest
 
         var composeFilePath = Path.Combine(composeFileDirectoryPath, "compose.yml");
 
-        File.WriteAllText(composeFilePath, $"services:\n  app:\n    image: \"{CommonImages.Alpine.FullName}\"\n    command: [\"/bin/sh\", \"-c\", \"sleep infinity\"]\n");
+        File.WriteAllText(composeFilePath, $"""
+            services:
+              app:
+                image: "{CommonImages.Alpine.FullName}"
+                command: ["/bin/sh", "-c", "sleep infinity"]
+            """);
 
         await using var composeContainer = new ComposeBuilder(CommonImages.DockerCli)
             .WithComposeFile(composeFilePath)
@@ -246,7 +266,12 @@ public sealed class ComposeContainerWaitingForTest : IAsyncLifetime
 
         // The service does not publish or expose a port. Its readiness is only
         // observable through its log message.
-        File.WriteAllText(composeFilePath, $"services:\n  app:\n    image: \"{CommonImages.Alpine.FullName}\"\n    command: [\"/bin/sh\", \"-c\", \"sleep 1; echo Ready; sleep infinity\"]\n");
+        File.WriteAllText(composeFilePath, $"""
+            services:
+              app:
+                image: "{CommonImages.Alpine.FullName}"
+                command: ["/bin/sh", "-c", "sleep 1; echo Ready; sleep infinity"]
+            """);
 
         _composeContainer = new ComposeBuilder(CommonImages.DockerCli)
             .WithComposeFile(composeFilePath)
@@ -293,7 +318,18 @@ public sealed class ComposeContainerExitedServiceTest
         // The app service depends on the completion of the migration service. Docker
         // Compose does not wait for a service that no other service depends on. It
         // returns before a service that exits immediately has exited.
-        File.WriteAllText(composeFilePath, $"services:\n  migration:\n    image: \"{CommonImages.Alpine.FullName}\"\n    command: [\"/bin/sh\", \"-c\", \"exit {exitCode}\"]\n  app:\n    image: \"{CommonImages.Alpine.FullName}\"\n    command: [\"/bin/sh\", \"-c\", \"sleep infinity\"]\n    depends_on:\n      migration:\n        condition: service_completed_successfully\n");
+        File.WriteAllText(composeFilePath, $"""
+            services:
+              migration:
+                image: "{CommonImages.Alpine.FullName}"
+                command: ["/bin/sh", "-c", "exit {exitCode}"]
+              app:
+                image: "{CommonImages.Alpine.FullName}"
+                command: ["/bin/sh", "-c", "sleep infinity"]
+                depends_on:
+                  migration:
+                    condition: service_completed_successfully
+            """);
 
         return new ComposeBuilder(CommonImages.DockerCli)
             .WithComposeFile(composeFilePath)
@@ -308,7 +344,23 @@ public sealed class ComposeContainerExitedServiceTest
 
         // The app service depends on the completion of both services. Docker Compose
         // starts them at the same time, which lets both of them fail.
-        File.WriteAllText(composeFilePath, $"services:\n  migration:\n    image: \"{CommonImages.Alpine.FullName}\"\n    command: [\"/bin/sh\", \"-c\", \"exit {migrationExitCode}\"]\n  seeding:\n    image: \"{CommonImages.Alpine.FullName}\"\n    command: [\"/bin/sh\", \"-c\", \"exit {seedingExitCode}\"]\n  app:\n    image: \"{CommonImages.Alpine.FullName}\"\n    command: [\"/bin/sh\", \"-c\", \"sleep infinity\"]\n    depends_on:\n      migration:\n        condition: service_completed_successfully\n      seeding:\n        condition: service_completed_successfully\n");
+        File.WriteAllText(composeFilePath, $"""
+            services:
+              migration:
+                image: "{CommonImages.Alpine.FullName}"
+                command: ["/bin/sh", "-c", "exit {migrationExitCode}"]
+              seeding:
+                image: "{CommonImages.Alpine.FullName}"
+                command: ["/bin/sh", "-c", "exit {seedingExitCode}"]
+              app:
+                image: "{CommonImages.Alpine.FullName}"
+                command: ["/bin/sh", "-c", "sleep infinity"]
+                depends_on:
+                  migration:
+                    condition: service_completed_successfully
+                  seeding:
+                    condition: service_completed_successfully
+            """);
 
         return new ComposeBuilder(CommonImages.DockerCli)
             .WithComposeFile(composeFilePath)
@@ -373,7 +425,12 @@ public sealed class ComposeContainerFileCopyInclusionTest : IAsyncLifetime
 
         var composeFilePath = Path.Combine(composeFileDirectoryPath, "compose.yml");
 
-        File.WriteAllText(composeFilePath, $"services:\n  migration:\n    image: \"{CommonImages.Alpine.FullName}\"\n    command: [\"/bin/sh\", \"-c\", \"exit 0\"]\n");
+        File.WriteAllText(composeFilePath, $"""
+            services:
+              migration:
+                image: "{CommonImages.Alpine.FullName}"
+                command: ["/bin/sh", "-c", "exit 0"]
+            """);
 
         _ = Directory.CreateDirectory(Path.Combine(composeFileDirectoryPath, "included"));
         File.WriteAllText(Path.Combine(composeFileDirectoryPath, "included", "included-nested.txt"), string.Empty);
@@ -435,7 +492,14 @@ public sealed class ComposeContainerRelativeBindMountTest : IAsyncLifetime
 
         var composeFilePath = Path.Combine(composeFileDirectoryPath, "compose.yml");
 
-        File.WriteAllText(composeFilePath, $"services:\n  app:\n    image: \"{CommonImages.Alpine.FullName}\"\n    volumes:\n      - \"./data:/data\"\n    command: [\"/bin/sh\", \"-c\", \"sleep infinity\"]\n");
+        File.WriteAllText(composeFilePath, $"""
+            services:
+              app:
+                image: "{CommonImages.Alpine.FullName}"
+                volumes:
+                  - "./data:/data"
+                command: ["/bin/sh", "-c", "sleep infinity"]
+            """);
 
         _composeContainer = new ComposeBuilder(CommonImages.DockerCli)
             .WithComposeFile(composeFilePath)
@@ -486,7 +550,12 @@ public sealed class ComposeContainerPathSeparatorTest : IAsyncLifetime
 
         var composeFilePath = Path.Combine(composeFileDirectoryPath, "compose.yml");
 
-        File.WriteAllText(composeFilePath, $"services:\n  {ServiceName}:\n    image: \"{CommonImages.Alpine.FullName}\"\n    command: [\"/bin/sh\", \"-c\", \"sleep infinity\"]\n");
+        File.WriteAllText(composeFilePath, $"""
+            services:
+              {ServiceName}:
+                image: "{CommonImages.Alpine.FullName}"
+                command: ["/bin/sh", "-c", "sleep infinity"]
+            """);
 
         _composeContainer = new ComposeBuilder(CommonImages.DockerCli)
             .WithComposeFile(composeFilePath)
@@ -529,13 +598,20 @@ public sealed class ComposeContainerPullTest : IAsyncLifetime
     {
         var composeFileDirectoryPath = Directory.CreateDirectory(Path.Combine(TestSession.TempDirectoryPath, Guid.NewGuid().ToString("D"))).FullName;
 
-        File.WriteAllText(Path.Combine(composeFileDirectoryPath, "Dockerfile"), $"FROM {CommonImages.Alpine.FullName}\nCMD [\"/bin/sh\", \"-c\", \"sleep infinity\"]\n");
-
         var composeFilePath = Path.Combine(composeFileDirectoryPath, "compose.yml");
+
+        File.WriteAllText(Path.Combine(composeFileDirectoryPath, "Dockerfile"), $"""
+            FROM {CommonImages.Alpine.FullName}
+            CMD ["/bin/sh", "-c", "sleep infinity"]
+            """);
 
         // Docker Compose builds the image of this service. It does not exist in a
         // registry, so pulling it fails. That must not fail the start.
-        File.WriteAllText(composeFilePath, "services:\n  app:\n    build: \".\"\n");
+        File.WriteAllText(composeFilePath, """
+            services:
+              app:
+                build: "."
+            """);
 
         _composeContainer = new ComposeBuilder(CommonImages.DockerCli)
             .WithComposeFile(composeFilePath)

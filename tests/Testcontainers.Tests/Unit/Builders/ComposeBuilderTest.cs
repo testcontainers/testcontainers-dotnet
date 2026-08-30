@@ -13,8 +13,13 @@ namespace DotNet.Testcontainers.Tests.Unit
 
     static ComposeBuilderTest()
     {
-      _ = Directory.CreateDirectory(Path.GetDirectoryName(ComposeFilePath)!);
-      File.WriteAllText(ComposeFilePath, "services:\n  web:\n    image: \"" + CommonImages.Nginx.FullName + "\"\n");
+      _ = Directory.CreateDirectory(Path.GetDirectoryName(ComposeFilePath));
+
+      File.WriteAllText(ComposeFilePath, $"""
+        services:
+          web:
+            image: "{CommonImages.Nginx.FullName}"
+        """);
     }
 
     public static bool IsNotWindows
@@ -32,7 +37,8 @@ namespace DotNet.Testcontainers.Tests.Unit
       // The Docker Compose files keep the path they have on the test host,
       // which allows Docker Compose files to share their name.
       var composeFilePath = Path.Combine(TestSession.TempDirectoryPath, Guid.NewGuid().ToString("D"), Path.GetFileName(ComposeFilePath));
-      _ = Directory.CreateDirectory(Path.GetDirectoryName(composeFilePath)!);
+
+      _ = Directory.CreateDirectory(Path.GetDirectoryName(composeFilePath));
       File.Copy(ComposeFilePath, composeFilePath);
 
       // When
@@ -69,7 +75,8 @@ namespace DotNet.Testcontainers.Tests.Unit
       // path separator character. A path that contains every supported separator
       // cannot be passed to Docker Compose.
       var composeFilePath = Path.Combine(TestSession.TempDirectoryPath, Guid.NewGuid().ToString("D") + ":;|,", Path.GetFileName(ComposeFilePath));
-      _ = Directory.CreateDirectory(Path.GetDirectoryName(composeFilePath)!);
+
+      _ = Directory.CreateDirectory(Path.GetDirectoryName(composeFilePath));
       File.Copy(ComposeFilePath, composeFilePath);
 
       var composeBuilder = new ComposeBuilder(CommonImages.DockerCli).WithComposeFile(composeFilePath);

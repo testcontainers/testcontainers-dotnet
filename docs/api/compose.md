@@ -1,6 +1,6 @@
 # Docker Compose
 
-`ComposeBuilder` and `ComposeContainer` run a Docker Compose project as part of your tests. Docker Compose runs inside a container (`docker compose up` / `docker compose down`), so you do not need Docker Compose installed on the test host. Testcontainers copies the Docker Compose files, and the directories they live in, into that container, and mounts the Docker socket so Docker Compose can reach the Docker daemon.
+`ComposeBuilder` and `ComposeContainer` run a Docker Compose project as part of your tests. Docker Compose runs inside a container (`docker compose up` / `docker compose down`), you do not need Docker Compose installed on the test host. Testcontainers copies the Docker Compose files, and the directories they live in, into that container, and mounts the Docker socket so Docker Compose can reach the Docker daemon.
 
 ```csharp
 --8<-- "tests/Testcontainers.Platform.Linux.Tests/ComposeContainerExampleTest.cs:CreateComposeContainer"
@@ -14,7 +14,7 @@ By default, the entire directory of each Docker Compose file is copied into the 
 
 ## Waiting for services
 
-Use `WaitingFor(string, IWaitForContainerOS)` to wait for a service without exposing it, and `WithExposedService(string, ushort, IWaitForContainerOS)` to expose a service port and wait for it at the same time. `WithExposedService(string, ushort)` exposes a port without an additional wait strategy; the readiness check then only waits until the port accepts connections.
+Use `WaitingFor(string, IWaitForContainerOS)` to wait for a service without exposing it, and `WithExposedService(string, ushort, IWaitForContainerOS)` to expose a service port and wait for it at the same time. `WithExposedService(string, ushort)` exposes a port without an additional wait strategy. The readiness check then only waits until the port accepts connections.
 
 An exposed service port does not need to be published in the Docker Compose file. An ambassador container proxies the port and makes it accessible to the test host, so wait strategies work against Docker Compose services the same way they work against any other container. Resolve the address with `GetServiceHost(string, ushort)` and `GetServicePort(string, ushort)`.
 
@@ -24,11 +24,11 @@ An exposed service port does not need to be published in the Docker Compose file
 
 !!! note
 
-    `docker compose up` already starts the services. The wait strategies of a Docker Compose service run against the already running container, they do not start it.
+    `docker compose up` already starts the services. The wait strategies of a Docker Compose service run against the already running container. They do not start it.
 
 ## Getting the service container
 
-`GetServiceContainer(string)` returns the `IContainer` that belongs to a Docker Compose service, for example to read its logs or run a command inside it. Docker Compose owns its lifecycle; stopping or disposing the returned container has no effect. Stop or dispose the `ComposeContainer` instead.
+`GetServiceContainer(string)` returns the `IContainer` that belongs to a Docker Compose service, for example to read its logs or run a command inside it. Docker Compose owns its lifecycle. Stopping or disposing the returned container has no effect. Stop or dispose the `ComposeContainer` instead.
 
 ```csharp
 --8<-- "tests/Testcontainers.Platform.Linux.Tests/ComposeContainerExampleTest.cs:GetServiceContainer"
@@ -59,7 +59,7 @@ _ = new ComposeBuilder(image)
 
 ## Pulling images
 
-Testcontainers pulls the Docker Compose service images from the test host before `docker compose up` runs, so the Docker credentials and credential helpers of the test host apply; Docker Compose running inside its own container does not have access to them. This is enabled by default. A failing pull does not fail the start, Docker Compose still tries to pull the image itself. Disable it with `WithPull(false)` if your images are already present on the Docker host.
+Testcontainers pulls the Docker Compose service images from the test host before `docker compose up` runs, so the Docker credentials and credential helpers of the test host apply. Docker Compose running inside its own container does not have access to them. This is enabled by default. A failing pull does not fail the start. Docker Compose still tries to pull the image itself. Disable it with `WithPull(false)` if your images are already present on the Docker host.
 
 !!! note
 

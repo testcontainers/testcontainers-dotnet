@@ -57,7 +57,6 @@ public sealed class ComposeContainerExampleTest : IAsyncLifetime
     [Fact]
     public async Task EstablishesConnectionToExposedService()
     {
-        // Given
         // # --8<-- [start:ConnectToExposedService]
         var serviceHost = _composeContainer.GetServiceHost(WebServiceName, WebServicePort);
 
@@ -66,28 +65,23 @@ public sealed class ComposeContainerExampleTest : IAsyncLifetime
         using var httpClient = new HttpClient();
         httpClient.BaseAddress = new UriBuilder(Uri.UriSchemeHttp, serviceHost, servicePort).Uri;
 
-        // When
         using var httpResponse = await httpClient.GetAsync("/", TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
         // # --8<-- [end:ConnectToExposedService]
 
-        // Then
         Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);
     }
 
     [Fact]
     public async Task ReadsLogsOfNonExposedService()
     {
-        // Given
         // # --8<-- [start:GetServiceContainer]
         var workerContainer = _composeContainer.GetServiceContainer(WorkerServiceName);
 
-        // When
         var (stdout, _) = await workerContainer.GetLogsAsync(ct: TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
         // # --8<-- [end:GetServiceContainer]
 
-        // Then
         Assert.Contains("Ready", stdout);
     }
 }
