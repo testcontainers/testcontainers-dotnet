@@ -297,11 +297,13 @@ namespace DotNet.Testcontainers.Containers
       var resourceReaper = await ResourceReaper.GetAndStartDefaultAsync(_configuration.DockerEndpointAuthConfig, Logger, isWindowsEngineEnabled, ct)
         .ConfigureAwait(false);
 
-      if (resourceReaper != null)
+      if (resourceReaper == null)
       {
-        await resourceReaper.RegisterFilterAsync($"label={ComposeProjectLabel}={ProjectName}", ct)
-          .ConfigureAwait(false);
+        return;
       }
+
+      await resourceReaper.RegisterFilterAsync($"label={ComposeProjectLabel}={ProjectName}", ct)
+        .ConfigureAwait(false);
     }
 
     /// <summary>
@@ -486,8 +488,8 @@ namespace DotNet.Testcontainers.Containers
       var containers = await _client.Container.GetAllAsync(filters, ct)
         .ConfigureAwait(false);
 
-      // Each container of a Docker Compose service is one instance, e.g. web-1 and
-      // web-2. Do not collapse them, the instances are addressed individually.
+      // Each container of a Docker Compose service is one instance, e.g. web-1 and web-2.
+      // Do not collapse them, the instances are addressed individually.
       return containers
         .Select(container => (Service: ComposeServiceName.GetInstance(container.Labels), Container: container))
         .Where(item => item.Service.HasValue)
@@ -599,8 +601,7 @@ namespace DotNet.Testcontainers.Containers
       // the service run. Materialize them, the container configuration outlives this
       // method and would create new wait strategies on every enumeration.
       var waitStrategies = servicePortWaitStrategies
-        .Concat(serviceReadinessWaitStrategies)
-        .ToArray();
+        .Concat(serviceReadinessWaitStrategies);
 
       // The cast selects the constructor overload that copies the resource
       // configuration (Docker endpoint, session id, logger) and intentionally drops

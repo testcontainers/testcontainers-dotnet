@@ -91,6 +91,14 @@ namespace DotNet.Testcontainers.Tests.Unit
     }
 
     [Fact]
+    public void ThrowsArgumentExceptionWhenProjectNamePrefixIsTooLong()
+    {
+      var projectNamePrefix = new string('a', 55);
+      var exception = Assert.Throws<ArgumentException>(() => new ComposeBuilder(CommonImages.DockerCli).WithComposeFile(ComposeFilePath).WithProjectNamePrefix(projectNamePrefix).Build());
+      Assert.StartsWith("The Docker Compose project name prefix", exception.Message);
+    }
+
+    [Fact]
     public void ThrowsArgumentExceptionWhenReuseIsEnabled()
     {
       var exception = Assert.Throws<ArgumentException>(() => new ComposeBuilder(CommonImages.DockerCli).WithComposeFile(ComposeFilePath).WithReuse(true).Build());
