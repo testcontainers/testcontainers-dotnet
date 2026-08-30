@@ -50,6 +50,7 @@ To test network conditions with Toxiproxy, you need to configure the communicati
         ```
 
 !!! tip
+
     Toxiproxy allows you to configure the `Toxicity` property, which determines the probability (0.0 to 1.0) that a toxic will be applied to the connection. A value of 1.0 means the toxic is applied 100% of the time, while 0.5 would apply it to approximately 50% of requests.
 
 The test example uses the following NuGet dependencies:
