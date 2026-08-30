@@ -241,8 +241,8 @@ namespace DotNet.Testcontainers.Containers
       var serviceContainersByExited = _serviceContainers
         .ToLookup(serviceContainer => TestcontainersStates.Exited.Equals(serviceContainer.Value.State));
 
-      // Check the exit code of the services that already exited first. It fails faster
-      // and reports the cause more accurately than the readiness checks of the
+      // Check the exit code of the services that already exited first. It fails
+      // faster and reports the cause more accurately than the readiness checks of the
       // services that depend on them.
       await ThrowIfAnyServiceFailedAsync(serviceContainersByExited[true]
           .Select(serviceContainer => GetExitCodeFailureAsync(serviceContainer.Key, serviceContainer.Value.Id, ct)))

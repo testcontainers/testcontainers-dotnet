@@ -57,8 +57,7 @@ namespace DotNet.Testcontainers.Containers
     }
 
     /// <summary>
-    /// Gets the display name of a Docker Compose service instance, e.g.
-    /// <c>web-2</c>.
+    /// Gets the display name of a Docker Compose service instance, e.g. <c>web-2</c>.
     /// </summary>
     /// <param name="serviceName">The Docker Compose service name.</param>
     /// <param name="instance">The number of the container within the Docker Compose service.</param>

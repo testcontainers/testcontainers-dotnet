@@ -58,8 +58,8 @@ namespace DotNet.Testcontainers.Builders
     /// (e.g., <c>docker:28-cli</c>).
     /// </param>
     /// <remarks>
-    /// The image requires the Docker Compose plugin.
-    /// Docker image tags available at <see href="https://hub.docker.com/_/docker/tags" />.
+    /// The image requires the Docker Compose plugin. Docker image tags available at
+    /// <see href="https://hub.docker.com/_/docker/tags" />.
     /// </remarks>
     public ComposeBuilder(string image)
       : this(new DockerImage(image))
@@ -74,8 +74,8 @@ namespace DotNet.Testcontainers.Builders
     /// for the container builder configuration.
     /// </param>
     /// <remarks>
-    /// The image requires the Docker Compose plugin.
-    /// Docker image tags available at <see href="https://hub.docker.com/_/docker/tags" />.
+    /// The image requires the Docker Compose plugin. Docker image tags available at
+    /// <see href="https://hub.docker.com/_/docker/tags" />.
     /// </remarks>
     public ComposeBuilder(IImage image)
       : this(new ComposeConfiguration())

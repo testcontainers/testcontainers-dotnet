@@ -72,7 +72,7 @@ namespace DotNet.Testcontainers.Containers
     /// <inheritdoc />
     public override IReadOnlyDictionary<ushort, ushort> GetMappedPublicPorts()
     {
-      var mappedPublicPorts = base.GetMappedPublicPorts().ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+      var mappedPublicPorts = base.GetMappedPublicPorts().ToDictionary(item => item.Key, item => item.Value);
 
       if (_ambassadorContainer == null)
       {

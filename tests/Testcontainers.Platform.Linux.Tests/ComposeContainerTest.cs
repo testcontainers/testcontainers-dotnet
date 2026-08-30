@@ -371,13 +371,9 @@ public sealed class ComposeContainerFileCopyInclusionTest : IAsyncLifetime
 {
     private readonly ComposeContainer _composeContainer;
 
-    private readonly string _composeFileDirectoryPath;
-
     public ComposeContainerFileCopyInclusionTest()
     {
         var composeFileDirectoryPath = Directory.CreateDirectory(Path.Combine(TestSession.TempDirectoryPath, Guid.NewGuid().ToString("D"))).FullName;
-
-        _composeFileDirectoryPath = composeFileDirectoryPath;
 
         var composeFilePath = Path.Combine(composeFileDirectoryPath, "compose.yml");
 
@@ -410,7 +406,10 @@ public sealed class ComposeContainerFileCopyInclusionTest : IAsyncLifetime
     public async Task CopiesIncludedFilesOnly()
     {
         // Given
-        var execResult = await _composeContainer.ExecAsync(new[] { "find", _composeFileDirectoryPath, "-type", "f" }, TestContext.Current.CancellationToken)
+        // The working directory is the directory of the Docker Compose file. Search it
+        // relative to the working directory, the path inside the container does not
+        // match the path on the test host when the test host is Windows.
+        var execResult = await _composeContainer.ExecAsync(new[] { "find", ".", "-type", "f" }, TestContext.Current.CancellationToken)
             .ThrowOnFailure()
             .ConfigureAwait(true);
 
@@ -418,10 +417,10 @@ public sealed class ComposeContainerFileCopyInclusionTest : IAsyncLifetime
         var filePaths = execResult.Stdout.Split('\n', StringSplitOptions.RemoveEmptyEntries).Select(filePath => filePath.Trim()).ToArray();
 
         // Then
-        Assert.Contains(Path.Combine(_composeFileDirectoryPath, "compose.yml"), filePaths);
-        Assert.Contains(Path.Combine(_composeFileDirectoryPath, "included.txt"), filePaths);
-        Assert.Contains(Path.Combine(_composeFileDirectoryPath, "included", "included-nested.txt"), filePaths);
-        Assert.DoesNotContain(Path.Combine(_composeFileDirectoryPath, "excluded.txt"), filePaths);
+        Assert.Contains("./compose.yml", filePaths);
+        Assert.Contains("./included.txt", filePaths);
+        Assert.Contains("./included/included-nested.txt", filePaths);
+        Assert.DoesNotContain("./excluded.txt", filePaths);
     }
 }
 
@@ -567,7 +566,7 @@ public sealed class ComposeContainerPullTest : IAsyncLifetime
         var logRecords = _fakeLogger.Collector.GetSnapshot();
 
         // When
-        var pullImageFailed = logRecords.Any(logRecord => logRecord.Message.Contains("Cannot pull the Docker Compose image"));
+        var pullImageFailed = logRecords.Any(logRecord => logRecord.Message.Contains("Cannot pull Compose service image"));
 
         // Then
         Assert.True(pullImageFailed, "Expected a warning about the image that cannot be pulled.");
