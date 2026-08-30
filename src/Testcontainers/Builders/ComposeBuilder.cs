@@ -419,13 +419,13 @@ namespace DotNet.Testcontainers.Builders
       _ = Guard.Argument(GetFileCopyInclusionPaths(), nameof(DockerResourceConfiguration.FileCopyInclusions))
         .ThrowIf(argument => argument.Value.Any(IsFileCopyInclusionMissing), argument => new FileNotFoundException(string.Format(fileCopyInclusionDoesNotExist, argument.Value.First(IsFileCopyInclusionMissing))));
 
-      const string projectNamePrefixTooLong = "The Docker Compose project name prefix must not exceed {0} characters because Docker Compose prefixes the container names with the project name, and a DNS label is limited to 63 characters.";
-      _ = Guard.Argument(DockerResourceConfiguration.ProjectNamePrefix, nameof(DockerResourceConfiguration.ProjectNamePrefix))
-        .ThrowIf(argument => argument.Value != null && argument.Value.Length > ProjectNamePrefixMaxLength, argument => new ArgumentException(string.Format(projectNamePrefixTooLong, ProjectNamePrefixMaxLength), argument.Name));
-
       const string projectNamePrefixInvalid = "The Docker Compose project name prefix must start with a lowercase letter or digit and can only contain lowercase letters, digits, dashes, and underscores.";
       _ = Guard.Argument(DockerResourceConfiguration.ProjectNamePrefix, nameof(DockerResourceConfiguration.ProjectNamePrefix))
         .ThrowIf(argument => argument.Value != null && !ProjectNameRegex.IsMatch(argument.Value), argument => new ArgumentException(projectNamePrefixInvalid, argument.Name));
+
+      const string projectNamePrefixTooLong = "The Docker Compose project name prefix must not exceed {0} characters, keeping the project name Docker Compose derives from it within the 63-character DNS label limit.";
+      _ = Guard.Argument(DockerResourceConfiguration.ProjectNamePrefix, nameof(DockerResourceConfiguration.ProjectNamePrefix))
+        .ThrowIf(argument => argument.Value != null && argument.Value.Length > ProjectNamePrefixMaxLength, argument => new ArgumentException(string.Format(projectNamePrefixTooLong, ProjectNamePrefixMaxLength), argument.Name));
     }
 
     /// <inheritdoc />

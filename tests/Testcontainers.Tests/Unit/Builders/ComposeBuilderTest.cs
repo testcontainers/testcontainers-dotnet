@@ -115,7 +115,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       var exception = Assert.Throws<ArgumentException>(composeBuilder.Build);
 
       // Then
-      Assert.StartsWith("The Docker Compose project name prefix", exception.Message);
+      Assert.StartsWith("The Docker Compose project name prefix must start with", exception.Message);
     }
 
     [Fact]
@@ -129,7 +129,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       var exception = Assert.Throws<ArgumentException>(composeBuilder.Build);
 
       // Then
-      Assert.StartsWith("The Docker Compose project name prefix", exception.Message);
+      Assert.StartsWith("The Docker Compose project name prefix must not exceed", exception.Message);
     }
 
     [Fact]

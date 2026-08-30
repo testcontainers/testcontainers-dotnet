@@ -601,7 +601,8 @@ namespace DotNet.Testcontainers.Containers
       // the service run. Materialize them, the container configuration outlives this
       // method and would create new wait strategies on every enumeration.
       var waitStrategies = servicePortWaitStrategies
-        .Concat(serviceReadinessWaitStrategies);
+        .Concat(serviceReadinessWaitStrategies)
+        .ToArray();
 
       // The cast selects the constructor overload that copies the resource
       // configuration (Docker endpoint, session id, logger) and intentionally drops
