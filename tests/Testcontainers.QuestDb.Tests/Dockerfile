@@ -1,1 +1,1 @@
-FROM questdb/questdb:9.2.3
+FROM questdb/questdb:10.0.1@sha256:67eaed863ebb2383227919ea9a5499a4a39ceca3862c20b974c84a10e11cdf89

@@ -17,9 +17,12 @@ public sealed class QuestDbContainer : DockerContainer, IDatabaseContainer
     }
 
     /// <summary>
-    /// Gets the PostgreSQL connection string for SQL queries.
+    /// Gets the QuestDb connection string.
     /// </summary>
-    /// <returns>The PostgreSQL wire protocol connection string.</returns>
+    /// <remarks>
+    /// QuestDb exposes its SQL interface over the PostgreSQL wire protocol.
+    /// </remarks>
+    /// <returns>The QuestDb connection string.</returns>
     public string GetConnectionString()
     {
         var properties = new Dictionary<string, string>();
@@ -33,66 +36,26 @@ public sealed class QuestDbContainer : DockerContainer, IDatabaseContainer
     }
 
     /// <summary>
-    /// Gets the REST API base address.
+    /// Gets the QuestDb base address.
     /// </summary>
-    /// <returns>The REST API base address.</returns>
-    public string GetRestApiAddress()
+    /// <remarks>
+    /// QuestDb serves the REST API and the Web Console on this address.
+    /// </remarks>
+    /// <returns>The QuestDb base address.</returns>
+    public string GetBaseAddress()
     {
         return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(QuestDbBuilder.QuestDbHttpPort)).ToString();
     }
 
     /// <summary>
-    /// Gets the HTTP API port.
+    /// Gets the QuestDb ILP address.
     /// </summary>
-    /// <returns>The mapped HTTP API port.</returns>
-    public int GetHttpApiPort()
-    {
-        return GetMappedPublicPort(QuestDbBuilder.QuestDbHttpPort);
-    }
-
-    /// <summary>
-    /// Gets the Web Console URL.
-    /// </summary>
-    /// <returns>The Web Console URL.</returns>
-    public string GetWebConsoleUrl()
-    {
-        return GetRestApiAddress();
-    }
-
-    /// <summary>
-    /// Gets the connection string for the official QuestDB .NET client (net-questdb-client).
-    /// </summary>
-    /// <param name="useHttpTransport">If true, uses HTTP transport; otherwise uses TCP (default).</param>
-    /// <returns>The QuestDB client connection string in format "protocol::addr=host:port;".</returns>
     /// <remarks>
-    /// TCP example: tcp::addr=localhost:9009;
-    /// HTTP example: http::addr=localhost:9000;
+    /// QuestDb ingests the InfluxDB Line Protocol (ILP) over TCP on this address.
     /// </remarks>
-    public string GetClientConnectionString(bool useHttpTransport = false)
+    /// <returns>The QuestDb ILP address.</returns>
+    public string GetIlpAddress()
     {
-        if (useHttpTransport)
-        {
-            return $"http::addr={Hostname}:{GetMappedPublicPort(QuestDbBuilder.QuestDbHttpPort)};";
-        }
-
-        return $"tcp::addr={Hostname}:{GetMappedPublicPort(QuestDbBuilder.QuestDbInfluxLinePort)};";
-    }
-
-    /// <summary>
-    /// Gets the InfluxDB Line Protocol (ILP) host.
-    /// </summary>
-    /// <returns>The ILP host.</returns>
-    public string GetInfluxLineProtocolHost()
-    {
-        return Hostname;
-    }
-
-    /// <summary>
-    /// Gets the InfluxDB Line Protocol (ILP) port.
-    /// </summary>
-    /// <returns>The ILP port.</returns>
-    public int GetInfluxLineProtocolPort()
-    {
-        return GetMappedPublicPort(QuestDbBuilder.QuestDbInfluxLinePort);
+        return new UriBuilder("tcp", Hostname, GetMappedPublicPort(QuestDbBuilder.QuestDbInfluxLinePort)).ToString();
     }
 }

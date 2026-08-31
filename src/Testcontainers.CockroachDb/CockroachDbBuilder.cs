@@ -124,7 +124,7 @@ public sealed class CockroachDbBuilder : ContainerBuilder<CockroachDbBuilder, Co
             .WithCommand("--insecure")
             .WithConnectionStringProvider(new CockroachDbConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
-                request.ForPort(CockroachDbRestPort).ForPath("/health")));
+                request.ForPath("/health").ForPort(CockroachDbRestPort)));
     }
 
     /// <inheritdoc />

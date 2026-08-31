@@ -11,8 +11,8 @@
         <PackageReference Include="coverlet.collector"/>
         <PackageReference Include="xunit.runner.visualstudio"/>
         <PackageReference Include="xunit.v3"/>
-        <PackageReference Include="net-questdb-client"/>
         <PackageReference Include="Npgsql"/>
+        <PackageReference Include="net-questdb-client"/>
         <!-- -8<- [end:PackageReferences] -->
     </ItemGroup>
     <ItemGroup>

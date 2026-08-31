@@ -1,18 +1,19 @@
 namespace Testcontainers.QuestDb;
 
-using System.Net;
-
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
 [PublicAPI]
 public sealed class QuestDbBuilder : ContainerBuilder<QuestDbBuilder, QuestDbContainer, QuestDbConfiguration>
 {
+    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
+    public const string QuestDbImage = "questdb/questdb:10.0.1";
+
     public const ushort QuestDbPgPort = 8812;
 
     public const ushort QuestDbHttpPort = 9000;
 
     public const ushort QuestDbInfluxLinePort = 9009;
 
-    public const string DefaultUsername = "admin";
+    public const string DefaultUsername = "quest";
 
     public const string DefaultPassword = "quest";
 
@@ -21,9 +22,19 @@ public sealed class QuestDbBuilder : ContainerBuilder<QuestDbBuilder, QuestDbCon
     /// <summary>
     /// Initializes a new instance of the <see cref="QuestDbBuilder" /> class.
     /// </summary>
+    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
+    [ExcludeFromCodeCoverage]
+    public QuestDbBuilder()
+        : this(QuestDbImage)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="QuestDbBuilder" /> class.
+    /// </summary>
     /// <param name="image">
     /// The full Docker image name, including the image repository and tag
-    /// (e.g., <c>questdb/questdb:9.2.3</c>).
+    /// (e.g., <c>questdb/questdb:10.0.1</c>).
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/questdb/questdb/tags" />.
@@ -100,11 +111,9 @@ public sealed class QuestDbBuilder : ContainerBuilder<QuestDbBuilder, QuestDbCon
             .WithPortBinding(QuestDbInfluxLinePort, true)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
-            .WithWaitStrategy(Wait.ForUnixContainer()
-                .UntilHttpRequestIsSucceeded(r => r
-                    .ForPort(QuestDbHttpPort)
-                    .ForPath("/")
-                    .ForStatusCode(HttpStatusCode.OK)));
+            .WithConnectionStringProvider(new QuestDbConnectionStringProvider())
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
+                request.ForPath("/").ForPort(QuestDbHttpPort)));
     }
 
     /// <inheritdoc />
