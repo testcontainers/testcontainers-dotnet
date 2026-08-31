@@ -83,7 +83,9 @@ namespace DotNet.Testcontainers.Clients
     /// <returns>A task that represents the asynchronous execute operation.</returns>
     public async Task ExecuteAsync(Func<CancellationToken, Task> action, CancellationToken ct = default)
     {
-      for (var attempt = 1; ; attempt++)
+      var attempt = 1;
+
+      while (true)
       {
         ct.ThrowIfCancellationRequested();
 
@@ -102,6 +104,8 @@ namespace DotNet.Testcontainers.Clients
 
           await DelayAsync(delay, ct)
             .ConfigureAwait(false);
+
+          attempt++;
         }
       }
     }
