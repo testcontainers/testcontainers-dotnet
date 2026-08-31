@@ -117,6 +117,20 @@ public sealed class QuestDbBuilder : ContainerBuilder<QuestDbBuilder, QuestDbCon
     }
 
     /// <inheritdoc />
+    protected override void Validate()
+    {
+        base.Validate();
+
+        _ = Guard.Argument(DockerResourceConfiguration.Username, nameof(DockerResourceConfiguration.Username))
+            .NotNull()
+            .NotEmpty();
+
+        _ = Guard.Argument(DockerResourceConfiguration.Password, nameof(DockerResourceConfiguration.Password))
+            .NotNull()
+            .NotEmpty();
+    }
+
+    /// <inheritdoc />
     protected override QuestDbBuilder Clone(IResourceConfiguration<CreateContainerParameters> resourceConfiguration)
     {
         return Merge(DockerResourceConfiguration, new QuestDbConfiguration(resourceConfiguration));
