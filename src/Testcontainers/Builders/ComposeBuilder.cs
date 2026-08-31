@@ -503,7 +503,7 @@ namespace DotNet.Testcontainers.Builders
       // understands, e.g. C:/Users/Default to /c/Users/Default.
       if (containerPath.Length > 1 && char.IsLetter(containerPath[0]) && ':'.Equals(containerPath[1]))
       {
-        containerPath = "/" + char.ToLowerInvariant(containerPath[0]) + containerPath.Substring(2);
+        containerPath = $"{Path.AltDirectorySeparatorChar}{char.ToLowerInvariant(containerPath[0])}{containerPath.Substring(2)}";
       }
 
       return containerPath;
