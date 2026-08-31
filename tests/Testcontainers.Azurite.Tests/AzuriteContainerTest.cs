@@ -2,6 +2,10 @@ namespace Testcontainers.Azurite;
 
 public abstract class AzuriteContainerTest : IAsyncLifetime
 {
+    private static readonly BlobClientOptions BlobOptions = new BlobClientOptions(BlobClientOptions.ServiceVersion.V2025_11_05);
+
+    private static readonly QueueClientOptions QueueOptions = new QueueClientOptions(QueueClientOptions.ServiceVersion.V2025_11_05);
+
     private readonly AzuriteContainer _azuriteContainer;
 
     private AzuriteContainerTest(AzuriteContainer azuriteContainer)
@@ -28,7 +32,7 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
     public async Task EstablishesBlobServiceConnection()
     {
         // Give
-        var client = new BlobServiceClient(_azuriteContainer.GetConnectionString());
+        var client = new BlobServiceClient(_azuriteContainer.GetConnectionString(), BlobOptions);
 
         // When
         var properties = await client.GetPropertiesAsync(TestContext.Current.CancellationToken)
@@ -44,7 +48,7 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
     public async Task EstablishesQueueServiceConnection()
     {
         // Give
-        var client = new QueueServiceClient(_azuriteContainer.GetConnectionString());
+        var client = new QueueServiceClient(_azuriteContainer.GetConnectionString(), QueueOptions);
 
         // When
         var properties = await client.GetPropertiesAsync(TestContext.Current.CancellationToken)

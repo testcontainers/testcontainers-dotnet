@@ -47,12 +47,9 @@ public sealed class CleanTask : FrostingTask<BuildContext>
             Force = true,
         };
 
-        foreach (var directory in context.Parameters.Paths.Directories.ToClean)
+        foreach (var directory in context.Parameters.Paths.Directories.ToClean.Where(context.DirectoryExists))
         {
-            if (context.DirectoryExists(directory))
-            {
-                context.DeleteDirectory(directory, deleteDirectorySettings);
-            }
+            context.DeleteDirectory(directory, deleteDirectorySettings);
         }
     }
 }
@@ -214,7 +211,7 @@ public sealed class SignNuGetPackagesTask : FrostingTask<BuildContext>
                 .Append("sign")
                 .AppendSwitchQuoted("--certificate-path", param.Paths.Files.CodeSigningCertificateFilePath.FullPath)
                 .AppendSwitchQuoted("--certificate-password", param.CodeSigningCertificateCredentials.Password)
-                .AppendSwitchQuoted("--timestamper", "http://ts.quovadisglobal.com/eu")
+                .AppendSwitchQuoted("--timestamper", "https://timestamp.sectigo.com")
                 .Append($"{context.MakeAbsolute(param.Paths.Directories.NuGetDirectoryPath)}/**/*.nupkg"),
         });
     }

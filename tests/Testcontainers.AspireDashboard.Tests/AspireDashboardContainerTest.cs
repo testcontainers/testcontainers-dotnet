@@ -5,9 +5,9 @@ public sealed class AspireDashboardContainerTest : IAsyncLifetime
     // # --8<-- [start:UseAspireDashboardContainer]
     private readonly AspireDashboardContainer _aspireDashboardContainer = new AspireDashboardBuilder(TestSession.GetImageFromDockerfile()).Build();
 
-    private readonly string _serviceName = Guid.NewGuid().ToString("N");
+    private readonly string _serviceName = Guid.NewGuid().ToString("D");
 
-    private readonly string _spanName = Guid.NewGuid().ToString("N");
+    private readonly string _spanName = Guid.NewGuid().ToString("D");
 
     public async ValueTask InitializeAsync()
     {

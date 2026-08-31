@@ -43,7 +43,7 @@ namespace DotNet.Testcontainers.Builders
           {
             try
             {
-              await dockerClient.System.PingAsync()
+              await dockerClient.System.PingAsync(CancellationToken.None)
                 .ConfigureAwait(false);
 
               _cachedException = null;
@@ -58,7 +58,7 @@ namespace DotNet.Testcontainers.Builders
               return false;
             }
           }
-        })
+        }, CancellationToken.None)
         .Unwrap()
         .ConfigureAwait(false)
         .GetAwaiter()

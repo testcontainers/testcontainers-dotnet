@@ -69,6 +69,9 @@ namespace DotNet.Testcontainers
     [LoggerMessage(Level = LogLevel.Information, Message = "Docker image {FullName} created")]
     private static partial void DockerImageCreatedCore(ILogger logger, string fullName);
 
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Retry creating Docker image {FullName}, Attempt: {Attempt}/{MaxAttempts}, Delay: {Delay} ms, Reason: {Reason}")]
+    private static partial void RetryCreateDockerImageCore(ILogger logger, string fullName, int attempt, int maxAttempts, int delay, string reason);
+
     [LoggerMessage(Level = LogLevel.Information, Message = "Docker image {FullName} built")]
     private static partial void DockerImageBuiltCore(ILogger logger, string fullName);
 
@@ -95,6 +98,15 @@ namespace DotNet.Testcontainers
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Add file to tar archive: Source file: \"{Source}\", Target file: \"{Target}\", UID: {Uid}, GID: {Gid}, Mode: {Mode}")]
     private static partial void AddFileToTarArchiveCore(ILogger logger, string source, string target, int uid, int gid, string mode);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Cannot resolve Compose service images for project {ProjectName}")]
+    private static partial void CanNotResolveComposeServiceImagesCore(ILogger logger, string projectName, Exception exception);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Cannot pull Compose service image {FullName}")]
+    private static partial void CanNotPullComposeServiceImageCore(ILogger logger, string fullName, Exception exception);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Cannot clean up Compose project {ProjectName}")]
+    private static partial void CanNotCleanUpComposeProjectCore(ILogger logger, string projectName, Exception exception);
 
     [LoggerMessage(Level = LogLevel.Debug, Message = "Cannot get resource reaper {Id} endpoint")]
     private static partial void CanNotGetResourceReaperEndpointCore(ILogger logger, Guid id, Exception exception);
@@ -214,6 +226,11 @@ namespace DotNet.Testcontainers
       DockerImageCreatedCore(logger, image.FullName);
     }
 
+    public static void RetryCreateDockerImage(this ILogger logger, IImage image, int attempt, int maxAttempts, TimeSpan delay, string reason)
+    {
+      RetryCreateDockerImageCore(logger, image.FullName, attempt, maxAttempts, (int)delay.TotalMilliseconds, reason);
+    }
+
     public static void DockerImageBuilt(this ILogger logger, IImage image)
     {
       DockerImageBuiltCore(logger, image.FullName);
@@ -257,6 +274,21 @@ namespace DotNet.Testcontainers
     public static void AddFileToTarArchive(this ILogger logger, string source, string target, int uid, int gid, string mode)
     {
       AddFileToTarArchiveCore(logger, source, target, uid, gid, mode);
+    }
+
+    public static void CanNotResolveComposeServiceImages(this ILogger logger, string projectName, Exception e)
+    {
+      CanNotResolveComposeServiceImagesCore(logger, projectName, e);
+    }
+
+    public static void CanNotPullComposeServiceImage(this ILogger logger, string fullName, Exception e)
+    {
+      CanNotPullComposeServiceImageCore(logger, fullName, e);
+    }
+
+    public static void CanNotCleanUpComposeProject(this ILogger logger, string projectName, Exception e)
+    {
+      CanNotCleanUpComposeProjectCore(logger, projectName, e);
     }
 
     public static void CanNotGetResourceReaperEndpoint(this ILogger logger, Guid id, Exception e)

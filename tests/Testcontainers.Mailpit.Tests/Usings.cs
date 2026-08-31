@@ -1,0 +1,15 @@
+global using System;
+global using System.Net;
+global using System.Net.Http;
+global using System.Net.Http.Json;
+global using System.Text.RegularExpressions;
+global using System.Threading;
+global using System.Threading.Tasks;
+global using DotNet.Testcontainers.Commons;
+global using JetBrains.Annotations;
+global using MailKit.Net.Smtp;
+global using MailKit.Security;
+global using MimeKit;
+global using Testcontainers.Xunit;
+global using Xunit;
+global using Xunit.Sdk;

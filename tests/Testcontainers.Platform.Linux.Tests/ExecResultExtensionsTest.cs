@@ -25,7 +25,8 @@ public sealed class ExecResultExtensionsTest : IAsyncLifetime
         var command = new[] { "true" };
 
         // When
-        var exception = await Record.ExceptionAsync(() => _container.ExecAsync(command, TestContext.Current.CancellationToken).ThrowOnFailure())
+        var exception = await Record.ExceptionAsync(() => _container.ExecAsync(command, TestContext.Current.CancellationToken)
+            .ThrowOnFailure())
             .ConfigureAwait(true);
 
         // Then
@@ -40,7 +41,8 @@ public sealed class ExecResultExtensionsTest : IAsyncLifetime
         var command = new[] { "/bin/sh", "-c", "echo out; echo err >&2; exit 1" };
 
         // When
-        var exception = await Assert.ThrowsAsync<ExecFailedException>(() => _container.ExecAsync(command, TestContext.Current.CancellationToken).ThrowOnFailure())
+        var exception = await Assert.ThrowsAsync<ExecFailedException>(() => _container.ExecAsync(command, TestContext.Current.CancellationToken)
+            .ThrowOnFailure())
             .ConfigureAwait(true);
 
         // Then

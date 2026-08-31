@@ -59,6 +59,7 @@ public abstract class EventHubsContainerTest : IAsyncLifetime
         await using var asyncEnumerator = consumer.ReadEventsAsync(readOptions, TestContext.Current.CancellationToken)
             .WithCancellation(TestContext.Current.CancellationToken)
             .GetAsyncEnumerator();
+
         _ = await asyncEnumerator.MoveNextAsync();
 
         // Then

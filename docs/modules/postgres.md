@@ -28,6 +28,7 @@ The following example utilizes the [xUnit.net](/test_frameworks/xunit_net/) modu
 Use `WithSsl` to enable TLS and map the server certificates. Configure the client connection string with `SslMode` and (for validation) the CA certificate.
 
 !!! note
+
     When SSL is enabled, Testcontainers doesn't set the SSL mode for the connection string. You'll need to choose the `SslMode` and configure it yourself.
 
 ```csharp

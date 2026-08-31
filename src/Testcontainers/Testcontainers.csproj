@@ -8,7 +8,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations" VersionOverride="2023.3.0" PrivateAssets="All"/>
+    <PackageReference Include="JetBrains.Annotations" VersionOverride="2026.2.0" PrivateAssets="All"/>
     <PackageReference Include="Docker.DotNet.Enhanced.X509"/>
     <PackageReference Include="Docker.DotNet.Enhanced"/>
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions"/>
