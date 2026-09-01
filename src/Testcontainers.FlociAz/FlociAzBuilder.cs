@@ -6,10 +6,6 @@ public sealed class FlociAzBuilder : ContainerBuilder<FlociAzBuilder, FlociAzCon
 {
     public const ushort FlociAzPort = 4577;
 
-    public const ushort EventHubsPort = 5672;
-
-    public const ushort ServiceBusPort = 5673;
-
     public const string AccountName = "devstoreaccount1";
 
     public const string AccountKey = "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==";
@@ -70,8 +66,6 @@ public sealed class FlociAzBuilder : ContainerBuilder<FlociAzBuilder, FlociAzCon
     {
         return base.Init()
             .WithPortBinding(FlociAzPort, true)
-            .WithPortBinding(EventHubsPort, true)
-            .WithPortBinding(ServiceBusPort, true)
             .WithConnectionStringProvider(new FlociAzConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
                 request.ForPath("/_floci/health").ForPort(FlociAzPort)));

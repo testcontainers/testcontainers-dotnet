@@ -30,6 +30,15 @@ public sealed class FlociAzContainer : DockerContainer
     }
 
     /// <summary>
+    /// Gets the FlociAz endpoint used by root-level and Azure Resource Manager APIs.
+    /// </summary>
+    /// <returns>The FlociAz endpoint.</returns>
+    public string GetEndpoint()
+    {
+        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(FlociAzBuilder.FlociAzPort)).ToString();
+    }
+
+    /// <summary>
     /// Gets the FlociAz service endpoint.
     /// </summary>
     /// <remarks>
@@ -43,7 +52,7 @@ public sealed class FlociAzContainer : DockerContainer
     public string GetServiceEndpoint(string service = null)
     {
         var path = string.IsNullOrEmpty(service) ? FlociAzBuilder.AccountName : string.Join("-", FlociAzBuilder.AccountName, service);
-        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(FlociAzBuilder.FlociAzPort), path).ToString();
+        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(FlociAzBuilder.FlociAzPort), path + "/").ToString();
     }
 
     /// <summary>
@@ -56,23 +65,5 @@ public sealed class FlociAzContainer : DockerContainer
         properties.Add("AccountEndpoint", GetServiceEndpoint("cosmos"));
         properties.Add("AccountKey", FlociAzBuilder.AccountKey);
         return string.Join(";", properties.Select(property => string.Join("=", property.Key, property.Value)));
-    }
-
-    /// <summary>
-    /// Gets the FlociAz Event Hubs endpoint.
-    /// </summary>
-    /// <returns>The FlociAz Event Hubs endpoint.</returns>
-    public string GetEventHubsEndpoint()
-    {
-        return new UriBuilder("amqp", Hostname, GetMappedPublicPort(FlociAzBuilder.EventHubsPort)).ToString();
-    }
-
-    /// <summary>
-    /// Gets the FlociAz Service Bus endpoint.
-    /// </summary>
-    /// <returns>The FlociAz Service Bus endpoint.</returns>
-    public string GetServiceBusEndpoint()
-    {
-        return new UriBuilder("amqp", Hostname, GetMappedPublicPort(FlociAzBuilder.ServiceBusPort)).ToString();
     }
 }
