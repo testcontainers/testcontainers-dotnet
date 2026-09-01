@@ -1,62 +1,117 @@
 namespace Testcontainers.FlociAz;
 
-public sealed class FlociAzContainerTest(FlociAzContainerTest.FlociAzFixture fixture)
+public sealed partial class FlociAzContainerTest(FlociAzContainerTest.FlociAzFixture fixture)
     : IClassFixture<FlociAzContainerTest.FlociAzFixture>
 {
     private const string AzureService = "Service";
 
-    public static TheoryData<string, string> ArmResources
+    public static TheoryData<string, string, string, string, bool> ArmResources
         => new()
         {
             {
                 "Microsoft.Network/virtualNetworks/{name}?api-version=2024-05-01",
-                """{"location":"eastus","properties":{"addressSpace":{"addressPrefixes":["10.0.0.0/16"]}}}"""
+                """{"location":"eastus","properties":{"addressSpace":{"addressPrefixes":["10.0.0.0/16"]}}}""",
+                "properties.provisioningState",
+                "Succeeded",
+                true
             },
             {
                 "Microsoft.Compute/virtualMachines/{name}?api-version=2024-11-01",
-                """{"location":"eastus","properties":{"hardwareProfile":{"vmSize":"Standard_B1s"},"storageProfile":{"imageReference":{"publisher":"Canonical","offer":"ubuntu","sku":"22_04-lts","version":"latest"}},"osProfile":{"computerName":"{name}","adminUsername":"azureuser"},"networkProfile":{"networkInterfaces":[]}}}"""
+                """{"location":"eastus","properties":{"hardwareProfile":{"vmSize":"Standard_B1s"},"storageProfile":{"imageReference":{"publisher":"Canonical","offer":"ubuntu","sku":"22_04-lts","version":"latest"}},"osProfile":{"computerName":"{name}","adminUsername":"azureuser"},"networkProfile":{"networkInterfaces":[]}}}""",
+                "properties.hardwareProfile.vmSize",
+                "Standard_B1s",
+                true
             },
             {
                 "Microsoft.Sql/servers/{name}?api-version=2021-11-01",
-                """{"location":"eastus","properties":{"administratorLogin":"sa","administratorLoginPassword":"FlociAz_Strong123!"}}"""
+                """{"location":"eastus","properties":{"administratorLogin":"sa","administratorLoginPassword":"FlociAz_Strong123!"}}""",
+                "properties.administratorLogin",
+                "sa",
+                true
             },
             {
                 "Microsoft.ContainerService/managedClusters/{name}?api-version=2024-04-01",
-                """{"location":"eastus","properties":{"kubernetesVersion":"1.29","dnsPrefix":"{name}","agentPoolProfiles":[{"name":"nodepool1","count":1,"vmSize":"Standard_DS2_v2","osType":"Linux","mode":"System"}]}}"""
+                """{"location":"eastus","properties":{"kubernetesVersion":"1.29","dnsPrefix":"{name}","agentPoolProfiles":[{"name":"nodepool1","count":1,"vmSize":"Standard_DS2_v2","osType":"Linux","mode":"System"}]}}""",
+                "properties.dnsPrefix",
+                "{name}",
+                true
             },
             {
                 "Microsoft.ContainerRegistry/registries/{name}?api-version=2023-07-01",
-                """{"location":"eastus","sku":{"name":"Basic"},"properties":{"adminUserEnabled":true}}"""
+                """{"location":"eastus","sku":{"name":"Basic"},"properties":{"adminUserEnabled":true}}""",
+                "sku.name",
+                "Basic",
+                true
             },
             {
                 "Microsoft.Cache/redis/{name}?api-version=2024-11-01",
-                """{"location":"eastus","properties":{"sku":{"name":"Basic","family":"C","capacity":0},"enableNonSslPort":true}}"""
+                """{"location":"eastus","properties":{"sku":{"name":"Basic","family":"C","capacity":0},"enableNonSslPort":true}}""",
+                "properties.sku.name",
+                "Basic",
+                true
             },
             {
                 "Microsoft.ContainerInstance/containerGroups/{name}?api-version=2023-05-01",
-                """{"location":"eastus","properties":{"osType":"Linux","containers":[{"name":"app","properties":{"image":"alpine:3.20","resources":{"requests":{"cpu":1,"memoryInGB":1}}}}]}}"""
+                """{"location":"eastus","properties":{"osType":"Linux","containers":[{"name":"app","properties":{"image":"alpine:3.20","resources":{"requests":{"cpu":1,"memoryInGB":1}}}}]}}""",
+                "properties.osType",
+                "Linux",
+                true
             },
             {
                 "Microsoft.ApiManagement/service/{name}?api-version=2024-05-01",
-                """{"location":"eastus","sku":{"name":"Developer","capacity":1},"properties":{"publisherEmail":"dev@example.com","publisherName":"FlociAz"}}"""
+                """{"location":"eastus","sku":{"name":"Developer","capacity":1},"properties":{"publisherEmail":"dev@example.com","publisherName":"FlociAz"}}""",
+                "properties.publisherName",
+                "FlociAz",
+                true
             },
             {
                 "Microsoft.ManagedIdentity/userAssignedIdentities/{name}?api-version=2024-11-30",
-                """{"location":"eastus"}"""
+                """{"location":"eastus"}""",
+                "location",
+                "eastus",
+                true
             },
             {
                 "Microsoft.EventGrid/topics/{name}?api-version=2023-12-15-preview",
-                """{"location":"eastus","properties":{}}"""
+                """{"location":"eastus","properties":{}}""",
+                "properties.provisioningState",
+                "Succeeded",
+                true
             },
             {
                 "Microsoft.OperationalInsights/workspaces/{name}?api-version=2023-09-01",
-                """{"location":"eastus","properties":{}}"""
+                """{"location":"eastus","properties":{}}""",
+                "properties.provisioningState",
+                "Succeeded",
+                false
             },
             {
                 "Microsoft.Communication/communicationServices/{name}?api-version=2023-04-01",
-                """{"location":"global","properties":{"dataLocation":"United States"}}"""
+                """{"location":"global","properties":{"dataLocation":"United States"}}""",
+                "properties.dataLocation",
+                "United States",
+                true
+            },
+            {
+                "Microsoft.DBforPostgreSQL/flexibleServers/{name}?api-version=2025-08-01",
+                """{"location":"eastus","sku":{"name":"Standard_B1ms","tier":"Burstable"},"properties":{"administratorLogin":"psqladmin","administratorLoginPassword":"FlociAz_Strong123!","version":"16","storage":{"storageSizeGB":32}}}""",
+                "properties.administratorLogin",
+                "psqladmin",
+                true
             },
         };
+
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public async Task ResolvingSidecarPortRequiresDockerSocket()
+    {
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(async () =>
+        {
+            _ = await fixture.Container.GetSidecarMappedPublicPortAsync("sidecar", 1234, TestContext.Current.CancellationToken).ConfigureAwait(true);
+        });
+
+        Assert.Contains(nameof(FlociAzBuilder.WithDockerSocket), exception.Message, StringComparison.Ordinal);
+    }
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
@@ -346,12 +401,16 @@ public sealed class FlociAzContainerTest(FlociAzContainerTest.FlociAzFixture fix
     [MemberData(nameof(ArmResources))]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     [Trait(AzureService, "arm")]
-    public async Task GetArmResourceReturnsCreatedResource(string resourcePath, string payload)
+    public async Task ArmResourceSupportsLifecycle(string resourcePath, string payload, string expectedProperty, string expectedValue, bool supportsList)
     {
         // Given
         var resourceName = "tc" + Guid.NewGuid().ToString("N");
         var path = $"subscriptions/{FlociAzFixture.SubscriptionId}/resourceGroups/{FlociAzFixture.ResourceGroup}/providers/{resourcePath}"
             .Replace("{name}", resourceName, StringComparison.Ordinal);
+        var queryIndex = resourcePath.IndexOf('?', StringComparison.Ordinal);
+        var resourceIndex = resourcePath.IndexOf("/{name}", StringComparison.Ordinal);
+        var collectionResourcePath = resourcePath.Substring(0, resourceIndex) + resourcePath.Substring(queryIndex);
+        var collectionPath = $"subscriptions/{FlociAzFixture.SubscriptionId}/resourceGroups/{FlociAzFixture.ResourceGroup}/providers/{collectionResourcePath}";
         using var client = fixture.CreateHttpClient();
 
         // When
@@ -366,6 +425,33 @@ public sealed class FlociAzContainerTest(FlociAzContainerTest.FlociAzFixture fix
 
         // Then
         Assert.Equal(resourceName, document.RootElement.GetProperty("name").GetString());
+        Assert.Equal(expectedValue.Replace("{name}", resourceName, StringComparison.Ordinal), GetProperty(document.RootElement, expectedProperty).GetString());
+
+        if (supportsList)
+        {
+            using var listResponse = await client.GetAsync(collectionPath, TestContext.Current.CancellationToken)
+                .ConfigureAwait(true);
+            using var listDocument = await ReadJsonAsync(listResponse).ConfigureAwait(true);
+            Assert.Contains(listDocument.RootElement.GetProperty("value").EnumerateArray(), resource => resource.GetProperty("name").GetString() == resourceName);
+        }
+
+        using var deleteResponse = await client.DeleteAsync(path, TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+        await AssertSuccessAsync(deleteResponse).ConfigureAwait(true);
+
+        using var deletedResponse = await client.GetAsync(path, TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+        Assert.Equal(HttpStatusCode.NotFound, deletedResponse.StatusCode);
+    }
+
+    private static JsonElement GetProperty(JsonElement element, string path)
+    {
+        foreach (var segment in path.Split('.'))
+        {
+            element = element.GetProperty(segment);
+        }
+
+        return element;
     }
 
     private static async Task AssertSuccessAsync(HttpResponseMessage response)
@@ -395,6 +481,8 @@ public sealed class FlociAzContainerTest(FlociAzContainerTest.FlociAzFixture fix
 
         public FlociAzContainer Container { get; }
             = new FlociAzBuilder(TestSession.GetImageFromDockerfile())
+                .WithEnvironment("FLOCI_AZ_SERVICES_EVENT_HUB_ENABLED", "true")
+                .WithEnvironment("FLOCI_AZ_SERVICES_EVENT_HUB_MOCKED", "true")
                 .WithEnvironment("FLOCI_AZ_SERVICES_FUNCTIONS_MOCKED", "true")
                 .WithEnvironment("FLOCI_AZ_SERVICES_POSTGRES_MOCKED", "true")
                 .WithEnvironment("FLOCI_AZ_SERVICES_AKS_MOCKED", "true")
