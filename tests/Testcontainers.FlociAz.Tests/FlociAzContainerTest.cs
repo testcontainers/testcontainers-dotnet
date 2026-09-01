@@ -355,8 +355,8 @@ public sealed class FlociAzContainerTest(FlociAzContainerTest.FlociAzFixture fix
         using var client = fixture.CreateHttpClient();
 
         // When
-        using var payloadDocument = JsonDocument.Parse(payload.Replace("{name}", resourceName, StringComparison.Ordinal));
-        using var createResponse = await client.PutAsync(path, JsonContent.Create(payloadDocument.RootElement), TestContext.Current.CancellationToken)
+        using var content = new StringContent(payload.Replace("{name}", resourceName, StringComparison.Ordinal), Encoding.UTF8, "application/json");
+        using var createResponse = await client.PutAsync(path, content, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
         await AssertSuccessAsync(createResponse).ConfigureAwait(true);
 
