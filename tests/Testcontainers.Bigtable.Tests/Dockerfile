@@ -1,1 +1,1 @@
-FROM gcr.io/google.com/cloudsdktool/google-cloud-cli:446.0.1-emulators@sha256:7d2e60f14bb184c85bfce5f857cc7a23a0c4ab8b94e3e79007a6bb384f2d3cb3
+FROM gcr.io/google.com/cloudsdktool/google-cloud-cli:582.0.0-emulators@sha256:d343049a5b3fc0c880a51412ba0c53a3f6a3fc727978cef52931ea5f6fda5b9f
