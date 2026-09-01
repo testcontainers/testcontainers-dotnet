@@ -60,10 +60,10 @@ public sealed class KeycloakConfiguration : ContainerConfiguration
     /// <summary>
     /// Gets the admin username.
     /// </summary>
-    public string Username { get; } = null!;
+    public string Username { get; }
 
     /// <summary>
     /// Gets the admin password.
     /// </summary>
-    public string Password { get; } = null!;
+    public string Password { get; }
 }

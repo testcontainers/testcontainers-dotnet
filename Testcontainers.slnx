@@ -13,7 +13,7 @@
         <File Path=".github/workflows/test-report.yml"/>
     </Folder>
     <Folder Name="/build/">
-        <Project Path="build/Build.csproj" />
+        <Project Path="build/Build.csproj"/>
     </Folder>
     <Folder Name="/src/">
         <Project Path="src/Testcontainers.ActiveMq/Testcontainers.ActiveMq.csproj"/>
@@ -49,6 +49,7 @@
         <Project Path="src/Testcontainers.Kusto/Testcontainers.Kusto.csproj"/>
         <Project Path="src/Testcontainers.LocalStack/Testcontainers.LocalStack.csproj"/>
         <Project Path="src/Testcontainers.LowkeyVault/Testcontainers.LowkeyVault.csproj"/>
+        <Project Path="src/Testcontainers.Mailpit/Testcontainers.Mailpit.csproj"/>
         <Project Path="src/Testcontainers.MariaDb/Testcontainers.MariaDb.csproj"/>
         <Project Path="src/Testcontainers.Milvus/Testcontainers.Milvus.csproj"/>
         <Project Path="src/Testcontainers.Minio/Testcontainers.Minio.csproj"/>
@@ -67,6 +68,7 @@
         <Project Path="src/Testcontainers.PubSub/Testcontainers.PubSub.csproj"/>
         <Project Path="src/Testcontainers.Pulsar/Testcontainers.Pulsar.csproj"/>
         <Project Path="src/Testcontainers.Qdrant/Testcontainers.Qdrant.csproj"/>
+        <Project Path="src/Testcontainers.QuestDb/Testcontainers.QuestDb.csproj"/>
         <Project Path="src/Testcontainers.RabbitMq/Testcontainers.RabbitMq.csproj"/>
         <Project Path="src/Testcontainers.RavenDb/Testcontainers.RavenDb.csproj"/>
         <Project Path="src/Testcontainers.Redis/Testcontainers.Redis.csproj"/>
@@ -118,6 +120,7 @@
         <Project Path="tests/Testcontainers.Kusto.Tests/Testcontainers.Kusto.Tests.csproj"/>
         <Project Path="tests/Testcontainers.LocalStack.Tests/Testcontainers.LocalStack.Tests.csproj"/>
         <Project Path="tests/Testcontainers.LowkeyVault.Tests/Testcontainers.LowkeyVault.Tests.csproj"/>
+        <Project Path="tests/Testcontainers.Mailpit.Tests/Testcontainers.Mailpit.Tests.csproj"/>
         <Project Path="tests/Testcontainers.MariaDb.Tests/Testcontainers.MariaDb.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Milvus.Tests/Testcontainers.Milvus.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Minio.Tests/Testcontainers.Minio.Tests.csproj"/>
@@ -142,6 +145,7 @@
         <Project Path="tests/Testcontainers.PubSub.Tests/Testcontainers.PubSub.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Pulsar.Tests/Testcontainers.Pulsar.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Qdrant.Tests/Testcontainers.Qdrant.Tests.csproj"/>
+        <Project Path="tests/Testcontainers.QuestDb.Tests/Testcontainers.QuestDb.Tests.csproj"/>
         <Project Path="tests/Testcontainers.RabbitMq.Tests/Testcontainers.RabbitMq.Tests.csproj"/>
         <Project Path="tests/Testcontainers.RavenDb.Tests/Testcontainers.RavenDb.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Redis.Tests/Testcontainers.Redis.Tests.csproj"/>

@@ -7,6 +7,7 @@ namespace DotNet.Testcontainers.Clients
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
+  using DotNet.Testcontainers.Images;
 
   /// <summary>
   /// This class represents a Testcontainers client.
@@ -179,5 +180,13 @@ namespace DotNet.Testcontainers.Clients
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the Docker image has been built.</returns>
     Task<string> BuildAsync(IImageFromDockerfileConfiguration configuration, CancellationToken ct = default);
+
+    /// <summary>
+    /// Pulls an image from a registry.
+    /// </summary>
+    /// <param name="image">The image to pull.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the image has been pulled.</returns>
+    Task PullImageAsync(IImage image, CancellationToken ct = default);
   }
 }

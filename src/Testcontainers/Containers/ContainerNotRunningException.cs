@@ -12,7 +12,7 @@ namespace DotNet.Testcontainers.Containers
   [PublicAPI]
   public sealed class ContainerNotRunningException : Exception
   {
-    private static readonly string[] LineEndings = new[] { "\r\n", "\n" };
+    private static readonly string[] LineEndings = { "\r\n", "\n" };
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ContainerNotRunningException" /> class.

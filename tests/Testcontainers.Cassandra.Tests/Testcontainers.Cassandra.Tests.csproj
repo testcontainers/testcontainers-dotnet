@@ -15,6 +15,10 @@
         <!-- -8<- [end:PackageReferences] -->
     </ItemGroup>
     <ItemGroup>
+        <!-- Lift the vulnerable Newtonsoft.Json version CassandraCSharpDriver resolves to (GHSA-5crp-9r3c-p9vr). -->
+        <PackageReference Include="Newtonsoft.Json"/>
+    </ItemGroup>
+    <ItemGroup>
         <ProjectReference Include="../../src/Testcontainers.Cassandra/Testcontainers.Cassandra.csproj"/>
         <ProjectReference Include="../../src/Testcontainers.XunitV3/Testcontainers.XunitV3.csproj"/>
         <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
