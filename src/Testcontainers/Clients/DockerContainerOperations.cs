@@ -131,11 +131,11 @@ namespace DotNet.Testcontainers.Clients
       return tarResponse.Stream;
     }
 
-    public async Task AttachAsync(string id, IOutputConsumer outputConsumer, CancellationToken ct = default)
+    public async Task<IDisposable> AttachAsync(string id, IOutputConsumer outputConsumer, CancellationToken ct = default)
     {
       if (!outputConsumer.Enabled)
       {
-        return;
+        return null;
       }
 
       Logger.AttachToDockerContainer(id, outputConsumer.GetType());
@@ -150,8 +150,7 @@ namespace DotNet.Testcontainers.Clients
       var stream = await DockerClient.Containers.AttachContainerAsync(id, attachParameters, ct)
         .ConfigureAwait(false);
 
-      _ = stream.CopyOutputToAsync(Stream.Null, outputConsumer.Stdout, outputConsumer.Stderr, ct)
-        .ConfigureAwait(false);
+      return new AttachedStream(stream, outputConsumer, Logger, id);
     }
 
     public async Task<ExecResult> ExecAsync(string id, IList<string> command, CancellationToken ct = default)

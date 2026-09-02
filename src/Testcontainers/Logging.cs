@@ -60,6 +60,9 @@ namespace DotNet.Testcontainers
     [LoggerMessage(Level = LogLevel.Information, Message = "Attach {OutputConsumer} at Docker container {Id}")]
     private static partial void AttachToDockerContainerCore(ILogger logger, Type outputConsumer, TruncatedId id);
 
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Cannot read the stdout and stderr of Docker container {Id}")]
+    private static partial void CanNotReadDockerContainerOutputCore(ILogger logger, TruncatedId id, Exception exception);
+
     [LoggerMessage(Level = LogLevel.Information, Message = "Connect Docker container {ContainerId} to Docker network {NetworkId}")]
     private static partial void ConnectToDockerNetworkCore(ILogger logger, TruncatedId containerId, TruncatedId networkId);
 
@@ -208,6 +211,11 @@ namespace DotNet.Testcontainers
     public static void AttachToDockerContainer(this ILogger logger, string id, Type type)
     {
       AttachToDockerContainerCore(logger, type, new TruncatedId(id));
+    }
+
+    public static void CanNotReadDockerContainerOutput(this ILogger logger, string id, Exception e)
+    {
+      CanNotReadDockerContainerOutputCore(logger, new TruncatedId(id), e);
     }
 
     public static void ConnectToDockerNetwork(this ILogger logger, string networkId, string containerId)

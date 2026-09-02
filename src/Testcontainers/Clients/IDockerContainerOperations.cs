@@ -29,7 +29,7 @@ namespace DotNet.Testcontainers.Clients
 
     Task<Stream> GetArchiveFromContainerAsync(string id, string path, CancellationToken ct = default);
 
-    Task AttachAsync(string id, IOutputConsumer outputConsumer, CancellationToken ct = default);
+    Task<IDisposable> AttachAsync(string id, IOutputConsumer outputConsumer, CancellationToken ct = default);
 
     Task<ExecResult> ExecAsync(string id, IList<string> command, CancellationToken ct = default);
 

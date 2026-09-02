@@ -109,8 +109,12 @@ namespace DotNet.Testcontainers.Clients
     /// <param name="id">The container id.</param>
     /// <param name="outputConsumer">The stdout and stderr consumer.</param>
     /// <param name="ct">Cancellation token.</param>
-    /// <returns>Task that completes when the container's stdout and stderr has been copied to the consumer.</returns>
-    Task AttachAsync(string id, IOutputConsumer outputConsumer, CancellationToken ct = default);
+    /// <returns>
+    /// Task that completes when the client has attached to the container's
+    /// stdout and stderr. The result detaches from the container when disposed,
+    /// or is <c>null</c> if the output consumer is disabled.
+    /// </returns>
+    Task<IDisposable> AttachAsync(string id, IOutputConsumer outputConsumer, CancellationToken ct = default);
 
     /// <summary>
     /// Executes a command in the container.
