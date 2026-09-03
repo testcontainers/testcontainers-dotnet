@@ -80,7 +80,7 @@ public sealed class AspireDashboardContainerTest : IAsyncLifetime
             {
                 using (var activity = activitySource.StartActivity(_spanName))
                 {
-                    activity!.SetTag("test.key", "test-value");
+                    activity.SetTag("test.key", "test-value");
                 }
             }
         }

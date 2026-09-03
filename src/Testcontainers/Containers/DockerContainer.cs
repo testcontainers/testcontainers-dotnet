@@ -633,7 +633,7 @@ namespace DotNet.Testcontainers.Containers
 
       Logger.CompleteReadinessCheck(_container.ID);
 
-      StartedTime = DateTime.TryParse(_container.State!.StartedAt, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out var startedTime) ? startedTime : DateTime.UtcNow;
+      StartedTime = DateTime.TryParse(_container.State.StartedAt, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out var startedTime) ? startedTime : DateTime.UtcNow;
 
       if (_configuration.ConnectionStringProvider != null)
       {

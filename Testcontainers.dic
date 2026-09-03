@@ -4,6 +4,7 @@ azurite
 capi
 creds
 dind
+dockerignore
 dvcm
 enumerables
 fmpeg

@@ -33,7 +33,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     public void CommonDirectoryPathNotExists()
     {
       var callerFilePath = Path.GetPathRoot(Directory.GetCurrentDirectory());
-      Assert.Throws<DirectoryNotFoundException>(() => CommonDirectoryPath.GetGitDirectory(callerFilePath!));
+      Assert.Throws<DirectoryNotFoundException>(() => CommonDirectoryPath.GetGitDirectory(callerFilePath));
     }
   }
 }

@@ -60,7 +60,7 @@ public abstract class PlaywrightContainerTest : IAsyncLifetime
         var headingElement = await page.QuerySelectorAsync("h1")
             .ConfigureAwait(true);
 
-        var headingElementText = await headingElement!.InnerTextAsync()
+        var headingElementText = await headingElement.InnerTextAsync()
             .ConfigureAwait(true);
 
         // Then
