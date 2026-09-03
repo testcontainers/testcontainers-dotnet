@@ -6,10 +6,6 @@ namespace DotNet.Testcontainers.Configurations
   /// <inheritdoc cref="IOutputConsumer" />
   internal sealed class RedirectStdoutAndStderrToStream : IOutputConsumer
   {
-    private readonly StreamWriter _stdout;
-
-    private readonly StreamWriter _stderr;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="RedirectStdoutAndStderrToStream" /> class.
     /// </summary>
@@ -23,31 +19,38 @@ namespace DotNet.Testcontainers.Configurations
     /// </summary>
     /// <param name="stdout">The stdout stream.</param>
     /// <param name="stderr">The stderr stream.</param>
+    /// <exception cref="ArgumentException">Thrown when a stream is not writable.</exception>
     public RedirectStdoutAndStderrToStream(Stream stdout, Stream stderr)
     {
-      Enabled = stdout.CanWrite || stderr.CanWrite;
-      _stdout = new StreamWriter(stdout);
-      _stdout.AutoFlush = true;
-      _stderr = new StreamWriter(stderr);
-      _stderr.AutoFlush = true;
+      if (!stdout.CanWrite)
+      {
+        throw new ArgumentException("Stream is not writable.", nameof(stdout));
+      }
+
+      if (!stderr.CanWrite)
+      {
+        throw new ArgumentException("Stream is not writable.", nameof(stderr));
+      }
+
+      Enabled = true;
+      Stdout = stdout;
+      Stderr = stderr;
     }
 
     /// <inheritdoc />
     public bool Enabled { get; }
 
     /// <inheritdoc />
-    public Stream Stdout
-      => _stdout.BaseStream;
+    public Stream Stdout { get; }
 
     /// <inheritdoc />
-    public Stream Stderr
-      => _stderr.BaseStream;
+    public Stream Stderr { get; }
 
     /// <inheritdoc />
     public void Dispose()
     {
-      _stdout.Dispose();
-      _stderr.Dispose();
+      Stdout.Dispose();
+      Stderr.Dispose();
     }
   }
 }
