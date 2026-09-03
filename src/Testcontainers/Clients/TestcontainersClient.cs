@@ -188,7 +188,7 @@ namespace DotNet.Testcontainers.Clients
     }
 
     /// <inheritdoc />
-    public Task AttachAsync(string id, IOutputConsumer outputConsumer, CancellationToken ct = default)
+    public Task<IDisposable> AttachAsync(string id, IOutputConsumer outputConsumer, CancellationToken ct = default)
     {
       return Container.AttachAsync(id, outputConsumer, ct);
     }

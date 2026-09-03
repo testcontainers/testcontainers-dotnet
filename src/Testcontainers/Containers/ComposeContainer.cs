@@ -439,6 +439,22 @@ namespace DotNet.Testcontainers.Containers
         return;
       }
 
+      // Detach from the stdout and stderr of the services before removing them.
+      // A client that stops reading blocks the container it is attached to, and
+      // with it `docker compose down`.
+      foreach (var serviceContainer in _serviceContainers.Values)
+      {
+        try
+        {
+          await serviceContainer.DisposeAsync()
+            .ConfigureAwait(false);
+        }
+        catch (Exception e)
+        {
+          Logger.CanNotCleanUpComposeProject(ProjectName, e);
+        }
+      }
+
       _serviceContainers = new Dictionary<(string, ushort), ComposeServiceContainer>();
 
       try
@@ -705,9 +721,14 @@ namespace DotNet.Testcontainers.Containers
     {
       // A wait strategy or exposed port that references a service that does not exist
       // would otherwise pass silently, e.g. when the service name contains a typo.
-      var serviceNotFound = _configuration.ExposedServices
-        .Select(exposedService => (exposedService.ServiceName, exposedService.Instance))
-        .Concat(_configuration.ServiceReadiness.Select(serviceReadiness => (serviceReadiness.ServiceName, serviceReadiness.Instance)))
+      var exposedServices = _configuration.ExposedServices
+        .Select(service => (service.ServiceName, service.Instance));
+
+      var serviceReadiness = _configuration.ServiceReadiness
+        .Select(service => (service.ServiceName, service.Instance));
+
+      var serviceNotFound = exposedServices
+        .Concat(serviceReadiness)
         .Where(service => !composeContainers.ContainsKey(service))
         .Select(service => ComposeServiceName.GetDisplayName(service.ServiceName, service.Instance))
         .FirstOrDefault();

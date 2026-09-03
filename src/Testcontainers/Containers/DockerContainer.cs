@@ -32,6 +32,8 @@ namespace DotNet.Testcontainers.Containers
 
     private IConnectionStringProvider<IContainer, IContainerConfiguration> _connectionStringProvider;
 
+    private IDisposable _attachedStream;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerContainer" /> class.
     /// </summary>
@@ -482,6 +484,12 @@ namespace DotNet.Testcontainers.Containers
           await UnsafeDeleteAsync()
             .ConfigureAwait(false);
         }
+
+        // Derived types such as ComposeServiceContainer neither stop nor delete
+        // the container because another component owns its lifecycle. Detach
+        // from its stdout and stderr either way. This instance opened the
+        // connection and closes it.
+        DisposeAttachedStream();
       }
 
       await base.DisposeAsyncCore()
@@ -588,6 +596,8 @@ namespace DotNet.Testcontainers.Containers
         return;
       }
 
+      DisposeAttachedStream();
+
       await _client.RemoveAsync(_container.ID, ct)
         .ConfigureAwait(false);
 
@@ -610,9 +620,11 @@ namespace DotNet.Testcontainers.Containers
     {
       ThrowIfLockNotAcquired();
 
+      DisposeAttachedStream();
+
       WaitStrategy portBindingsMapped = new WaitUntilPortBindingsMapped(this);
 
-      await _client.AttachAsync(_container.ID, _configuration.OutputConsumer, ct)
+      _attachedStream = await _client.AttachAsync(_container.ID, _configuration.OutputConsumer, ct)
         .ConfigureAwait(false);
 
       await UnsafeStartContainerAsync(ct)
@@ -665,6 +677,8 @@ namespace DotNet.Testcontainers.Containers
 
       await _client.StopAsync(_container.ID, ct)
         .ConfigureAwait(false);
+
+      DisposeAttachedStream();
 
       try
       {
@@ -764,6 +778,25 @@ namespace DotNet.Testcontainers.Containers
     protected override bool Exists()
     {
       return ContainerHasBeenCreatedStates.HasFlag(State);
+    }
+
+    /// <summary>
+    /// Detaches from the container's stdout and stderr, closing the connection.
+    /// </summary>
+    /// <remarks>
+    /// A client that stops reading blocks the container and every other
+    /// attached client, including Docker Engine API operations such as stopping
+    /// or removing the container (see <see cref="AttachedStream" />).
+    /// </remarks>
+    private void DisposeAttachedStream()
+    {
+      if (_attachedStream == null)
+      {
+        return;
+      }
+
+      _attachedStream.Dispose();
+      _attachedStream = null;
     }
 
     /// <summary>

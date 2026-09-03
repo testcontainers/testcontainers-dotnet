@@ -31,8 +31,13 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <summary>
-    /// Redirects the output of the Testcontainer to the given streams..
+    /// Redirects the output of the Testcontainer to the given streams.
     /// </summary>
+    /// <remarks>
+    /// The output consumer takes ownership of the streams and closes them when
+    /// it is disposed. Dispose it only after the containers that write to it
+    /// have stopped, otherwise their remaining output is lost.
+    /// </remarks>
     /// <param name="stdout">Receives Stdout.</param>
     /// <param name="stderr">Receives Stderr.</param>
     /// <returns>A output consumer.</returns>
