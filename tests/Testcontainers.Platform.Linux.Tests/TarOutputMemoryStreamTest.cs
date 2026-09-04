@@ -12,7 +12,7 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
 
     protected TarOutputMemoryStreamTest()
     {
-        _ = Directory.CreateDirectory(_testFile.Directory!.FullName);
+        _ = Directory.CreateDirectory(_testFile.Directory.FullName);
 
         using var fileStream = _testFile.Open(FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
         fileStream.WriteByte(13);
@@ -34,7 +34,7 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
         if (disposing)
         {
             _tarOutputMemoryStream.Dispose();
-            _testFile.Directory!.Delete(true);
+            _testFile.Directory.Delete(true);
         }
 
         _disposed = true;
@@ -195,12 +195,12 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
                 .WithResourceMapping(_testFile.FullName, targetDirectoryPath1)
                 .WithResourceMapping(_testFile, targetDirectoryPath2)
                 .WithResourceMapping(_testFile, new DirectoryInfo(targetDirectoryPath3))
-                .WithResourceMapping(_testFile.Directory!, targetDirectoryPath4)
-                .WithResourceMapping(_testFile.Directory!, new DirectoryInfo(targetDirectoryPath5))
+                .WithResourceMapping(_testFile.Directory, targetDirectoryPath4)
+                .WithResourceMapping(_testFile.Directory, new DirectoryInfo(targetDirectoryPath5))
                 .WithResourceMapping(new Uri(_testFileUri), new DirectoryInfo(targetDirectoryPath6))
                 .WithResourceMapping(new Uri(_testFileUri), targetDirectoryPath7.AsDirectory())
                 .WithResourceMapping(_testFile.FullName.AsFile(), targetDirectoryPath8.AsDirectory())
-                .WithResourceMapping(_testFile.Directory!.FullName.AsDirectory(), targetDirectoryPath9.AsDirectory())
+                .WithResourceMapping(_testFile.Directory.FullName.AsDirectory(), targetDirectoryPath9.AsDirectory())
                 .WithResourceMapping(new Uri(_testFileUri), targetDirectoryPath12)
                 .Build();
 
@@ -211,7 +211,7 @@ public abstract class TarOutputMemoryStreamTest : IDisposable
             await container.CopyAsync(fileContent, targetFilePath9, ct: TestContext.Current.CancellationToken)
                 .ConfigureAwait(true);
 
-            await container.CopyAsync(_testFile.Directory!.FullName, targetDirectoryPath10, ct: TestContext.Current.CancellationToken)
+            await container.CopyAsync(_testFile.Directory.FullName, targetDirectoryPath10, ct: TestContext.Current.CancellationToken)
                 .ConfigureAwait(true);
 
             await container.CopyAsync(_testFile.FullName, targetDirectoryPath11, ct: TestContext.Current.CancellationToken)

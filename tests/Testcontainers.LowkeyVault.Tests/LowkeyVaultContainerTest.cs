@@ -100,7 +100,7 @@ public abstract class LowkeyVaultContainerTest : IAsyncLifetime
         var response = await certificateClient.DownloadCertificateAsync(certificateName, cancellationToken: TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        using var certificate = response!.Value;
+        using var certificate = response.Value;
 
         // Then
         Assert.Equal(subject, certificate.Subject);
