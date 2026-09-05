@@ -645,3 +645,70 @@ public sealed class ComposeContainerPullTest : IAsyncLifetime
         Assert.Equal(TestcontainersStates.Running, _composeContainer.GetServiceContainer("app").State);
     }
 }
+
+public sealed class ComposeContainerOptionTest : IAsyncLifetime
+{
+    private readonly string _image = "compose-" + Guid.NewGuid().ToString("D");
+
+    private readonly ComposeContainer _composeContainer;
+
+    private bool _imageExistsAfterUp;
+
+    private bool _imageExistsAfterDown;
+
+    public ComposeContainerOptionTest()
+    {
+        var composeFileDirectoryPath = Directory.CreateDirectory(Path.Combine(TestSession.TempDirectoryPath, Guid.NewGuid().ToString("D"))).FullName;
+
+        var composeFilePath = Path.Combine(composeFileDirectoryPath, "compose.yml");
+
+        File.WriteAllText(Path.Combine(composeFileDirectoryPath, "Dockerfile"), $"""
+            FROM {CommonImages.Alpine.FullName}
+            CMD ["/bin/sh", "-c", "sleep infinity"]
+            """);
+
+        // The up command builds the image of this service, the down command removes
+        // it again.
+        File.WriteAllText(composeFilePath, $"""
+            services:
+              app:
+                image: "{_image}"
+                build: "."
+            """);
+
+        _composeContainer = new ComposeBuilder(CommonImages.DockerCli)
+            .WithComposeFile(composeFilePath)
+            .WithComposeUpOption("--build")
+            .WithComposeDownOption("--rmi", "local")
+            .Build();
+    }
+
+    public async ValueTask InitializeAsync()
+    {
+        await _composeContainer.StartAsync()
+            .ConfigureAwait(false);
+
+        _imageExistsAfterUp = DockerCli.ResourceExists(DockerCli.DockerResource.Image, _image);
+
+        // The test asserts the result of the down command. Run it here instead of in
+        // DisposeAsync, which runs after the test. Disposing the Docker Compose
+        // container twice is a no-op.
+        await _composeContainer.DisposeAsync()
+            .ConfigureAwait(false);
+
+        _imageExistsAfterDown = DockerCli.ResourceExists(DockerCli.DockerResource.Image, _image);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await _composeContainer.DisposeAsync()
+            .ConfigureAwait(false);
+    }
+
+    [Fact]
+    public void AddsOptionsToComposeUpAndDownCommand()
+    {
+        Assert.True(_imageExistsAfterUp, "Expected the Docker Compose up command to build the image.");
+        Assert.False(_imageExistsAfterDown, "Expected the Docker Compose down command to remove the image.");
+    }
+}

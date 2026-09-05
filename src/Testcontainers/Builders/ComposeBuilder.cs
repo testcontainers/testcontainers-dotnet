@@ -332,6 +332,46 @@ namespace DotNet.Testcontainers.Builders
       return Merge(DockerResourceConfiguration, new ComposeConfiguration(pull: pull));
     }
 
+    /// <summary>
+    /// Adds options to the Docker Compose up command.
+    /// </summary>
+    /// <remarks>
+    /// Each option is one command line argument. Pass an option and its value as two
+    /// arguments, <c>"--pull", "always"</c>, or as one argument that contains the
+    /// assignment, <c>"--pull=always"</c>.
+    ///
+    /// Docker Compose always starts the services detached. Options that attach to
+    /// the services are not supported.
+    ///
+    /// Options that apply to Docker Compose itself instead of to the up command,
+    /// such as <c>--profile</c> or <c>--env-file</c>, are set with their
+    /// pre-defined environment variable (see
+    /// <see href="https://docs.docker.com/compose/how-tos/environment-variables/envvars/" />),
+    /// for example <c>WithEnvironment("COMPOSE_PROFILES", "debug")</c>.
+    /// </remarks>
+    /// <param name="upOptions">A list of options that are added to the Docker Compose up command.</param>
+    /// <returns>A configured instance of <see cref="ComposeBuilder" />.</returns>
+    public ComposeBuilder WithComposeUpOption(params string[] upOptions)
+    {
+      return Merge(DockerResourceConfiguration, new ComposeConfiguration(upOptions: upOptions));
+    }
+
+    /// <summary>
+    /// Adds options to the Docker Compose down command.
+    /// </summary>
+    /// <remarks>
+    /// Each option is one command line argument, the same as for the Docker
+    /// Compose up command (see <see cref="WithComposeUpOption(string[])" />).
+    ///
+    /// The Docker Compose services are always removed with their volumes.
+    /// </remarks>
+    /// <param name="downOptions">A list of options that are added to the Docker Compose down command.</param>
+    /// <returns>A configured instance of <see cref="ComposeBuilder" />.</returns>
+    public ComposeBuilder WithComposeDownOption(params string[] downOptions)
+    {
+      return Merge(DockerResourceConfiguration, new ComposeConfiguration(downOptions: downOptions));
+    }
+
     /// <inheritdoc />
     public override ComposeContainer Build()
     {
@@ -433,6 +473,10 @@ namespace DotNet.Testcontainers.Builders
 
       _ = Guard.Argument(DockerResourceConfiguration.ServiceReadiness, nameof(DockerResourceConfiguration.ServiceReadiness))
         .ThrowIf(argument => argument.Value != null && argument.Value.Any(serviceReadiness => serviceReadiness.Instance < ComposeServiceName.FirstInstance), argument => new ArgumentException(string.Format(serviceInstanceInvalid, ComposeServiceName.FirstInstance), argument.Name));
+
+      const string composeUpOptionNotDetached = "The Docker Compose services always start detached. The option '{0}' is not supported.";
+      _ = Guard.Argument(DockerResourceConfiguration.UpOptions, nameof(DockerResourceConfiguration.UpOptions))
+        .ThrowIf(argument => argument.Value != null && argument.Value.Any(IsNotDetached), argument => new ArgumentException(string.Format(composeUpOptionNotDetached, argument.Value.First(IsNotDetached)), argument.Name));
     }
 
     /// <inheritdoc />
@@ -569,6 +613,22 @@ namespace DotNet.Testcontainers.Builders
     private static bool IsFileCopyInclusionMissing(string fileCopyInclusion)
     {
       return !File.Exists(fileCopyInclusion) && !Directory.Exists(fileCopyInclusion);
+    }
+
+    /// <summary>
+    /// Checks whether a Docker Compose up option disables the detached mode, e.g.
+    /// <c>--detach=false</c>.
+    /// </summary>
+    /// <remarks>
+    /// Docker Compose rejects the remaining options that attach to the services
+    /// itself. An option that disables the detached mode keeps the Docker Compose up
+    /// command running until the services stop, which never lets the start complete.
+    /// </remarks>
+    /// <param name="upOption">The Docker Compose up option.</param>
+    /// <returns>True if the Docker Compose up option disables the detached mode; otherwise, false.</returns>
+    private static bool IsNotDetached(string upOption)
+    {
+      return upOption.StartsWith("--detach=", StringComparison.Ordinal) || upOption.StartsWith("-d=", StringComparison.Ordinal);
     }
   }
 }

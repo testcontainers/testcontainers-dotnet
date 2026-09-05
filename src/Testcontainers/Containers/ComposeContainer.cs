@@ -387,6 +387,7 @@ namespace DotNet.Testcontainers.Containers
     private async Task ComposeUpAsync(CancellationToken ct = default)
     {
       var upCommand = new List<string>(ComposeUpCommand);
+      upCommand.AddRange(_configuration.UpOptions);
 
       foreach (var scaledService in _configuration.ScaledServices)
       {
@@ -478,7 +479,10 @@ namespace DotNet.Testcontainers.Containers
 
       try
       {
-        _ = await ExecAsync(ComposeDownCommand, ct)
+        var downCommand = new List<string>(ComposeDownCommand);
+        downCommand.AddRange(_configuration.DownOptions);
+
+        _ = await ExecAsync(downCommand, ct)
           .ThrowOnFailure()
           .ConfigureAwait(false);
 

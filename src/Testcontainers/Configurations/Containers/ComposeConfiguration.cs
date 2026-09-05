@@ -20,6 +20,8 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="exposedServices">A list of exposed Docker Compose service ports.</param>
     /// <param name="serviceReadiness">A list that indicates the readiness of the Docker Compose services.</param>
     /// <param name="fileCopyInclusions">A list of files and directories to copy into the container.</param>
+    /// <param name="upOptions">A list of options that are added to the Docker Compose up command.</param>
+    /// <param name="downOptions">A list of options that are added to the Docker Compose down command.</param>
     /// <param name="pull">A value indicating whether the Docker Compose images are pulled before the services start or not.</param>
     public ComposeConfiguration(
       IEnumerable<string> composeFiles = null,
@@ -30,6 +32,8 @@ namespace DotNet.Testcontainers.Configurations
       IEnumerable<ComposeExposedService> exposedServices = null,
       IEnumerable<ComposeServiceReadiness> serviceReadiness = null,
       IEnumerable<string> fileCopyInclusions = null,
+      IEnumerable<string> upOptions = null,
+      IEnumerable<string> downOptions = null,
       bool? pull = null)
     {
       ComposeFiles = composeFiles;
@@ -40,6 +44,8 @@ namespace DotNet.Testcontainers.Configurations
       ExposedServices = exposedServices;
       ServiceReadiness = serviceReadiness;
       FileCopyInclusions = fileCopyInclusions;
+      UpOptions = upOptions;
+      DownOptions = downOptions;
       Pull = pull;
     }
 
@@ -89,6 +95,8 @@ namespace DotNet.Testcontainers.Configurations
       ExposedServices = BuildConfiguration.Combine(oldValue.ExposedServices, newValue.ExposedServices);
       ServiceReadiness = BuildConfiguration.Combine(oldValue.ServiceReadiness, newValue.ServiceReadiness);
       FileCopyInclusions = BuildConfiguration.Combine(oldValue.FileCopyInclusions, newValue.FileCopyInclusions);
+      UpOptions = BuildConfiguration.Combine(oldValue.UpOptions, newValue.UpOptions);
+      DownOptions = BuildConfiguration.Combine(oldValue.DownOptions, newValue.DownOptions);
       Pull = BuildConfiguration.Combine(oldValue.Pull, newValue.Pull);
     }
 
@@ -132,6 +140,16 @@ namespace DotNet.Testcontainers.Configurations
     /// the directory of the first Docker Compose file.
     /// </summary>
     public IEnumerable<string> FileCopyInclusions { get; }
+
+    /// <summary>
+    /// Gets a list of options that are added to the Docker Compose up command.
+    /// </summary>
+    public IEnumerable<string> UpOptions { get; }
+
+    /// <summary>
+    /// Gets a list of options that are added to the Docker Compose down command.
+    /// </summary>
+    public IEnumerable<string> DownOptions { get; }
 
     /// <summary>
     /// Gets a value indicating whether the Docker Compose images are pulled before
