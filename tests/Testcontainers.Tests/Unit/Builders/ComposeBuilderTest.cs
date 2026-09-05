@@ -139,6 +139,21 @@ namespace DotNet.Testcontainers.Tests.Unit
       Assert.StartsWith("The Docker Compose project name prefix must not exceed", exception.Message);
     }
 
+    [Theory]
+    [InlineData("--detach=false")]
+    [InlineData("-d=false")]
+    public void ThrowsArgumentExceptionWhenComposeUpOptionIsNotDetached(string upOption)
+    {
+      // Given
+      var composeBuilder = new ComposeBuilder(CommonImages.DockerCli).WithComposeFile(ComposeFilePath).WithComposeUpOption(upOption);
+
+      // When
+      var exception = Assert.Throws<ArgumentException>(composeBuilder.Build);
+
+      // Then
+      Assert.StartsWith("The Docker Compose services always start detached", exception.Message);
+    }
+
     [Fact]
     public void ThrowsArgumentExceptionWhenReuseIsEnabled()
     {

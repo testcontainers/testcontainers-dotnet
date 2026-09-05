@@ -61,6 +61,31 @@ _ = new ComposeBuilder(image)
 
 Testcontainers pulls the Docker Compose service images from the test host before `docker compose up` runs, so the Docker credentials and credential helpers of the test host apply. Docker Compose running inside its own container does not have access to them. This is enabled by default. A failing pull does not fail the start. Docker Compose still tries to pull the image itself. Disable it with `WithPull(false)` if your images are already present on the Docker host.
 
+## Command options
+
+`WithComposeUpOption(params string[])` and `WithComposeDownOption(params string[])` add options to the `docker compose up` and `docker compose down` commands. Each option is one command line argument. Pass an option and its value as two arguments, `"--pull", "always"`, or as one argument that contains the assignment, `"--pull=always"`.
+
+```csharp
+_ = new ComposeBuilder(image)
+  .WithComposeFile(composeFilePath)
+  .WithComposeUpOption("--build")
+  .WithComposeDownOption("--rmi", "local");
+```
+
+A service that Docker Compose builds needs its build context inside the container that runs the Docker Compose CLI. The directory of the Docker Compose file is copied by default, which includes the build context. If you restrict the copy with `WithCopyFilesInContainer(params string[])`, list the Dockerfile and the build context as well.
+
+Options that apply to Docker Compose itself instead of to a command, such as `--profile` or `--env-file`, are set with their [pre-defined environment variable](https://docs.docker.com/compose/how-tos/environment-variables/envvars/). They apply to every command Testcontainers runs.
+
+```csharp
+_ = new ComposeBuilder(image)
+  .WithComposeFile(composeFilePath)
+  .WithEnvironment("COMPOSE_PROFILES", "debug");
+```
+
+!!! note
+
+    The Docker Compose services always start detached, and are always removed with their volumes.
+
 !!! note
 
     `ComposeContainer` does not support `WithReuse(true)`.
