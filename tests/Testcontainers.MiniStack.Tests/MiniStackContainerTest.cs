@@ -1,5 +1,6 @@
 namespace Testcontainers.MiniStack;
 
+// # --8<-- [start:UseMiniStackContainer]
 public sealed class MiniStackContainerTest : IAsyncLifetime
 {
     private const string AwsService = "Service";
@@ -22,6 +23,7 @@ public sealed class MiniStackContainerTest : IAsyncLifetime
     {
         return _miniStackContainer.DisposeAsync();
     }
+// # --8<-- [end:UseMiniStackContainer]
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
