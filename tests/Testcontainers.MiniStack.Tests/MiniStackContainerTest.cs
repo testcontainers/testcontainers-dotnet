@@ -1,0 +1,231 @@
+namespace Testcontainers.MiniStack;
+
+public sealed class MiniStackContainerTest : IAsyncLifetime
+{
+    private const string AwsService = "Service";
+
+    private readonly MiniStackContainer _miniStackContainer = new MiniStackBuilder(TestSession.GetImageFromDockerfile()).Build();
+
+    static MiniStackContainerTest()
+    {
+        Environment.SetEnvironmentVariable("AWS_ACCESS_KEY_ID", CommonCredentials.AwsAccessKey);
+        Environment.SetEnvironmentVariable("AWS_SECRET_ACCESS_KEY", CommonCredentials.AwsSecretKey);
+    }
+
+    public async ValueTask InitializeAsync()
+    {
+        await _miniStackContainer.StartAsync()
+            .ConfigureAwait(false);
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        return _miniStackContainer.DisposeAsync();
+    }
+
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    [Trait(AwsService, "cloudwatch")]
+    public async Task CreateLogReturnsHttpStatusCodeOk()
+    {
+        // Given
+        var config = new AmazonCloudWatchLogsConfig();
+        config.ServiceURL = _miniStackContainer.GetConnectionString();
+        config.AuthenticationRegion = "us-east-1";
+
+        using var client = new AmazonCloudWatchLogsClient(config);
+
+        var logGroupRequest = new CreateLogGroupRequest(Guid.NewGuid().ToString("D"));
+
+        // When
+        var logGroupResponse = await client.CreateLogGroupAsync(logGroupRequest, TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        // Then
+        Assert.Equal(HttpStatusCode.OK, logGroupResponse.HttpStatusCode);
+        Assert.Equal(_miniStackContainer.GetConnectionString(), _miniStackContainer.GetConnectionString(ConnectionMode.Host));
+    }
+
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    [Trait(AwsService, "dynamodb")]
+    public async Task GetItemReturnsPutItem()
+    {
+        // Given
+        var id = Guid.NewGuid().ToString("D");
+
+        var tableName = Guid.NewGuid().ToString("D");
+
+        var config = new AmazonDynamoDBConfig();
+        config.ServiceURL = _miniStackContainer.GetConnectionString();
+        config.AuthenticationRegion = "us-east-1";
+
+        using var client = new AmazonDynamoDBClient(config);
+
+        var tableRequest = new CreateTableRequest();
+        tableRequest.TableName = tableName;
+        tableRequest.AttributeDefinitions = new List<AttributeDefinition> { new AttributeDefinition("Id", ScalarAttributeType.S) };
+        tableRequest.KeySchema = new List<KeySchemaElement> { new KeySchemaElement("Id", KeyType.HASH) };
+        tableRequest.ProvisionedThroughput = new ProvisionedThroughput(10, 5);
+
+        var putItemRequest = new PutItemRequest();
+        putItemRequest.TableName = tableName;
+        putItemRequest.Item = new Dictionary<string, AttributeValue> { { "Id", new AttributeValue { S = id } } };
+
+        var getItemRequest = new GetItemRequest();
+        getItemRequest.TableName = tableName;
+        getItemRequest.Key = new Dictionary<string, AttributeValue> { { "Id", new AttributeValue { S = id } } };
+
+        // When
+        _ = await client.CreateTableAsync(tableRequest, TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        _ = await client.PutItemAsync(putItemRequest, TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        var itemResponse = await client.GetItemAsync(getItemRequest, TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        // Then
+        Assert.Equal(id, itemResponse.Item.Values.Single().S);
+    }
+
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    [Trait(AwsService, "s3")]
+    public async Task ListBucketsReturnsHttpStatusCodeOk()
+    {
+        // Given
+        var config = new AmazonS3Config();
+        config.ServiceURL = _miniStackContainer.GetConnectionString();
+        config.AuthenticationRegion = "us-east-1";
+
+        using var client = new AmazonS3Client(config);
+
+        // When
+        var buckets = await client.ListBucketsAsync(TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        // Then
+        Assert.Equal(HttpStatusCode.OK, buckets.HttpStatusCode);
+    }
+
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    [Trait(AwsService, "sns")]
+    public async Task CreateTopicReturnsHttpStatusCodeOk()
+    {
+        // Given
+        var config = new AmazonSimpleNotificationServiceConfig();
+        config.ServiceURL = _miniStackContainer.GetConnectionString();
+        config.AuthenticationRegion = "us-east-1";
+
+        using var client = new AmazonSimpleNotificationServiceClient(config);
+
+        // When
+        var topicResponse = await client.CreateTopicAsync(Guid.NewGuid().ToString("D"), TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        // Then
+        Assert.Equal(HttpStatusCode.OK, topicResponse.HttpStatusCode);
+    }
+
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    [Trait(AwsService, "sqs")]
+    public async Task CreateQueueReturnsHttpStatusCodeOk()
+    {
+        // Given
+        var config = new AmazonSQSConfig();
+        config.ServiceURL = _miniStackContainer.GetConnectionString();
+        config.AuthenticationRegion = "us-east-1";
+
+        using var client = new AmazonSQSClient(config);
+
+        // When
+        var queueResponse = await client.CreateQueueAsync(Guid.NewGuid().ToString("D"), TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        // Then
+        Assert.Equal(HttpStatusCode.OK, queueResponse.HttpStatusCode);
+    }
+
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public async Task ResetClearsAllState()
+    {
+        // Given
+        var tableName = Guid.NewGuid().ToString("D");
+
+        var config = new AmazonDynamoDBConfig();
+        config.ServiceURL = _miniStackContainer.GetConnectionString();
+        config.AuthenticationRegion = "us-east-1";
+
+        using var client = new AmazonDynamoDBClient(config);
+
+        var tableRequest = new CreateTableRequest();
+        tableRequest.TableName = tableName;
+        tableRequest.AttributeDefinitions = new List<AttributeDefinition> { new AttributeDefinition("Id", ScalarAttributeType.S) };
+        tableRequest.KeySchema = new List<KeySchemaElement> { new KeySchemaElement("Id", KeyType.HASH) };
+        tableRequest.ProvisionedThroughput = new ProvisionedThroughput(10, 5);
+
+        _ = await client.CreateTableAsync(tableRequest, TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        var beforeReset = await client.ListTablesAsync(TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        // When
+        await _miniStackContainer.ResetAsync(ct: TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        var afterReset = await client.ListTablesAsync(TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        // Then
+        Assert.Contains(tableName, beforeReset.TableNames);
+        Assert.DoesNotContain(tableName, afterReset.TableNames);
+    }
+
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    [Trait(AwsService, "ses")]
+    public async Task GetSesMessagesReturnsJson()
+    {
+        // When
+        var json = await _miniStackContainer.GetSesMessagesAsync(TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        // Then
+        Assert.NotNull(json);
+        Assert.NotEmpty(json);
+    }
+
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    [Trait(AwsService, "sqs")]
+    public async Task GetSqsMessagesReturnsJsonAfterSend()
+    {
+        // Given
+        var queueName = Guid.NewGuid().ToString("D");
+
+        var config = new AmazonSQSConfig();
+        config.ServiceURL = _miniStackContainer.GetConnectionString();
+        config.AuthenticationRegion = "us-east-1";
+
+        using var client = new AmazonSQSClient(config);
+
+        var queue = await client.CreateQueueAsync(queueName, TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        await client.SendMessageAsync(queue.QueueUrl, "hello-ministack", TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        // When
+        var json = await _miniStackContainer.GetSqsMessagesAsync(TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        // Then
+        Assert.Contains("hello-ministack", json);
+    }
+}
