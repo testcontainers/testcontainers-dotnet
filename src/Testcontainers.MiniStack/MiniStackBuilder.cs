@@ -6,7 +6,7 @@ public sealed class MiniStackBuilder : ContainerBuilder<MiniStackBuilder, MiniSt
 {
     [Obsolete(
         "This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
-    public const string MiniStackImage = "ministackorg/ministack:latest";
+    public const string MiniStackImage = "ministackorg/ministack:1.5.8";
 
     public const ushort MiniStackPort = 4566;
 
@@ -26,7 +26,7 @@ public sealed class MiniStackBuilder : ContainerBuilder<MiniStackBuilder, MiniSt
     /// </summary>
     /// <param name="image">
     /// The full Docker image name, including the image repository and tag
-    /// (e.g., <c>ministackorg/ministack:latest</c>).
+    /// (e.g., <c>ministackorg/ministack:1.5.8</c>).
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/ministackorg/ministack/tags" />.

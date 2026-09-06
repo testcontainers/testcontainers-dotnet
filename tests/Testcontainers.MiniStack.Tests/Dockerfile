@@ -1,1 +1,1 @@
-FROM ministackorg/ministack:latest@sha256:d865b1e43b0b1a7e6f246e1a46fb8a0a2fa04e2a94c64740c8ff454748040726
+FROM ministackorg/ministack:1.5.8@sha256:d865b1e43b0b1a7e6f246e1a46fb8a0a2fa04e2a94c64740c8ff454748040726
