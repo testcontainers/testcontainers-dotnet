@@ -1,6 +1,7 @@
 awslocal
 azurecr
 azurite
+buildx
 capi
 creds
 dind

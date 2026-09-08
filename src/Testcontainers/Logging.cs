@@ -78,6 +78,9 @@ namespace DotNet.Testcontainers
     [LoggerMessage(Level = LogLevel.Information, Message = "Docker image {FullName} built")]
     private static partial void DockerImageBuiltCore(ILogger logger, string fullName);
 
+    [LoggerMessage(Level = LogLevel.Information, Message = "Docker image {FullName} build output:{NewLine}{BuildOutput}")]
+    private static partial void DockerImageBuildOutputCore(ILogger logger, string fullName, string newLine, string buildOutput);
+
     [LoggerMessage(Level = LogLevel.Information, Message = "Delete Docker image {FullName}")]
     private static partial void DeleteDockerImageCore(ILogger logger, string fullName);
 
@@ -242,6 +245,11 @@ namespace DotNet.Testcontainers
     public static void DockerImageBuilt(this ILogger logger, IImage image)
     {
       DockerImageBuiltCore(logger, image.FullName);
+    }
+
+    public static void DockerImageBuildOutput(this ILogger logger, IImage image, string buildOutput)
+    {
+      DockerImageBuildOutputCore(logger, image.FullName, Environment.NewLine, buildOutput);
     }
 
     public static void DeleteDockerImage(this ILogger logger, IImage image)
