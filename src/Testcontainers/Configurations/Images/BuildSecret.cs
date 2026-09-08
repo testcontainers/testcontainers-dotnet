@@ -73,6 +73,22 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <summary>
+    /// Gets the path of the file on the test host that contains the build secret
+    /// value.
+    /// </summary>
+    /// <remarks>
+    /// The path is empty if the build secret value is set directly instead of read
+    /// from a file.
+    /// </remarks>
+    internal string SourceFilePath
+    {
+      get
+      {
+        return _resourceMapping.Source;
+      }
+    }
+
+    /// <summary>
     /// Gets the Unix file mode of the file inside the Docker CLI container that
     /// contains the build secret value.
     /// </summary>

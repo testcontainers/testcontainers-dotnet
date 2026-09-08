@@ -78,8 +78,14 @@ namespace DotNet.Testcontainers
     [LoggerMessage(Level = LogLevel.Information, Message = "Docker image {FullName} built")]
     private static partial void DockerImageBuiltCore(ILogger logger, string fullName);
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "Docker image {FullName} build output:{NewLine}{BuildOutput}")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Build Docker image {FullName} with \"{Command}\"")]
+    private static partial void BuildDockerImageCore(ILogger logger, string fullName, string command);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Docker image {FullName} build output:{NewLine}{BuildOutput}")]
     private static partial void DockerImageBuildOutputCore(ILogger logger, string fullName, string newLine, string buildOutput);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "The image build parameter {ParameterName} is set, but the Docker CLI does not provide an equivalent argument. It is not applied to the Docker image build")]
+    private static partial void ImageBuildParameterNotSupportedCore(ILogger logger, string parameterName);
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Delete Docker image {FullName}")]
     private static partial void DeleteDockerImageCore(ILogger logger, string fullName);
@@ -247,9 +253,20 @@ namespace DotNet.Testcontainers
       DockerImageBuiltCore(logger, image.FullName);
     }
 
+    public static void BuildDockerImage(this ILogger logger, IImage image, IEnumerable<string> command)
+    {
+      var commandLine = string.Join(" ", command);
+      BuildDockerImageCore(logger, image.FullName, commandLine);
+    }
+
     public static void DockerImageBuildOutput(this ILogger logger, IImage image, string buildOutput)
     {
       DockerImageBuildOutputCore(logger, image.FullName, Environment.NewLine, buildOutput);
+    }
+
+    public static void ImageBuildParameterNotSupported(this ILogger logger, string parameterName)
+    {
+      ImageBuildParameterNotSupportedCore(logger, parameterName);
     }
 
     public static void DeleteDockerImage(this ILogger logger, IImage image)

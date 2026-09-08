@@ -151,11 +151,11 @@ COPY . .
 RUN --mount=type=secret,id=nuget dotnet restore --configfile /run/secrets/nuget
 ```
 
-Testcontainers copies the build secret into the Docker CLI container that runs the build. It is not part of the build context, and is not passed as a build argument or an environment variable.
+Testcontainers copies the build secret into the Docker CLI container that runs the build. It is not part of the build context, and is not passed as a build argument or an environment variable. The container that runs the build is removed after the build, no matter whether the cleanup of the image is enabled or not.
 
 ### SSH agents
 
-`WithSshAgent(string, params string[])` passes an SSH agent socket or private key to the build. The Dockerfile mounts it with `RUN --mount=type=ssh,id=<id>`. Use the id `default` for a mount that does not name an id. Each path is bind-mounted read-only into the Docker CLI container, keeping the path it has on the test host, so the paths must exist on the host that runs the Docker daemon.
+`WithSshAgent(string, params string[])` passes an SSH agent socket or private key to the build. The Dockerfile mounts it with `RUN --mount=type=ssh,id=<id>`. Use the id `default` for a mount that does not name an id. Each path is bind-mounted read-only into the Docker CLI container, keeping the path it has on the test host, so the paths must exist on the host that runs the Docker daemon. A path cannot contain a comma, which the Docker CLI uses to separate the paths of an SSH agent.
 
 ```csharp
 _ = new BuildKitImageFromDockerfileBuilder()
@@ -197,7 +197,7 @@ _ = new BuildKitImageFromDockerfileBuilder()
 
 !!! note
 
-    `BuildKitImageFromDockerfileBuilder` translates the image build parameter (`WithCreateParameterModifier`) into Docker CLI arguments. Only the parameters that the Docker CLI supports are passed on: the Dockerfile, the tags, the build arguments, the labels, the target and the platform.
+    `BuildKitImageFromDockerfileBuilder` translates the image build parameter (`WithCreateParameterModifier`) into Docker CLI arguments. The Dockerfile, the tags, the build arguments, the labels, the target and the platform are passed on, and so are `NoCache` (`--no-cache`), `Pull` (`--pull`), `NetworkMode` (`--network`), `ShmSize` (`--shm-size`), `ExtraHosts` (`--add-host`) and `CacheFrom` (`--cache-from`). A parameter that the Docker CLI does not provide an equivalent argument for, such as the resource limits of the legacy builder (`Memory`, `CPUShares`) or `Squash`, is logged as a warning instead of being applied.
 
 ## Known issues
 

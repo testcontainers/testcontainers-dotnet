@@ -81,6 +81,21 @@ namespace DotNet.Testcontainers.Tests.Unit
     }
 
     [Fact]
+    public void ThrowsFileNotFoundExceptionWhenSecretFileDoesNotExist()
+    {
+      // Given
+      var secretFilePath = Path.Combine(TestSession.TempDirectoryPath, Guid.NewGuid().ToString("D"));
+
+      var imageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder().WithSecret("mysecret", new FileInfo(secretFilePath));
+
+      // When
+      var exception = Assert.Throws<FileNotFoundException>(() => imageFromDockerfileBuilder.Build());
+
+      // Then
+      Assert.Equal($"The build secret file '{secretFilePath}' does not exist.", exception.Message);
+    }
+
+    [Fact]
     public void ThrowsArgumentExceptionWhenSshAgentIdIsInvalid()
     {
       // Given
@@ -91,6 +106,21 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       // Then
       Assert.StartsWith("The SSH agent id 'invalid id' must start with", exception.Message);
+    }
+
+    [Fact]
+    public void ThrowsArgumentExceptionWhenSshAgentPathContainsComma()
+    {
+      // Given
+      var sshAgentPath = Path.Combine(TestSession.TempDirectoryPath, "ssh,agent.sock");
+
+      var imageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder().WithSshAgent("default", sshAgentPath);
+
+      // When
+      var exception = Assert.Throws<ArgumentException>(() => imageFromDockerfileBuilder.Build());
+
+      // Then
+      Assert.StartsWith($"The SSH agent path '{sshAgentPath}' cannot contain a comma", exception.Message);
     }
   }
 }

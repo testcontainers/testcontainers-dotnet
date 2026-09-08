@@ -288,9 +288,17 @@ namespace DotNet.Testcontainers.Builders
       _ = Guard.Argument(DockerResourceConfiguration.Secrets, nameof(DockerResourceConfiguration.Secrets))
         .ThrowIf(argument => argument.Value.GroupBy(secret => secret.Id).Any(group => group.Count() > 1), argument => new ArgumentException(string.Format(secretIdNotUnique, argument.Value.GroupBy(secret => secret.Id).First(group => group.Count() > 1).Key), argument.Name));
 
+      const string secretSourceDoesNotExist = "The build secret file '{0}' does not exist.";
+      _ = Guard.Argument(DockerResourceConfiguration.Secrets, nameof(DockerResourceConfiguration.Secrets))
+        .ThrowIf(argument => argument.Value.Any(IsSecretSourceMissing), argument => new FileNotFoundException(string.Format(secretSourceDoesNotExist, argument.Value.First(IsSecretSourceMissing).SourceFilePath)));
+
       const string sshAgentIdInvalid = "The SSH agent id '{0}' must start with a letter or digit and can only contain letters, digits, dots, dashes, and underscores.";
       _ = Guard.Argument(DockerResourceConfiguration.SshAgents, nameof(DockerResourceConfiguration.SshAgents))
         .ThrowIf(argument => argument.Value.Keys.Any(id => !IsIdValid(id)), argument => new ArgumentException(string.Format(sshAgentIdInvalid, argument.Value.Keys.First(id => !IsIdValid(id))), argument.Name));
+
+      const string sshAgentPathInvalid = "The SSH agent path '{0}' cannot contain a comma, which separates the paths of an SSH agent.";
+      _ = Guard.Argument(DockerResourceConfiguration.SshAgents, nameof(DockerResourceConfiguration.SshAgents))
+        .ThrowIf(argument => GetSshAgentPaths(argument.Value).Any(IsPathInvalid), argument => new ArgumentException(string.Format(sshAgentPathInvalid, GetSshAgentPaths(argument.Value).First(IsPathInvalid)), argument.Name));
     }
 
     /// <inheritdoc />
@@ -323,6 +331,42 @@ namespace DotNet.Testcontainers.Builders
     private static bool IsIdValid(string id)
     {
       return !string.IsNullOrEmpty(id) && IdRegex.IsMatch(id);
+    }
+
+    /// <summary>
+    /// Checks whether the file that contains the build secret value is missing or
+    /// not.
+    /// </summary>
+    /// <param name="secret">The build secret.</param>
+    /// <returns>True if the build secret reads its value from a file that does not exist; otherwise, false.</returns>
+    private static bool IsSecretSourceMissing(BuildSecret secret)
+    {
+      return !string.IsNullOrEmpty(secret.SourceFilePath) && !File.Exists(secret.SourceFilePath);
+    }
+
+    /// <summary>
+    /// Gets the SSH agent socket and private key paths of all SSH agents.
+    /// </summary>
+    /// <param name="sshAgents">A dictionary of SSH agent sockets or private keys.</param>
+    /// <returns>The SSH agent socket and private key paths.</returns>
+    private static IEnumerable<string> GetSshAgentPaths(IReadOnlyDictionary<string, IEnumerable<string>> sshAgents)
+    {
+      return sshAgents.Values.SelectMany(paths => paths);
+    }
+
+    /// <summary>
+    /// Checks whether an SSH agent socket or private key path can be passed to the
+    /// Docker CLI or not.
+    /// </summary>
+    /// <remarks>
+    /// The Docker CLI takes the paths of an SSH agent as a comma-separated list. A
+    /// path that contains a comma cannot be encoded.
+    /// </remarks>
+    /// <param name="path">The SSH agent socket or private key path.</param>
+    /// <returns>True if the path cannot be passed to the Docker CLI; otherwise, false.</returns>
+    private static bool IsPathInvalid(string path)
+    {
+      return path != null && path.IndexOf(',') > -1;
     }
   }
 }

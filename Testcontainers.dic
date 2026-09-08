@@ -33,6 +33,7 @@ rebalance
 redpanda
 ryuk
 servercore
+shm
 sqlplus
 testcontainer
 testcontainers
