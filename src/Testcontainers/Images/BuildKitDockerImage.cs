@@ -536,19 +536,19 @@ namespace DotNet.Testcontainers.Images
         buildCommand.Add(cacheFrom);
       }
 
-      foreach (var tag in buildParameters.Tags)
+      foreach (var tag in buildParameters.Tags ?? Array.Empty<string>())
       {
         buildCommand.Add("--tag");
         buildCommand.Add(tag);
       }
 
-      foreach (var buildArgument in buildParameters.BuildArgs)
+      foreach (var buildArgument in buildParameters.BuildArgs ?? Enumerable.Empty<KeyValuePair<string, string>>())
       {
         buildCommand.Add("--build-arg");
         buildCommand.Add($"{buildArgument.Key}={buildArgument.Value}");
       }
 
-      foreach (var label in buildParameters.Labels)
+      foreach (var label in buildParameters.Labels ?? Enumerable.Empty<KeyValuePair<string, string>>())
       {
         buildCommand.Add("--label");
         buildCommand.Add($"{label.Key}={label.Value}");

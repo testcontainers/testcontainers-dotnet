@@ -312,6 +312,40 @@ public sealed class BuildKitImageFromDockerfileTest
     }
 
     [Fact]
+    public async Task BuildsImageWhenImageBuildParameterCollectionsAreReset()
+    {
+        // Given
+        using var dockerClient = TestcontainersSettings.OS.DockerEndpointAuthConfig.GetDockerClientBuilder().Build();
+
+        var dockerfileDirectoryPath = CreateDockerfileDirectory($"""
+            FROM {CommonImages.Alpine.FullName}
+            RUN touch /build
+            """);
+
+        await using var image = new BuildKitImageFromDockerfileBuilder()
+            .WithDockerfileDirectory(dockerfileDirectoryPath)
+            .WithBuildArgument("MAGIC_NUMBER", "42")
+            .WithCreateParameterModifier(parameters =>
+            {
+                // A parameter modifier can reset a collection of the image build
+                // parameters. The Docker CLI command does not enumerate it then.
+                parameters.BuildArgs = null;
+                parameters.Labels = null;
+            })
+            .Build();
+
+        // When
+        await image.CreateAsync(TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        var imageInspectResponse = await dockerClient.Images.InspectImageAsync(image.FullName, TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        // Then
+        Assert.NotNull(imageInspectResponse);
+    }
+
+    [Fact]
     public async Task LogsRedactedBuildCommandAndBuildOutputAtDebugLevel()
     {
         // Given
