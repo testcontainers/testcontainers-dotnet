@@ -3,6 +3,9 @@ namespace Testcontainers.ZooKeeper;
 public sealed class ZooKeeperContainerTest(ZooKeeperContainerTest.ZooKeeperFixture fixture)
     : IClassFixture<ZooKeeperContainerTest.ZooKeeperFixture>
 {
+    /// <summary>
+    /// Verifies that the connection string is the host:port pair ZooKeeper clients expect.
+    /// </summary>
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public void GetConnectionStringReturnsHostAndPort()
@@ -10,6 +13,9 @@ public sealed class ZooKeeperContainerTest(ZooKeeperContainerTest.ZooKeeperFixtu
         Assert.Equal($"{fixture.Container.Hostname}:{fixture.Container.GetMappedPublicPort(ZooKeeperBuilder.ZooKeeperPort)}", fixture.Container.GetConnectionString());
     }
 
+    /// <summary>
+    /// Verifies that a znode can be created and read back through the ZooKeeper CLI.
+    /// </summary>
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task CreateAndReadZNodeReturnsValue()
@@ -32,10 +38,14 @@ public sealed class ZooKeeperContainerTest(ZooKeeperContainerTest.ZooKeeperFixtu
         Assert.Contains(zNodeData, getResult.Stdout);
     }
 
+    /// <summary>
+    /// Fixture that shares a single ZooKeeper container instance across the tests.
+    /// </summary>
     [UsedImplicitly]
     public class ZooKeeperFixture(IMessageSink messageSink)
         : ContainerFixture<ZooKeeperBuilder, ZooKeeperContainer>(messageSink)
     {
+        /// <inheritdoc />
         protected override ZooKeeperBuilder Configure()
             => new ZooKeeperBuilder(TestSession.GetImageFromDockerfile());
     }
