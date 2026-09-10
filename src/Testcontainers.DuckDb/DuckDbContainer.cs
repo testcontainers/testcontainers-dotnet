@@ -4,6 +4,8 @@ namespace Testcontainers.DuckDb;
 [PublicAPI]
 public sealed class DuckDbContainer : DockerContainer
 {
+    private readonly SemaphoreSlim _scriptExecutionSemaphore = new SemaphoreSlim(1, 1);
+
     private readonly DuckDbConfiguration _configuration;
 
     /// <summary>
@@ -33,6 +35,11 @@ public sealed class DuckDbContainer : DockerContainer
     /// <summary>
     /// Executes the SQL script in the DuckDB container.
     /// </summary>
+    /// <remarks>
+    /// Each execution runs a dedicated DuckDB process against the database file. DuckDB
+    /// does not support concurrent write access to the same database file from multiple
+    /// processes, therefore script executions are serialized per container instance.
+    /// </remarks>
     /// <param name="scriptContent">The content of the SQL script to execute.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the SQL script has been executed.</returns>
@@ -40,10 +47,20 @@ public sealed class DuckDbContainer : DockerContainer
     {
         var scriptFilePath = string.Join("/", string.Empty, "tmp", Guid.NewGuid().ToString("D"), Path.GetRandomFileName());
 
-        await CopyAsync(Encoding.Default.GetBytes(scriptContent), scriptFilePath, fileMode: Unix.FileMode644, ct: ct)
+        await _scriptExecutionSemaphore.WaitAsync(ct)
             .ConfigureAwait(false);
 
-        return await ExecAsync(new[] { DuckDbBuilder.DuckDbBinaryFilePath, _configuration.Database, "-f", scriptFilePath }, ct)
-            .ConfigureAwait(false);
+        try
+        {
+            await CopyAsync(Encoding.UTF8.GetBytes(scriptContent), scriptFilePath, fileMode: Unix.FileMode644, ct: ct)
+                .ConfigureAwait(false);
+
+            return await ExecAsync(new[] { DuckDbBuilder.DuckDbBinaryFilePath, _configuration.Database, "-f", scriptFilePath }, ct)
+                .ConfigureAwait(false);
+        }
+        finally
+        {
+            _scriptExecutionSemaphore.Release();
+        }
     }
 }
