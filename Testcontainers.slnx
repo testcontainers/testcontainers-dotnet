@@ -37,6 +37,7 @@
         <Project Path="src/Testcontainers.FirebirdSql/Testcontainers.FirebirdSql.csproj"/>
         <Project Path="src/Testcontainers.Firestore/Testcontainers.Firestore.csproj"/>
         <Project Path="src/Testcontainers.Floci/Testcontainers.Floci.csproj"/>
+        <Project Path="src/Testcontainers.FlociAz/Testcontainers.FlociAz.csproj"/>
         <Project Path="src/Testcontainers.GCloud/Testcontainers.GCloud.csproj"/>
         <Project Path="src/Testcontainers.Grafana/Testcontainers.Grafana.csproj"/>
         <Project Path="src/Testcontainers.InfluxDb/Testcontainers.InfluxDb.csproj"/>
@@ -108,6 +109,7 @@
         <Project Path="tests/Testcontainers.FirebirdSql.Tests/Testcontainers.FirebirdSql.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Firestore.Tests/Testcontainers.Firestore.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Floci.Tests/Testcontainers.Floci.Tests.csproj"/>
+        <Project Path="tests/Testcontainers.FlociAz.Tests/Testcontainers.FlociAz.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Grafana.Tests/Testcontainers.Grafana.Tests.csproj"/>
         <Project Path="tests/Testcontainers.InfluxDb.Tests/Testcontainers.InfluxDb.Tests.csproj"/>
         <Project Path="tests/Testcontainers.JanusGraph.Tests/Testcontainers.JanusGraph.Tests.csproj"/>

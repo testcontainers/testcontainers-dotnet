@@ -59,6 +59,7 @@ nav:
     - modules/pulsar.md # Apache
     - modules/aspire-dashboard.md
     - modules/eventhubs.md # Azure
+    - modules/flociaz.md # Azure
     - modules/servicebus.md # Azure
     - modules/clickhouse.md
     - modules/db2.md
