@@ -62,6 +62,7 @@ nav:
     - modules/servicebus.md # Azure
     - modules/clickhouse.md
     - modules/db2.md
+    - modules/duckdb.md
     - modules/elasticsearch.md
     - modules/garnet.md
     - modules/grafana.md
