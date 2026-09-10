@@ -10,7 +10,7 @@ namespace DotNet.Testcontainers.Configurations
 
   /// <inheritdoc cref="IImageFromDockerfileConfiguration" />
   [PublicAPI]
-  internal sealed class ImageFromDockerfileConfiguration : ResourceConfiguration<ImageBuildParameters>, IImageFromDockerfileConfiguration
+  internal class ImageFromDockerfileConfiguration : ResourceConfiguration<ImageBuildParameters>, IImageFromDockerfileConfiguration
   {
     /// <summary>
     /// Initializes a new instance of the <see cref="ImageFromDockerfileConfiguration" /> class.
