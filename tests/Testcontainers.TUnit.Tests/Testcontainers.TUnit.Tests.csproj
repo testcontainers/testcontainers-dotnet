@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <IsPackable>false</IsPackable>
+        <IsPublishable>false</IsPublishable>
+        <OutputType>Exe</OutputType>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="TUnit"/>
+        <PackageReference Include="Dapper"/>
+        <PackageReference Include="Npgsql"/>
+        <PackageReference Include="StackExchange.Redis"/>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="../../src/Testcontainers.TUnit/Testcontainers.TUnit.csproj"/>
+        <ProjectReference Include="../../src/Testcontainers.PostgreSql/Testcontainers.PostgreSql.csproj"/>
+        <ProjectReference Include="../../src/Testcontainers.Redis/Testcontainers.Redis.csproj"/>
+        <ProjectReference Include="../Testcontainers.Commons/Testcontainers.Commons.csproj"/>
+    </ItemGroup>
+    <ItemGroup>
+        <None Include="../Testcontainers.Xunit.Tests/Chinook_PostgreSql_AutoIncrementPKs.sql">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+</Project>

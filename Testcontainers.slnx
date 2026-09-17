@@ -154,6 +154,7 @@
         <Project Path="tests/Testcontainers.Temporal.Tests/Testcontainers.Temporal.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Tests/Testcontainers.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Toxiproxy.Tests/Testcontainers.Toxiproxy.Tests.csproj"/>
+        <Project Path="tests/Testcontainers.TUnit.Tests/Testcontainers.TUnit.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Typesense.Tests/Testcontainers.Typesense.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Weaviate.Tests/Testcontainers.Weaviate.Tests.csproj"/>
         <Project Path="tests/Testcontainers.WebDriver.Tests/Testcontainers.WebDriver.Tests.csproj"/>
