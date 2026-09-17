@@ -50,6 +50,7 @@ nav:
   - dind/index.md
   - full_framework/index.md
   - test_frameworks/xunit_net.md
+  - test_frameworks/tunit.md
   - Examples:
     - examples/aspnet.md
   - Modules:
