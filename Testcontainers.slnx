@@ -76,6 +76,7 @@
         <Project Path="src/Testcontainers.Sftp/Testcontainers.Sftp.csproj"/>
         <Project Path="src/Testcontainers.Temporal/Testcontainers.Temporal.csproj"/>
         <Project Path="src/Testcontainers.Toxiproxy/Testcontainers.Toxiproxy.csproj"/>
+        <Project Path="src/Testcontainers.TUnit/Testcontainers.TUnit.csproj"/>
         <Project Path="src/Testcontainers.Typesense/Testcontainers.Typesense.csproj"/>
         <Project Path="src/Testcontainers.Weaviate/Testcontainers.Weaviate.csproj"/>
         <Project Path="src/Testcontainers.WebDriver/Testcontainers.WebDriver.csproj"/>
