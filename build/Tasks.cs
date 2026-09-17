@@ -4,6 +4,10 @@ public sealed class BuildContext(ICakeContext context) : FrostingContext(context
 {
     internal BuildParameters Parameters { get; } = BuildParameters.Instance(context);
 
+    /// <summary>
+    /// Runs the tests of a test project and writes the TRX report and the code coverage to the test results directory.
+    /// </summary>
+    /// <param name="project">The test project.</param>
     public void DotNetTest(SolutionProject project)
     {
         if (UsesTestingPlatform(project))
@@ -28,9 +32,15 @@ public sealed class BuildContext(ICakeContext context) : FrostingContext(context
         });
     }
 
-    // Microsoft.Testing.Platform test projects (e.g. TUnit) cannot run through the VSTest mode
-    // of `dotnet test` on the .NET 10 SDK and later. Run them directly and pass the platform's
-    // equivalents of the VSTest options: TRX report, code coverage, results directory, filter.
+    /// <summary>
+    /// Runs the tests of a Microsoft.Testing.Platform test project (e.g. TUnit).
+    /// </summary>
+    /// <remarks>
+    /// These projects cannot run through the VSTest mode of <c>dotnet test</c> on the .NET 10 SDK and later.
+    /// The project is run directly instead, with the platform's equivalents of the VSTest options:
+    /// TRX report, code coverage, results directory, and test filter.
+    /// </remarks>
+    /// <param name="project">The test project.</param>
     private void DotNetTestWithTestingPlatform(SolutionProject project)
     {
         var resultsDirectoryPath = this.MakeAbsolute(Parameters.Paths.Directories.TestResultsDirectoryPath);
@@ -57,8 +67,14 @@ public sealed class BuildContext(ICakeContext context) : FrostingContext(context
         });
     }
 
-    // A test project opts into running through Microsoft.Testing.Platform (instead of VSTest) by
-    // setting TestingPlatformDotnetTestSupport. TUnit sets it to true; xUnit.net v3 sets it to false.
+    /// <summary>
+    /// Determines whether a test project opts into running through Microsoft.Testing.Platform instead of VSTest.
+    /// </summary>
+    /// <remarks>
+    /// The opt-in is the MSBuild property <c>TestingPlatformDotnetTestSupport</c>. TUnit sets it to <c>true</c>; xUnit.net v3 sets it to <c>false</c>.
+    /// </remarks>
+    /// <param name="project">The test project.</param>
+    /// <returns><c>true</c> if the project runs through Microsoft.Testing.Platform; otherwise, <c>false</c>.</returns>
     private bool UsesTestingPlatform(SolutionProject project)
     {
         var processSettings = new ProcessSettings

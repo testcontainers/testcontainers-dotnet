@@ -53,8 +53,10 @@ public sealed partial class PostgreSqlContainerTest
     }
     // # --8<-- [end:RunTests]
 
-    // Exercises the remaining ADO.NET helper methods of DbContainerTest. The shared fixture
-    // variant is covered by the tests in PostgreSqlContainerFixture.cs.
+    /// <summary>
+    /// Exercises the remaining ADO.NET helper methods of <c>DbContainerTest</c>.
+    /// The shared fixture variant is covered by the tests in <c>PostgreSqlContainerFixture.cs</c>.
+    /// </summary>
     [Test]
     [Property(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task HelperMethodsShouldBeBoundToDatabase(CancellationToken cancellationToken)

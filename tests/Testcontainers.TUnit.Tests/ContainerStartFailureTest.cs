@@ -13,6 +13,9 @@ public sealed class ContainerStartFailureTest : ContainerTest<RedisBuilder, Redi
             .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("this message is never logged", waitStrategy => waitStrategy.WithTimeout(TimeSpan.FromSeconds(1))));
     }
 
+    /// <summary>
+    /// The container fails to start because the wait strategy times out. Accessing <c>Container</c> rethrows that exception.
+    /// </summary>
     [Test]
     [Property(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task ContainerShouldRethrowStartException()
