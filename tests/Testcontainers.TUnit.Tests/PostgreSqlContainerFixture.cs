@@ -48,6 +48,9 @@ public sealed partial class PostgreSqlContainerTest
 
     private const string FirstArtistName = "AC/DC";
 
+    /// <summary>
+    /// The shared fixture starts the configured image.
+    /// </summary>
     [Test]
     [Property(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task ImageShouldMatchDefaultModuleImage()
@@ -55,6 +58,9 @@ public sealed partial class PostgreSqlContainerTest
         await Assert.That(Fixture.Container.Image.FullName).IsEqualTo(PostgreSqlBuilder.PostgreSqlImage);
     }
 
+    /// <summary>
+    /// <c>CreateConnection</c> returns a closed connection that is bound to the database.
+    /// </summary>
     [Test]
     [Property(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task CreateConnectionShouldReturnClosedConnection(CancellationToken cancellationToken)
@@ -67,6 +73,9 @@ public sealed partial class PostgreSqlContainerTest
         await Assert.That(title).IsEqualTo(FirstAlbumTitle);
     }
 
+    /// <summary>
+    /// <c>OpenConnection</c> returns an open connection that is bound to the database.
+    /// </summary>
     [Test]
     [Property(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task OpenConnectionShouldReturnOpenConnection()
@@ -78,6 +87,9 @@ public sealed partial class PostgreSqlContainerTest
         await Assert.That(title).IsEqualTo(FirstAlbumTitle);
     }
 
+    /// <summary>
+    /// <c>OpenConnectionAsync</c> returns an open connection that is bound to the database.
+    /// </summary>
     [Test]
     [Property(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task OpenConnectionAsyncShouldReturnOpenConnection(CancellationToken cancellationToken)
@@ -100,6 +112,9 @@ public sealed partial class PostgreSqlContainerTest
     }
     // # --8<-- [end:RunTests]
 
+    /// <summary>
+    /// <c>CreateBatch</c> returns a batch that executes several commands against the database.
+    /// </summary>
     [Test]
     [Property(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task CreateBatchShouldExecuteAgainstDatabase(CancellationToken cancellationToken)
