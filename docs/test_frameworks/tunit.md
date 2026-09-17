@@ -109,4 +109,25 @@ After configuring the dependent ADO.NET service, you can add the necessary tests
 --8<-- "tests/Testcontainers.TUnit.Tests/PostgreSqlContainer.cs:RunTests"
 ```
 
+To share a database container across tests, inherit from `DbContainerFixture` instead. The fixture implements the `DbProviderFactory` property and the `Configure()` method in one place.
+
+=== "Configure PostgreSQL Container Fixture"
+```csharp
+--8<-- "tests/Testcontainers.TUnit.Tests/PostgreSqlContainerFixture.cs:ConfigurePostgreSqlContainer"
+```
+
+Instead of a constructor parameter, this example injects the fixture through a `required` property. Both styles are supported by TUnit.
+
+=== "Inject PostgreSQL Container Fixture"
+```csharp
+--8<-- "tests/Testcontainers.TUnit.Tests/PostgreSqlContainerFixture.cs:InjectContainerFixture"
+```
+
+The fixture offers the same helper methods as the test base class. `CreateCommand` and `CreateBatch` return objects that are already bound to the database and ready for execution.
+
+=== "Run Tests"
+```csharp
+--8<-- "tests/Testcontainers.TUnit.Tests/PostgreSqlContainerFixture.cs:RunTests"
+```
+
 --8<-- "docs/modules/_call_out_test_projects.txt"
