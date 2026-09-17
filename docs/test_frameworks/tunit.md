@@ -21,9 +21,9 @@ The example below demonstrates how to override the `Configure()` method and pin 
 
 !!! tip
 
-    Always pin the image version to avoid flakiness. This ensures consistency and prevents unexpected behavior, as the `latest` tag may pointing to a new version.
+    Always pin the image version to avoid flakiness. This ensures consistency and prevents unexpected behavior, as the `latest` tag can point to a new version.
 
-The base class automatically forwards Testcontainers' log messages to the output of the running test. Container startup honors the test's cancellation token, so a canceled or timed out test does not leave a container start running in the background.
+The base class automatically forwards Testcontainers' log messages to the output of the running test. Container startup honors the test's cancellation token, so a canceled or timed-out test does not leave a container start running in the background.
 
 Considering that each test gets its own test resource instance (Redis container), retrieving the Redis (string) value in the second test will always return `null`, regardless of the order in which TUnit runs the tests.
 
@@ -87,16 +87,16 @@ Inherit from either the `DbContainerTest` or `DbContainerFixture` class and over
 In this example, we use the default configuration of the PostgreSQL module. The container image capabilities are used to instantiate the database, schema, and test data. During startup, the PostgreSQL container runs SQL scripts placed under the `/docker-entrypoint-initdb.d/` directory automatically.
 
 === "Configure PostgreSQL Container"
-```csharp
---8<-- "tests/Testcontainers.TUnit.Tests/PostgreSqlContainer.cs:ConfigurePostgreSqlContainer"
-```
+    ```csharp
+    --8<-- "tests/Testcontainers.TUnit.Tests/PostgreSqlContainer.cs:ConfigurePostgreSqlContainer"
+    ```
 
 Inheriting from the database container test or fixture class requires you to implement the abstract `DbProviderFactory` property and resolve a compatible `DbProviderFactory` according to your ADO.NET service.
 
 === "Configure DbProviderFactory"
-```csharp
---8<-- "tests/Testcontainers.TUnit.Tests/PostgreSqlContainer.cs:ConfigureDbProviderFactory"
-```
+    ```csharp
+    --8<-- "tests/Testcontainers.TUnit.Tests/PostgreSqlContainer.cs:ConfigureDbProviderFactory"
+    ```
 
 !!! note
 
@@ -105,29 +105,29 @@ Inheriting from the database container test or fixture class requires you to imp
 After configuring the dependent ADO.NET service, you can add the necessary tests. In this case, we run an SQL `SELECT` statement to retrieve the first record from the `album` table. TUnit injects the test's `CancellationToken` when the test method declares a parameter of that type.
 
 === "Run Tests"
-```csharp
---8<-- "tests/Testcontainers.TUnit.Tests/PostgreSqlContainer.cs:RunTests"
-```
+    ```csharp
+    --8<-- "tests/Testcontainers.TUnit.Tests/PostgreSqlContainer.cs:RunTests"
+    ```
 
 To share a database container across tests, inherit from `DbContainerFixture` instead. The fixture implements the `DbProviderFactory` property and the `Configure()` method in one place.
 
 === "Configure PostgreSQL Container Fixture"
-```csharp
---8<-- "tests/Testcontainers.TUnit.Tests/PostgreSqlContainerFixture.cs:ConfigurePostgreSqlContainer"
-```
+    ```csharp
+    --8<-- "tests/Testcontainers.TUnit.Tests/PostgreSqlContainerFixture.cs:ConfigurePostgreSqlContainer"
+    ```
 
 Instead of a constructor parameter, this example injects the fixture through a `required` property. Both styles are supported by TUnit.
 
 === "Inject PostgreSQL Container Fixture"
-```csharp
---8<-- "tests/Testcontainers.TUnit.Tests/PostgreSqlContainerFixture.cs:InjectContainerFixture"
-```
+    ```csharp
+    --8<-- "tests/Testcontainers.TUnit.Tests/PostgreSqlContainerFixture.cs:InjectContainerFixture"
+    ```
 
 The fixture offers the same helper methods as the test base class. `CreateCommand` and `CreateBatch` return objects that are already bound to the database and ready for execution.
 
 === "Run Tests"
-```csharp
---8<-- "tests/Testcontainers.TUnit.Tests/PostgreSqlContainerFixture.cs:RunTests"
-```
+    ```csharp
+    --8<-- "tests/Testcontainers.TUnit.Tests/PostgreSqlContainerFixture.cs:RunTests"
+    ```
 
 --8<-- "docs/modules/_call_out_test_projects.txt"
