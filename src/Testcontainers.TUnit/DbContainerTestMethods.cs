@@ -1,34 +1,53 @@
 namespace Testcontainers.TUnit;
 
-internal sealed class DbContainerTestMethods(DbProviderFactory dbProviderFactory, Lazy<string> connectionString) : IDbContainerTestMethods, IAsyncDisposable
+/// <summary>
+/// Implements the ADO.NET helper methods shared by <see cref="DbContainerFixture{TBuilderEntity,TContainerEntity}" /> and <see cref="DbContainerTest{TBuilderEntity,TContainerEntity}" />.
+/// </summary>
+internal sealed class DbContainerTestMethods : IDbContainerTestMethods, IAsyncDisposable
 {
-    private readonly DbProviderFactory _dbProviderFactory = dbProviderFactory ?? throw new ArgumentNullException(nameof(dbProviderFactory));
-    private readonly Lazy<string> _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+    private readonly DbProviderFactory _dbProviderFactory;
+
+    private readonly Lazy<string> _connectionString;
 
 #if NET8_0_OR_GREATER
-    [CanBeNull]
-    private DbDataSource _dbDataSource;
-    private DbDataSource DbDataSource
+    // TUnit runs the tests that share a fixture in parallel, hence the data source is created lazily and thread-safe.
+    private readonly Lazy<DbDataSource> _dbDataSource;
+#endif
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DbContainerTestMethods" /> class.
+    /// </summary>
+    /// <param name="dbProviderFactory">The <see cref="DbProviderFactory" /> used to create <see cref="DbConnection" /> instances.</param>
+    /// <param name="connectionString">The database connection string, resolved on first use.</param>
+    public DbContainerTestMethods(DbProviderFactory dbProviderFactory, Lazy<string> connectionString)
     {
-        get
-        {
-            _dbDataSource ??= _dbProviderFactory.CreateDataSource(_connectionString.Value);
-            return _dbDataSource;
-        }
+        _dbProviderFactory = dbProviderFactory ?? throw new ArgumentNullException(nameof(dbProviderFactory));
+        _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+#if NET8_0_OR_GREATER
+        _dbDataSource = new Lazy<DbDataSource>(() => _dbProviderFactory.CreateDataSource(_connectionString.Value));
+#endif
     }
 
-    public DbConnection CreateConnection() => DbDataSource.CreateConnection();
+#if NET8_0_OR_GREATER
+    /// <inheritdoc />
+    public DbConnection CreateConnection() => _dbDataSource.Value.CreateConnection();
 
-    public DbConnection OpenConnection() => DbDataSource.OpenConnection();
+    /// <inheritdoc />
+    public DbConnection OpenConnection() => _dbDataSource.Value.OpenConnection();
 
-    public ValueTask<DbConnection> OpenConnectionAsync(CancellationToken cancellationToken = default) => DbDataSource.OpenConnectionAsync(cancellationToken);
+    /// <inheritdoc />
+    public ValueTask<DbConnection> OpenConnectionAsync(CancellationToken cancellationToken = default) => _dbDataSource.Value.OpenConnectionAsync(cancellationToken);
 
-    public DbCommand CreateCommand(string commandText = null) => DbDataSource.CreateCommand(commandText);
+    /// <inheritdoc />
+    public DbCommand CreateCommand(string commandText = null) => _dbDataSource.Value.CreateCommand(commandText);
 
-    public DbBatch CreateBatch() => DbDataSource.CreateBatch();
+    /// <inheritdoc />
+    public DbBatch CreateBatch() => _dbDataSource.Value.CreateBatch();
 
-    public ValueTask DisposeAsync() => _dbDataSource?.DisposeAsync() ?? ValueTask.CompletedTask;
+    /// <inheritdoc />
+    public ValueTask DisposeAsync() => _dbDataSource.IsValueCreated ? _dbDataSource.Value.DisposeAsync() : ValueTask.CompletedTask;
 #else
+    /// <inheritdoc />
     public DbConnection CreateConnection()
     {
         var connection = _dbProviderFactory.CreateConnection() ?? throw new InvalidOperationException($"DbProviderFactory.CreateConnection() returned null for {_dbProviderFactory}");
@@ -36,6 +55,7 @@ internal sealed class DbContainerTestMethods(DbProviderFactory dbProviderFactory
         return connection;
     }
 
+    /// <inheritdoc />
     public ValueTask DisposeAsync() => default;
 #endif
 }

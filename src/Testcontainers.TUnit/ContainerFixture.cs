@@ -13,6 +13,9 @@ public abstract class ContainerFixture<TBuilderEntity, TContainerEntity> : Conta
     where TBuilderEntity : IContainerBuilder<TBuilderEntity, TContainerEntity, IContainerConfiguration>, new()
     where TContainerEntity : IContainer
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ContainerFixture{TBuilderEntity,TContainerEntity}" /> class.
+    /// </summary>
     protected ContainerFixture()
         : base(new TestContextLogger())
     {

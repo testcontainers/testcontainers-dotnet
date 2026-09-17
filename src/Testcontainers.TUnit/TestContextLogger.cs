@@ -8,6 +8,7 @@ internal sealed class TestContextLogger : Logger
 {
     private readonly Stopwatch _stopwatch = Stopwatch.StartNew();
 
+    /// <inheritdoc />
     protected override void Log<TState>(TState state, Exception exception, Func<TState, Exception, string> formatter)
     {
         var context = Context.Current;

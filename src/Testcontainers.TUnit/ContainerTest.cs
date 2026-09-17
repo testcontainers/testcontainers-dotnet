@@ -12,6 +12,9 @@ public abstract class ContainerTest<TBuilderEntity, TContainerEntity> : Containe
     where TBuilderEntity : IContainerBuilder<TBuilderEntity, TContainerEntity, IContainerConfiguration>, new()
     where TContainerEntity : IContainer
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ContainerTest{TBuilderEntity,TContainerEntity}" /> class.
+    /// </summary>
     protected ContainerTest()
         : base(new TestContextLogger())
     {
