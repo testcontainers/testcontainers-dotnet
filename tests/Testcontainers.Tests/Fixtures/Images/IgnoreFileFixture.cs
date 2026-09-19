@@ -10,6 +10,8 @@ namespace DotNet.Testcontainers.Tests.Fixtures
     {
       var logger = NullLogger.Instance;
       var ignoreFilesAndDirectories = new IgnoreFile(new[] { "bin/", "obj/*" }, logger);
+      var ignoreNodeModules = new IgnoreFile(new[] { "node_modules" }, logger);
+      var ignoreBuiltInDirectories = new IgnoreFile(new[] { "**/.idea", "**/.vs" }, logger);
       var ignoreAllFilesAndDirectories = new IgnoreFile(new[] { "*", "!README*.md" }, logger);
       var ignoreNonRecursiveFiles = new IgnoreFile(new[] { "*/temp*" }, logger);
       var ignoreNonRecursiveNestedFiles = new IgnoreFile(new[] { "*/*/temp*" }, logger);
@@ -17,8 +19,16 @@ namespace DotNet.Testcontainers.Tests.Fixtures
       var ignoreSingleCharacterFiles = new IgnoreFile(new[] { "temp?" }, logger);
       var ignoreExceptionFiles = new IgnoreFile(new[] { "*.md", "!README*.md", "README-secret.md" }, logger);
       Add(ignoreFilesAndDirectories, "bin/Debug", false);
+      Add(ignoreFilesAndDirectories, "bin-old/Debug", true);
       Add(ignoreFilesAndDirectories, "obj/Debug", false);
+      Add(ignoreFilesAndDirectories, "obj-old/Debug", true);
       Add(ignoreFilesAndDirectories, "README.md", true);
+      Add(ignoreNodeModules, "node_modules/file.txt", false);
+      Add(ignoreNodeModules, "node_modules-old/file.txt", true);
+      Add(ignoreBuiltInDirectories, "src/.idea/file.json", false);
+      Add(ignoreBuiltInDirectories, "src/.idea-old/file.json", true);
+      Add(ignoreBuiltInDirectories, "src/.vs/file.json", false);
+      Add(ignoreBuiltInDirectories, "src/.vs-old/file.json", true);
       Add(ignoreAllFilesAndDirectories, "bin/Debug", false);
       Add(ignoreAllFilesAndDirectories, "obj/Debug", false);
       Add(ignoreAllFilesAndDirectories, "README.md", true);

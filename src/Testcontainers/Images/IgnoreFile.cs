@@ -89,13 +89,14 @@ namespace DotNet.Testcontainers.Images
         })
 
         // Prepare regular expressions to accept and deny files.
-        .Select((ignorePattern, index) =>
+        .Select(ignorePattern =>
         {
           var key = ignorePattern.Key;
           var value = ignorePattern.Value;
           key = PrepareRegex.Aggregate(key, (current, prepareRegex) => prepareRegex.Replace(current));
-          key = 0.Equals(index) ? key : $"([\\\\\\/]?({key}\\b|$))";
-          key = $"^{key}";
+          // Match the complete path segment. A word boundary also matches before
+          // punctuation, e.g. "node_modules" would match "node_modules-old".
+          key = $"^[\\\\\\/]?{key}(?=[\\\\\\/]|$)";
           return new KeyValuePair<string, bool>(key, value);
         })
 
