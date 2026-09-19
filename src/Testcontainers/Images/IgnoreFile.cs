@@ -96,7 +96,7 @@ namespace DotNet.Testcontainers.Images
           key = PrepareRegex.Aggregate(key, (current, prepareRegex) => prepareRegex.Replace(current));
           // Match the complete path segment. A word boundary also matches before
           // punctuation, e.g. "node_modules" would match "node_modules-old".
-          key = $"^([\\\\\\/]?{key}(?=[\\\\\\/]|$))";
+          key = $"^[\\\\\\/]?{key}(?=[\\\\\\/]|$)";
           return new KeyValuePair<string, bool>(key, value);
         })
 
