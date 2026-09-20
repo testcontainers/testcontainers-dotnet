@@ -214,6 +214,10 @@ Using `OverwriteEnumerable<string>(Array.Empty<string>())` removes all default c
 
     You can create your own `ComposableEnumerable<T>` implementation to control exactly how configuration values are composed or modified.
 
+!!! warning "Not every configuration composes"
+
+    Commands compose, but most other configurations keep a single value and the last call wins. The startup callback is the one to watch: modules set their own to provision the container, so calling `WithStartupCallback` on a module builder replaces that provisioning and the container starts unprovisioned, usually surfacing as a wait strategy timeout rather than a clear error. A module can also set the callback while building, replacing yours. Use the generic container builder when you need full control over the startup callback.
+
 ## Reusing builder configurations
 
 Testcontainers builders are immutable. Every builder method returns a new instance that includes the updated configuration. The existing builder instance remains unchanged.
@@ -337,7 +341,7 @@ Assert.Equal(MagicNumber, magicNumber);
 | `WithPrivileged`              | Sets the `--privileged` flag.                                                                                                                                                        |
 | `WithOutputConsumer`          | Redirects `stdout` and `stderr` to capture the container output.                                                                                                                     |
 | `WithWaitStrategy`            | Sets the wait strategy to complete the container start and indicates when it is ready.                                                                                               |
-| `WithStartupCallback`         | Sets the startup callback to invoke after the container start.                                                                                                                       |
+| `WithStartupCallback`         | Sets the startup callback to invoke after the container start. A container keeps one callback and the last call wins, so setting this on a module builder replaces the module's own provisioning. |
 | `WithCreateParameterModifier` | Allows low level modifications of the Docker container create parameter.                                                                                                             |
 
 !!! tip

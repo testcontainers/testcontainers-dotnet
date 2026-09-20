@@ -728,7 +728,15 @@ namespace DotNet.Testcontainers.Builders
     /// Sets a startup callback to invoke after the container start.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// The callback method is invoked after the container start, but before the wait strategies.
+    /// </para>
+    /// <para>
+    /// A container keeps one startup callback, and the last call wins. Modules set their own callback to
+    /// provision the container, so calling this on a module builder replaces that provisioning and the
+    /// container starts unprovisioned. A module may also set the callback while building, replacing yours.
+    /// Use the generic container builder if you need full control over the startup callback.
+    /// </para>
     /// </remarks>
     /// <param name="startupCallback">The callback method to invoke.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
@@ -739,7 +747,15 @@ namespace DotNet.Testcontainers.Builders
     /// Sets a startup callback to invoke after the container start.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// The callback method is invoked after the container start, but before the wait strategies.
+    /// </para>
+    /// <para>
+    /// A container keeps one startup callback, and the last call wins. Modules set their own callback to
+    /// provision the container, so calling this on a module builder replaces that provisioning and the
+    /// container starts unprovisioned. A module may also set the callback while building, replacing yours.
+    /// Use the generic container builder if you need full control over the startup callback.
+    /// </para>
     /// </remarks>
     /// <param name="startupCallback">The callback method to invoke.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
