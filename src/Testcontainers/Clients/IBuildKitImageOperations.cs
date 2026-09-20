@@ -2,6 +2,7 @@ namespace DotNet.Testcontainers.Clients
 {
   using System.Threading;
   using System.Threading.Tasks;
+  using Docker.DotNet.Models;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Images;
 
@@ -11,12 +12,20 @@ namespace DotNet.Testcontainers.Clients
   internal interface IBuildKitImageOperations
   {
     /// <summary>
+    /// Gets the image build parameters of the Docker image build.
+    /// </summary>
+    /// <param name="configuration">The Dockerfile configuration.</param>
+    /// <returns>The image build parameters of the Docker image build.</returns>
+    ImageBuildParameters GetBuildParameters(IBuildKitImageFromDockerfileConfiguration configuration);
+
+    /// <summary>
     /// Builds a Docker image from a Dockerfile with BuildKit.
     /// </summary>
     /// <param name="configuration">The Dockerfile configuration.</param>
+    /// <param name="buildParameters">The image build parameters.</param>
     /// <param name="dockerfileArchive">The tar archive that contains the build context.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the Docker image has been built.</returns>
-    Task<string> BuildAsync(IBuildKitImageFromDockerfileConfiguration configuration, ITarArchive dockerfileArchive, CancellationToken ct = default);
+    Task<string> BuildAsync(IBuildKitImageFromDockerfileConfiguration configuration, ImageBuildParameters buildParameters, ITarArchive dockerfileArchive, CancellationToken ct = default);
   }
 }

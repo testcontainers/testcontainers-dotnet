@@ -54,7 +54,7 @@ namespace DotNet.Testcontainers.Clients
 
     /// <inheritdoc />
     /// <exception cref="ImageBuildFailedException">The Docker image build failed.</exception>
-    public async Task<string> BuildAsync(IBuildKitImageFromDockerfileConfiguration configuration, ITarArchive dockerfileArchive, CancellationToken ct = default)
+    public async Task<string> BuildAsync(IBuildKitImageFromDockerfileConfiguration configuration, ImageBuildParameters buildParameters, ITarArchive dockerfileArchive, CancellationToken ct = default)
     {
       var image = configuration.Image;
 
@@ -85,7 +85,7 @@ namespace DotNet.Testcontainers.Clients
         await ExtractContextAsync(cliContainer, ct)
           .ConfigureAwait(false);
 
-        await RunBuildCommandAsync(configuration, cliContainer, ct)
+        await RunBuildCommandAsync(configuration, buildParameters, cliContainer, ct)
           .ConfigureAwait(false);
       }
       finally
@@ -114,15 +114,16 @@ namespace DotNet.Testcontainers.Clients
     /// Runs the Docker CLI command that builds the Docker image.
     /// </summary>
     /// <param name="configuration">The Dockerfile configuration.</param>
+    /// <param name="buildParameters">The image build parameters.</param>
     /// <param name="cliContainer">The container that runs the Docker CLI.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the Docker image has been built.</returns>
     /// <exception cref="ImageBuildFailedException">The Docker image build failed.</exception>
-    private async Task RunBuildCommandAsync(IBuildKitImageFromDockerfileConfiguration configuration, IContainer cliContainer, CancellationToken ct = default)
+    private async Task RunBuildCommandAsync(IBuildKitImageFromDockerfileConfiguration configuration, ImageBuildParameters buildParameters, IContainer cliContainer, CancellationToken ct = default)
     {
       var image = configuration.Image;
 
-      var buildCommand = GetBuildCommand(configuration);
+      var buildCommand = GetBuildCommand(configuration, buildParameters);
 
       // The build arguments are not secrets by contract, but they are not
       // necessarily harmless either. Log them redacted, the same way the Docker
@@ -150,18 +151,14 @@ namespace DotNet.Testcontainers.Clients
       }
     }
 
-    /// <summary>
-    /// Gets the Docker CLI command that builds the Docker image.
-    /// </summary>
+    /// <inheritdoc />
     /// <remarks>
     /// The image build parameters carry the configuration that the Docker Engine API
     /// image builder gets too, including the parameter modifiers that
-    /// <c>WithCreateParameterModifier</c> sets. Only the parameters that the Docker
-    /// CLI provides an argument for are passed on, the remaining ones are logged.
+    /// <c>WithCreateParameterModifier</c> sets. The Dockerfile path refers to the
+    /// build context inside the Docker CLI container, not to the test host.
     /// </remarks>
-    /// <param name="configuration">The Dockerfile configuration.</param>
-    /// <returns>The Docker CLI command that builds the Docker image.</returns>
-    private IList<string> GetBuildCommand(IBuildKitImageFromDockerfileConfiguration configuration)
+    public ImageBuildParameters GetBuildParameters(IBuildKitImageFromDockerfileConfiguration configuration)
     {
       var dockerfileFilePath = string.Join("/", ContextDirectoryPath, Unix.Instance.NormalizePath(configuration.Dockerfile));
 
@@ -183,6 +180,21 @@ namespace DotNet.Testcontainers.Clients
         }
       }
 
+      return buildParameters;
+    }
+
+    /// <summary>
+    /// Gets the Docker CLI command that builds the Docker image.
+    /// </summary>
+    /// <remarks>
+    /// Only the image build parameters that the Docker CLI provides an argument for
+    /// are passed on, the remaining ones are logged.
+    /// </remarks>
+    /// <param name="configuration">The Dockerfile configuration.</param>
+    /// <param name="buildParameters">The image build parameters.</param>
+    /// <returns>The Docker CLI command that builds the Docker image.</returns>
+    private IList<string> GetBuildCommand(IBuildKitImageFromDockerfileConfiguration configuration, ImageBuildParameters buildParameters)
+    {
       foreach (var parameterName in GetUnsupportedParameterNames(buildParameters))
       {
         _logger.ImageBuildParameterNotSupported(parameterName);

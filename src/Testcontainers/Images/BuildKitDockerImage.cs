@@ -28,7 +28,7 @@ namespace DotNet.Testcontainers.Images
     /// <inheritdoc />
     protected override Task BuildAsync(CancellationToken ct = default)
     {
-      return Client.BuildWithBuildKitAsync(_configuration, ct);
+      return Client.BuildAsync(_configuration, ct);
     }
   }
 }

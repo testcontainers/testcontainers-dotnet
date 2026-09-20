@@ -40,6 +40,11 @@ namespace DotNet.Testcontainers.Clients
     IDockerSystemOperations System { get; }
 
     /// <summary>
+    /// Gets the BuildKit image operations endpoint.
+    /// </summary>
+    IBuildKitImageOperations BuildKit { get; }
+
+    /// <summary>
     /// Gets a value indicating whether the container is running inside another container or not.
     /// </summary>
     bool IsRunningInsideDocker { get; }
@@ -191,7 +196,7 @@ namespace DotNet.Testcontainers.Clients
     /// <param name="configuration">The Dockerfile configuration.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the Docker image has been built.</returns>
-    Task<string> BuildWithBuildKitAsync(IBuildKitImageFromDockerfileConfiguration configuration, CancellationToken ct = default);
+    Task<string> BuildAsync(IBuildKitImageFromDockerfileConfiguration configuration, CancellationToken ct = default);
 
     /// <summary>
     /// Pulls an image from a registry.

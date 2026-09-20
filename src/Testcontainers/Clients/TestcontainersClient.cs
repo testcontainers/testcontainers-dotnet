@@ -36,8 +36,6 @@ namespace DotNet.Testcontainers.Clients
 
     private readonly DockerRegistryAuthenticationProvider _registryAuthenticationProvider;
 
-    private readonly IBuildKitImageOperations _buildKitImageOperations;
-
     private readonly ILogger _logger;
 
     /// <summary>
@@ -68,13 +66,13 @@ namespace DotNet.Testcontainers.Clients
       ILogger logger)
     {
       _registryAuthenticationProvider = registryAuthenticationProvider;
-      _buildKitImageOperations = new BuildKitImageOperations(imageOperations, logger);
       _logger = logger;
       Container = containerOperations;
       Image = imageOperations;
       Network = networkOperations;
       Volume = volumeOperations;
       System = systemOperations;
+      BuildKit = new BuildKitImageOperations(imageOperations, logger);
     }
 
     /// <inheritdoc />
@@ -91,6 +89,9 @@ namespace DotNet.Testcontainers.Clients
 
     /// <inheritdoc />
     public IDockerSystemOperations System { get; }
+
+    /// <inheritdoc />
+    public IBuildKitImageOperations BuildKit { get; }
 
     /// <inheritdoc />
     public bool IsRunningInsideDocker => File.Exists(Path.Combine(OSRootDirectory, ".dockerenv"));
@@ -362,12 +363,14 @@ namespace DotNet.Testcontainers.Clients
     /// <inheritdoc />
     public async Task<string> BuildAsync(IImageFromDockerfileConfiguration configuration, CancellationToken ct = default)
     {
-      var dockerfileArchive = await PrepareBuildAsync(configuration, ct)
+      var buildParameters = Image.GetBuildParameters(configuration);
+
+      var dockerfileArchive = await PrepareBuildAsync(configuration, buildParameters, ct)
         .ConfigureAwait(false);
 
       if (dockerfileArchive != null)
       {
-        _ = await Image.BuildAsync(configuration, dockerfileArchive, ct)
+        _ = await Image.BuildAsync(configuration, buildParameters, dockerfileArchive, ct)
           .ConfigureAwait(false);
       }
 
@@ -375,14 +378,16 @@ namespace DotNet.Testcontainers.Clients
     }
 
     /// <inheritdoc />
-    public async Task<string> BuildWithBuildKitAsync(IBuildKitImageFromDockerfileConfiguration configuration, CancellationToken ct = default)
+    public async Task<string> BuildAsync(IBuildKitImageFromDockerfileConfiguration configuration, CancellationToken ct = default)
     {
-      var dockerfileArchive = await PrepareBuildAsync(configuration, ct)
+      var buildParameters = BuildKit.GetBuildParameters(configuration);
+
+      var dockerfileArchive = await PrepareBuildAsync(configuration, buildParameters, ct)
         .ConfigureAwait(false);
 
       if (dockerfileArchive != null)
       {
-        _ = await _buildKitImageOperations.BuildAsync(configuration, dockerfileArchive, ct)
+        _ = await BuildKit.BuildAsync(configuration, buildParameters, dockerfileArchive, ct)
           .ConfigureAwait(false);
       }
 
@@ -421,11 +426,19 @@ namespace DotNet.Testcontainers.Clients
     /// The base images are pulled from the test host. The image builder resolves them
     /// itself, but it does not have access to the Docker configuration of the test
     /// host, so its Docker credentials and credential helpers would not apply.
+    ///
+    /// A base image that does not declare a platform, such as <c>FROM --platform</c>,
+    /// is pulled for the platform the image build targets. Otherwise, the Docker
+    /// daemon resolves it for the platform of the test host, which does not
+    /// necessarily match the platform of the image build. An image build that
+    /// targets multiple platforms does not apply, the Docker daemon pulls an image
+    /// for a single platform only.
     /// </remarks>
     /// <param name="configuration">The Dockerfile configuration.</param>
+    /// <param name="buildParameters">The image build parameters.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the build context has been created, returning the tar archive, or <c>null</c> if the image build policy does not build the image.</returns>
-    private async Task<DockerfileArchive> PrepareBuildAsync(IImageFromDockerfileConfiguration configuration, CancellationToken ct = default)
+    private async Task<DockerfileArchive> PrepareBuildAsync(IImageFromDockerfileConfiguration configuration, ImageBuildParameters buildParameters, CancellationToken ct = default)
     {
       ImageInspectResponse cachedImage;
 
@@ -452,7 +465,16 @@ namespace DotNet.Testcontainers.Clients
         configuration.BuildArguments,
         _logger);
 
-      await PullImagesAsync(dockerfileArchive.GetBaseImages(), ct)
+      var platform = buildParameters.Platform;
+
+      var baseImages = dockerfileArchive.GetBaseImages();
+
+      if (!string.IsNullOrEmpty(platform) && platform.IndexOf(',') == -1)
+      {
+        baseImages = baseImages.Select(image => string.IsNullOrEmpty(image.Platform) ? new DockerImage(image.Repository, image.Registry, image.Tag, image.Digest, platform) : image);
+      }
+
+      await PullImagesAsync(baseImages, ct)
         .ConfigureAwait(false);
 
       return dockerfileArchive;
