@@ -36,6 +36,8 @@ namespace DotNet.Testcontainers.Clients
 
     private readonly DockerRegistryAuthenticationProvider _registryAuthenticationProvider;
 
+    private readonly IBuildKitImageOperations _buildKitImageOperations;
+
     private readonly ILogger _logger;
 
     /// <summary>
@@ -66,6 +68,7 @@ namespace DotNet.Testcontainers.Clients
       ILogger logger)
     {
       _registryAuthenticationProvider = registryAuthenticationProvider;
+      _buildKitImageOperations = new BuildKitImageOperations(imageOperations, logger);
       _logger = logger;
       Container = containerOperations;
       Image = imageOperations;
@@ -359,43 +362,27 @@ namespace DotNet.Testcontainers.Clients
     /// <inheritdoc />
     public async Task<string> BuildAsync(IImageFromDockerfileConfiguration configuration, CancellationToken ct = default)
     {
-      ImageInspectResponse cachedImage;
+      var dockerfileArchive = await PrepareBuildAsync(configuration, ct)
+        .ConfigureAwait(false);
 
-      try
+      if (dockerfileArchive != null)
       {
-        cachedImage = await Image.ByIdAsync(configuration.Image.FullName, ct)
-          .ConfigureAwait(false);
-      }
-      catch (DockerImageNotFoundException)
-      {
-        cachedImage = null;
-      }
-
-      if (configuration.ImageBuildPolicy(cachedImage))
-      {
-        var dockerfileArchive = new DockerfileArchive(
-          configuration.ContextDirectory,
-          configuration.DockerfileDirectory,
-          configuration.Dockerfile,
-          configuration.Image,
-          configuration.BuildArguments,
-          _logger);
-
-        var baseImages = dockerfileArchive.GetBaseImages().ToArray();
-
-        var filters = baseImages.Aggregate(new FilterByProperty(), (dictionary, baseImage) => dictionary.Add("reference", baseImage.FullName));
-
-        var cachedImages = await Image.GetAllAsync(filters, ct)
-          .ConfigureAwait(false);
-
-        var repositoryTags = new HashSet<string>(cachedImages.SelectMany(image => image.RepoTags ?? Array.Empty<string>()));
-
-        var uncachedImages = baseImages.Where(baseImage => !repositoryTags.Contains(baseImage.FullName));
-
-        await Task.WhenAll(uncachedImages.Select(image => PullImageAsync(image, ct)))
-          .ConfigureAwait(false);
-
         _ = await Image.BuildAsync(configuration, dockerfileArchive, ct)
+          .ConfigureAwait(false);
+      }
+
+      return configuration.Image.FullName;
+    }
+
+    /// <inheritdoc />
+    public async Task<string> BuildWithBuildKitAsync(IBuildKitImageFromDockerfileConfiguration configuration, CancellationToken ct = default)
+    {
+      var dockerfileArchive = await PrepareBuildAsync(configuration, ct)
+        .ConfigureAwait(false);
+
+      if (dockerfileArchive != null)
+      {
+        _ = await _buildKitImageOperations.BuildAsync(configuration, dockerfileArchive, ct)
           .ConfigureAwait(false);
       }
 
@@ -424,6 +411,73 @@ namespace DotNet.Testcontainers.Clients
       var authConfig = _registryAuthenticationProvider.GetAuthConfig(dockerRegistryServerAddress);
 
       await Image.CreateAsync(image, authConfig, ct)
+        .ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Creates the build context of the Docker image build.
+    /// </summary>
+    /// <remarks>
+    /// The base images are pulled from the test host. The image builder resolves them
+    /// itself, but it does not have access to the Docker configuration of the test
+    /// host, so its Docker credentials and credential helpers would not apply.
+    /// </remarks>
+    /// <param name="configuration">The Dockerfile configuration.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the build context has been created, returning the tar archive, or <c>null</c> if the image build policy does not build the image.</returns>
+    private async Task<DockerfileArchive> PrepareBuildAsync(IImageFromDockerfileConfiguration configuration, CancellationToken ct = default)
+    {
+      ImageInspectResponse cachedImage;
+
+      try
+      {
+        cachedImage = await Image.ByIdAsync(configuration.Image.FullName, ct)
+          .ConfigureAwait(false);
+      }
+      catch (DockerImageNotFoundException)
+      {
+        cachedImage = null;
+      }
+
+      if (!configuration.ImageBuildPolicy(cachedImage))
+      {
+        return null;
+      }
+
+      var dockerfileArchive = new DockerfileArchive(
+        configuration.ContextDirectory,
+        configuration.DockerfileDirectory,
+        configuration.Dockerfile,
+        configuration.Image,
+        configuration.BuildArguments,
+        _logger);
+
+      await PullImagesAsync(dockerfileArchive.GetBaseImages(), ct)
+        .ConfigureAwait(false);
+
+      return dockerfileArchive;
+    }
+
+    /// <summary>
+    /// Pulls the images that are not present on the Docker host.
+    /// </summary>
+    /// <param name="images">The images to pull.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the images have been pulled.</returns>
+    private async Task PullImagesAsync(IEnumerable<IImage> images, CancellationToken ct = default)
+    {
+      var requestedImages = images.ToArray();
+
+      var filters = requestedImages.Aggregate(new FilterByProperty(), (dictionary, image) => dictionary.Add("reference", image.FullName));
+
+      var cachedImages = await Image.GetAllAsync(filters, ct)
+        .ConfigureAwait(false);
+
+      var repositoryTags = new HashSet<string>(cachedImages.SelectMany(image => image.RepoTags ?? Array.Empty<string>()));
+
+      var uncachedImages = requestedImages.Where(image => !repositoryTags.Contains(image.FullName));
+
+      await Task.WhenAll(uncachedImages.Select(image => PullImageAsync(image, ct)))
         .ConfigureAwait(false);
     }
   }

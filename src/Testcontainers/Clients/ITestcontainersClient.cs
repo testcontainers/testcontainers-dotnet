@@ -186,6 +186,14 @@ namespace DotNet.Testcontainers.Clients
     Task<string> BuildAsync(IImageFromDockerfileConfiguration configuration, CancellationToken ct = default);
 
     /// <summary>
+    /// Builds a Docker image from a Dockerfile with BuildKit.
+    /// </summary>
+    /// <param name="configuration">The Dockerfile configuration.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the Docker image has been built.</returns>
+    Task<string> BuildWithBuildKitAsync(IBuildKitImageFromDockerfileConfiguration configuration, CancellationToken ct = default);
+
+    /// <summary>
     /// Pulls an image from a registry.
     /// </summary>
     /// <param name="image">The image to pull.</param>

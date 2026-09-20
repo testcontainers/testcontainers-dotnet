@@ -13,8 +13,8 @@ namespace DotNet.Testcontainers.Builders
   /// <inheritdoc cref="ImageFromDockerfileBuilder" />
   /// <remarks>
   /// Builds the Docker image with BuildKit (<c>docker buildx build</c>) instead of
-  /// the Docker Engine API, which uses the legacy builder. Dockerfile instructions
-  /// and options that require BuildKit, such as here-documents,
+  /// the Docker Engine API, which does not support it. Dockerfile instructions and
+  /// options that require BuildKit, such as here-documents,
   /// <c>RUN --mount=type=secret</c> and <c># syntax=</c> frontends, are only
   /// available with this builder.
   ///
@@ -52,9 +52,8 @@ namespace DotNet.Testcontainers.Builders
     /// The pattern that a build secret id and an SSH agent id must match.
     /// </summary>
     /// <remarks>
-    /// The id is part of the path of the file that carries the build secret inside
-    /// the Docker CLI container, and part of the Docker CLI argument that
-    /// references it.
+    /// The id is part of the path of the file that carries the build secret inside the
+    /// Docker CLI container, and part of the Docker CLI argument that references it.
     /// </remarks>
     private static readonly Regex IdRegex = new Regex("^[A-Za-z0-9][A-Za-z0-9_.-]*$", RegexOptions.None, TimeSpan.FromSeconds(1));
 
@@ -245,6 +244,8 @@ namespace DotNet.Testcontainers.Builders
     /// Each path is bind-mounted read-only into the Docker CLI container, keeping
     /// the path it has on the test host. The Docker daemon resolves the mount
     /// source, so the paths must exist on the host that runs the Docker daemon.
+    /// At least one path is required, because the Docker CLI container does not
+    /// run an SSH agent that an id without a path could resolve to.
     /// </remarks>
     /// <param name="id">The SSH agent id e.g. <c>--ssh "default=$SSH_AUTH_SOCK"</c>.</param>
     /// <param name="paths">A list of SSH agent socket or private key paths on the test host.</param>
@@ -296,6 +297,10 @@ namespace DotNet.Testcontainers.Builders
       _ = Guard.Argument(DockerResourceConfiguration.SshAgents, nameof(DockerResourceConfiguration.SshAgents))
         .ThrowIf(argument => argument.Value.Keys.Any(id => !IsIdValid(id)), argument => new ArgumentException(string.Format(sshAgentIdInvalid, argument.Value.Keys.First(id => !IsIdValid(id))), argument.Name));
 
+      const string sshAgentPathNotSet = "The SSH agent '{0}' does not set a path. The Docker CLI container does not run an SSH agent, so at least one SSH agent socket or private key path is required.";
+      _ = Guard.Argument(DockerResourceConfiguration.SshAgents, nameof(DockerResourceConfiguration.SshAgents))
+        .ThrowIf(argument => argument.Value.Any(IsSshAgentPathMissing), argument => new ArgumentException(string.Format(sshAgentPathNotSet, argument.Value.First(IsSshAgentPathMissing).Key), argument.Name));
+
       const string sshAgentPathInvalid = "The SSH agent path '{0}' cannot contain a comma, which separates the paths of an SSH agent.";
       _ = Guard.Argument(DockerResourceConfiguration.SshAgents, nameof(DockerResourceConfiguration.SshAgents))
         .ThrowIf(argument => GetSshAgentPaths(argument.Value).Any(IsPathInvalid), argument => new ArgumentException(string.Format(sshAgentPathInvalid, GetSshAgentPaths(argument.Value).First(IsPathInvalid)), argument.Name));
@@ -324,27 +329,6 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <summary>
-    /// Checks whether a build secret or SSH agent id is valid or not.
-    /// </summary>
-    /// <param name="id">The build secret or SSH agent id.</param>
-    /// <returns>True if the id is valid; otherwise, false.</returns>
-    private static bool IsIdValid(string id)
-    {
-      return !string.IsNullOrEmpty(id) && IdRegex.IsMatch(id);
-    }
-
-    /// <summary>
-    /// Checks whether the file that contains the build secret value is missing or
-    /// not.
-    /// </summary>
-    /// <param name="secret">The build secret.</param>
-    /// <returns>True if the build secret reads its value from a file that does not exist; otherwise, false.</returns>
-    private static bool IsSecretSourceMissing(BuildSecret secret)
-    {
-      return !string.IsNullOrEmpty(secret.SourceFilePath) && !File.Exists(secret.SourceFilePath);
-    }
-
-    /// <summary>
     /// Gets the SSH agent socket and private key paths of all SSH agents.
     /// </summary>
     /// <param name="sshAgents">A dictionary of SSH agent sockets or private keys.</param>
@@ -355,18 +339,51 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <summary>
-    /// Checks whether an SSH agent socket or private key path can be passed to the
-    /// Docker CLI or not.
+    /// Checks whether a build secret or SSH agent id is valid or not.
+    /// </summary>
+    /// <param name="id">The build secret or SSH agent id.</param>
+    /// <returns>True if the id is valid, false otherwise.</returns>
+    private static bool IsIdValid(string id)
+    {
+      return !string.IsNullOrEmpty(id) && IdRegex.IsMatch(id);
+    }
+
+    /// <summary>
+    /// Checks whether the file that contains the build secret value is missing or not.
+    /// </summary>
+    /// <param name="secret">The build secret.</param>
+    /// <returns>True if the build secret reads its value from a file that does not exist, false otherwise.</returns>
+    private static bool IsSecretSourceMissing(BuildSecret secret)
+    {
+      return !string.IsNullOrEmpty(secret.SourceFilePath) && !File.Exists(secret.SourceFilePath);
+    }
+
+    /// <summary>
+    /// Checks whether an SSH agent is missing its socket and private key paths or not.
+    /// </summary>
+    /// <remarks>
+    /// The Docker CLI resolves an SSH agent that does not name a path against
+    /// <c>SSH_AUTH_SOCK</c>, which the Docker CLI container does not set.
+    /// </remarks>
+    /// <param name="sshAgent">The SSH agent and its socket and private key paths.</param>
+    /// <returns>True if the SSH agent does not set a path, false otherwise.</returns>
+    private static bool IsSshAgentPathMissing(KeyValuePair<string, IEnumerable<string>> sshAgent)
+    {
+      return !sshAgent.Value.Any();
+    }
+
+    /// <summary>
+    /// Checks whether an SSH agent socket or private key path is invalid or not.
     /// </summary>
     /// <remarks>
     /// The Docker CLI takes the paths of an SSH agent as a comma-separated list. A
     /// path that contains a comma cannot be encoded.
     /// </remarks>
     /// <param name="path">The SSH agent socket or private key path.</param>
-    /// <returns>True if the path cannot be passed to the Docker CLI; otherwise, false.</returns>
+    /// <returns>True if the path is invalid, false otherwise.</returns>
     private static bool IsPathInvalid(string path)
     {
-      return path != null && path.IndexOf(',') > -1;
+      return path.IndexOf(',') > -1;
     }
   }
 }

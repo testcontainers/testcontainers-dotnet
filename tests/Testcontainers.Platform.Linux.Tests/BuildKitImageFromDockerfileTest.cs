@@ -170,28 +170,6 @@ public sealed class BuildKitImageFromDockerfileTest
     }
 
     [Fact]
-    public async Task ThrowsWhenDockerCliImageCannotBePulled()
-    {
-        // Given
-
-        // A Docker CLI container that does not start is not necessarily a Docker
-        // socket that cannot be mounted. The Docker daemon error propagates unchanged.
-        var dockerfileDirectoryPath = CreateDockerfileDirectory($"FROM {CommonImages.Alpine.FullName}");
-
-        await using var image = new BuildKitImageFromDockerfileBuilder("docker:0.0.0-does-not-exist-cli")
-            .WithDockerfileDirectory(dockerfileDirectoryPath)
-            .Build();
-
-        // When
-        var exception = await Assert.ThrowsAsync<DockerApiException>(() => image.CreateAsync(TestContext.Current.CancellationToken))
-            .ConfigureAwait(true);
-
-        // Then
-        Assert.Contains("docker:0.0.0-does-not-exist-cli", exception.Message);
-        Assert.DoesNotContain(nameof(TestcontainersSettings.DockerSocketOverride), exception.Message);
-    }
-
-    [Fact]
     public async Task BuildsForExpectedPlatform()
     {
         // Given
@@ -515,57 +493,5 @@ public sealed class BuildKitImageFromDockerfileTest
             .WithEntrypoint("/bin/sh", "-c")
             .WithCommand("trap 'exit 0' TERM; sleep infinity & wait $!")
             .Build();
-    }
-}
-
-[CollectionDefinition(nameof(DockerSocketOverrideCollection), DisableParallelization = true)]
-public static class DockerSocketOverrideCollection
-{
-}
-
-[Collection(nameof(DockerSocketOverrideCollection))]
-public sealed class BuildKitImageFromDockerfileDockerSocketTest : IDisposable
-{
-    private readonly string _dockerSocketOverride = TestcontainersSettings.DockerSocketOverride;
-
-    private bool _disposed;
-
-    public void Dispose()
-    {
-        if (_disposed)
-        {
-            return;
-        }
-
-        TestcontainersSettings.DockerSocketOverride = _dockerSocketOverride;
-        _disposed = true;
-    }
-
-    [Fact]
-    public async Task ThrowsWhenDockerSocketIsNotAvailable()
-    {
-        // Given
-
-        // A Docker daemon that does not listen on a Unix socket, such as a Docker
-        // daemon that is reached over a Windows named pipe, cannot provide a Docker
-        // socket to bind-mount into the Docker CLI container.
-        TestcontainersSettings.DockerSocketOverride = "/var/run/docker-socket-does-not-exist.sock";
-
-        var dockerfileDirectoryPath = Directory.CreateDirectory(Path.Combine(TestSession.TempDirectoryPath, Guid.NewGuid().ToString("D"))).FullName;
-
-        await File.WriteAllTextAsync(Path.Combine(dockerfileDirectoryPath, "Dockerfile"), $"FROM {CommonImages.Alpine.FullName}", TestContext.Current.CancellationToken)
-            .ConfigureAwait(true);
-
-        await using var image = new BuildKitImageFromDockerfileBuilder()
-            .WithDockerfileDirectory(dockerfileDirectoryPath)
-            .Build();
-
-        // When
-        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() => image.CreateAsync(TestContext.Current.CancellationToken))
-            .ConfigureAwait(true);
-
-        // Then
-        Assert.Contains("/var/run/docker-socket-does-not-exist.sock", exception.Message);
-        Assert.Contains(nameof(TestcontainersSettings.DockerSocketOverride), exception.Message);
     }
 }

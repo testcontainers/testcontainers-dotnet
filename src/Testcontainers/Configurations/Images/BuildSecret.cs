@@ -73,8 +73,7 @@ namespace DotNet.Testcontainers.Configurations
     }
 
     /// <summary>
-    /// Gets the path of the file on the test host that contains the build secret
-    /// value.
+    /// Gets the path of the file on the test host that contains the build secret value.
     /// </summary>
     /// <remarks>
     /// The path is empty if the build secret value is set directly instead of read
@@ -112,7 +111,7 @@ namespace DotNet.Testcontainers.Configurations
 
     /// <summary>
     /// Gets the path of the file inside the Docker CLI container that contains the
-    /// value of the build secret.
+    /// build secret value.
     /// </summary>
     /// <param name="id">The build secret id.</param>
     /// <returns>The path of the file inside the Docker CLI container.</returns>

@@ -4,7 +4,7 @@ Testcontainers for .NET uses the builder design pattern to configure, create and
 
 !!! warning
 
-    `ImageFromDockerfileBuilder` builds the image through the Docker Engine API, which uses the legacy builder. BuildKit features are not supported through the Docker Engine API. As a result, Dockerfile instructions and options that depend on BuildKit cannot be used with it. For more details, see this [discussion](https://github.com/testcontainers/testcontainers-dotnet/discussions/1193#discussioncomment-10315903). Use [`BuildKitImageFromDockerfileBuilder`](#building-with-buildkit) to build such a Dockerfile.
+    `ImageFromDockerfileBuilder` builds the image through the Docker Engine API, which does not support BuildKit. As a result, Dockerfile instructions and options that depend on BuildKit cannot be used with it. For more details, see this [discussion](https://github.com/testcontainers/testcontainers-dotnet/discussions/1193#discussioncomment-10315903). Use [`BuildKitImageFromDockerfileBuilder`](#building-with-buildkit) to build such a Dockerfile.
 
 ## Examples
 
@@ -155,7 +155,7 @@ Testcontainers copies the build secret into the Docker CLI container that runs t
 
 ### SSH agents
 
-`WithSshAgent(string, params string[])` passes an SSH agent socket or private key to the build. The Dockerfile mounts it with `RUN --mount=type=ssh,id=<id>`. Use the id `default` for a mount that does not name an id. Each path is bind-mounted read-only into the Docker CLI container, keeping the path it has on the test host, so the paths must exist on the host that runs the Docker daemon. A path cannot contain a comma, which the Docker CLI uses to separate the paths of an SSH agent.
+`WithSshAgent(string, params string[])` passes an SSH agent socket or private key to the build. The Dockerfile mounts it with `RUN --mount=type=ssh,id=<id>`. Use the id `default` for a mount that does not name an id. Each path is bind-mounted read-only into the Docker CLI container, keeping the path it has on the test host, so the paths must exist on the host that runs the Docker daemon. At least one path is required, because the Docker CLI container does not run an SSH agent that an id without a path could resolve to. A path cannot contain a comma, which the Docker CLI uses to separate the paths of an SSH agent.
 
 ```csharp
 _ = new BuildKitImageFromDockerfileBuilder()
@@ -187,19 +187,36 @@ A comma-separated value builds a manifest list, for example `linux/amd64,linux/a
 
 `BuildKitImageFromDockerfileBuilder` supports the same members, and additionally:
 
-| Builder method  | Description                                                              |
-|-----------------|--------------------------------------------------------------------------|
-| `WithSecret`    | Sets a build secret e.g. `--secret "id=aws,src=$HOME/.aws/credentials"`. |
-| `WithSshAgent`  | Sets an SSH agent socket or private key e.g. `--ssh "default"`.          |
-| `WithPlatform`  | Sets the platform to build the image for e.g. `--platform "linux/arm64"`.|
+| Builder method | Description                                                                    |
+|----------------|--------------------------------------------------------------------------------|
+| `WithSecret`   | Sets a build secret e.g. `--secret "id=aws,src=$HOME/.aws/credentials"`.       |
+| `WithSshAgent` | Sets an SSH agent socket or private key e.g. `--ssh "default=$SSH_AUTH_SOCK"`. |
+| `WithPlatform` | Sets the platform to build the image for e.g. `--platform "linux/arm64"`.      |
 
 !!! tip
 
     Testcontainers for .NET detects your Docker host configuration. You do **not** have to set the Docker daemon socket.
 
+`BuildKitImageFromDockerfileBuilder` translates the image build parameter (`WithCreateParameterModifier`) into Docker CLI arguments:
+
+| Image build parameter | Docker CLI argument |
+|-----------------------|---------------------|
+| `Dockerfile`          | `--file`            |
+| `Target`              | `--target`          |
+| `Platform`            | `--platform`        |
+| `NetworkMode`         | `--network`         |
+| `ShmSize`             | `--shm-size`        |
+| `NoCache`             | `--no-cache`        |
+| `Pull`                | `--pull`            |
+| `ExtraHosts`          | `--add-host`        |
+| `CacheFrom`           | `--cache-from`      |
+| `Tags`                | `--tag`             |
+| `BuildArgs`           | `--build-arg`       |
+| `Labels`              | `--label`           |
+
 !!! note
 
-    `BuildKitImageFromDockerfileBuilder` translates the image build parameter (`WithCreateParameterModifier`) into Docker CLI arguments. The Dockerfile, the tags, the build arguments, the labels, the target and the platform are passed on, and so are `NoCache` (`--no-cache`), `Pull` (`--pull`), `NetworkMode` (`--network`), `ShmSize` (`--shm-size`), `ExtraHosts` (`--add-host`) and `CacheFrom` (`--cache-from`). A parameter that the Docker CLI does not provide an equivalent argument for, such as the resource limits of the legacy builder (`Memory`, `CPUShares`) or `Squash`, is logged as a warning instead of being applied.
+    A parameter that the Docker CLI does not provide an equivalent argument for, such as the resource limits of the Docker Engine API image build (`Memory`, `CPUShares`) or `Squash`, is logged as a warning instead of being applied.
 
 ## Known issues
 

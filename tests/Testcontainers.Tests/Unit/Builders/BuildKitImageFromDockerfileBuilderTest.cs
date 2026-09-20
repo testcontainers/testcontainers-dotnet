@@ -109,6 +109,19 @@ namespace DotNet.Testcontainers.Tests.Unit
     }
 
     [Fact]
+    public void ThrowsArgumentExceptionWhenSshAgentPathIsMissing()
+    {
+      // Given
+      var imageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder().WithSshAgent("default");
+
+      // When
+      var exception = Assert.Throws<ArgumentException>(() => imageFromDockerfileBuilder.Build());
+
+      // Then
+      Assert.StartsWith("The SSH agent 'default' does not set a path.", exception.Message);
+    }
+
+    [Fact]
     public void ThrowsArgumentExceptionWhenSshAgentPathContainsComma()
     {
       // Given

@@ -10,7 +10,7 @@ namespace DotNet.Testcontainers.Images
 
   /// <inheritdoc cref="IFutureDockerImage" />
   [PublicAPI]
-  internal sealed class FutureDockerImage : Resource, IFutureDockerImage
+  internal class FutureDockerImage : Resource, IFutureDockerImage
   {
     private readonly ITestcontainersClient _client;
 
@@ -88,6 +88,17 @@ namespace DotNet.Testcontainers.Images
       }
     }
 
+    /// <summary>
+    /// Gets the Testcontainers client.
+    /// </summary>
+    protected ITestcontainersClient Client
+    {
+      get
+      {
+        return _client;
+      }
+    }
+
     /// <inheritdoc />
     public string GetHostname()
     {
@@ -152,11 +163,25 @@ namespace DotNet.Testcontainers.Images
       await _client.System.LogContainerRuntimeInfoAsync(ct)
         .ConfigureAwait(false);
 
-      _ = await _client.BuildAsync(_configuration, ct)
+      await BuildAsync(ct)
         .ConfigureAwait(false);
 
       _image = await _client.Image.ByIdAsync(_configuration.Image.FullName, ct)
         .ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Builds the Docker image.
+    /// </summary>
+    /// <remarks>
+    /// Derived classes override this member to build the Docker image with BuildKit
+    /// instead of the Docker Engine API.
+    /// </remarks>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the Docker image has been built.</returns>
+    protected virtual Task BuildAsync(CancellationToken ct = default)
+    {
+      return _client.BuildAsync(_configuration, ct);
     }
 
     /// <inheritdoc />
