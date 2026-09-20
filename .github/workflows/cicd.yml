@@ -129,8 +129,8 @@ jobs:
     env:
       CODE_SIGNING_CERTIFICATE_BASE64: ${{ secrets.CODE_SIGNING_CERTIFICATE_BASE64 }}
       CODE_SIGNING_CERTIFICATE_PASSWORD: ${{ secrets.CODE_SIGNING_CERTIFICATE_PASSWORD }}
-      FEED_SOURCE: https://api.nuget.org/v3/index.json
-      FEED_API_KEY: ${{ secrets.FEED_API_KEY }}
+      NUGET_SOURCE: https://api.nuget.org/v3/index.json
+      NUGET_USER: HofmeisterAn
       SONARCLOUD_URL: https://sonarcloud.io
       SONARCLOUD_ORGANIZATION: testcontainers
       SONARCLOUD_KEY: testcontainers_testcontainers-dotnet
@@ -185,9 +185,18 @@ jobs:
         run: ./build.sh --target=Sonar-End
         shell: bash
 
+      - id: nuget-login
+        name: NuGet Login
+        if: ${{ env.PUBLISH_NUGET_PACKAGE == 'true' }}
+        uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1.2.0
+        with:
+          user: ${{ env.NUGET_USER }}
+
       - name: Publish NuGet Package
         run: ./build.sh --target=Publish
         shell: bash
+        env:
+          NUGET_API_KEY: ${{ steps.nuget-login.outputs.NUGET_API_KEY }}
 
       - name: Attest
         if: ${{ env.PUBLISH_NUGET_PACKAGE == 'true' }}
