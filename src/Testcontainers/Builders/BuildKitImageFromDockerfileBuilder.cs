@@ -179,8 +179,9 @@ namespace DotNet.Testcontainers.Builders
     /// </summary>
     /// <remarks>
     /// The build result is written to the image store of the Docker daemon, which
-    /// takes a single platform only. Building an image for a platform other than
-    /// the platform of the Docker host requires emulation, such as QEMU.
+    /// takes a single platform only. A build step that executes a target platform
+    /// binary, such as a <c>RUN</c> instruction, requires emulation, such as QEMU.
+    /// A Dockerfile that only copies files and sets metadata builds without it.
     /// </remarks>
     /// <param name="platform">The platform to build the image for e.g. <c>--platform "linux/arm64"</c>.</param>
     /// <returns>A configured instance of <see cref="BuildKitImageFromDockerfileBuilder" />.</returns>

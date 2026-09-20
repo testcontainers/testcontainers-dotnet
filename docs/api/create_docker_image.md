@@ -165,7 +165,7 @@ _ = new BuildKitImageFromDockerfileBuilder()
 
 ### Platform
 
-`WithPlatform(string)` builds the image for a platform other than the platform of the Docker host, for example `linux/arm64`. Building for a foreign platform requires emulation, such as QEMU.
+`WithPlatform(string)` builds the image for a platform other than the platform of the Docker host, for example `linux/arm64`. A build step that executes a target platform binary, such as a `RUN` instruction, requires emulation, such as QEMU. A Dockerfile that only copies files and sets metadata builds without it.
 
 A comma-separated value builds a manifest list, for example `linux/amd64,linux/arm64`. Loading one into the image store of the Docker daemon requires the containerd image store. The classic image store takes a single platform only and the build fails.
 
