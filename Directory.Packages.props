@@ -23,13 +23,13 @@
         <PackageVersion Include="Dapper" Version="2.1.79"/>
         <PackageVersion Include="Moq" Version="4.20.72"/>
         <PackageVersion Include="ReflectionMagic" Version="5.0.1"/>
-        <PackageVersion Include="TUnit" Version="1.68.4"/>
+        <PackageVersion Include="TUnit" Version="1.68.17"/>
         <PackageVersion Include="xunit.analyzers" Version="1.27.0"/>
         <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5"/>
         <PackageVersion Include="xunit" Version="2.9.3"/>
         <PackageVersion Include="xunit.v3" Version="3.2.2"/>
         <!-- Test framework extensibility for Testcontainers.Xunit, Testcontainers.XunitV3 and Testcontainers.TUnit packages: -->
-        <PackageVersion Include="TUnit.Core" Version="1.68.4"/>
+        <PackageVersion Include="TUnit.Core" Version="1.68.17"/>
         <PackageVersion Include="xunit.extensibility.execution" Version="2.9.3"/>
         <PackageVersion Include="xunit.v3.extensibility.core" Version="3.2.2"/>
         <!-- Third-party client dependencies to connect and interact with the containers: -->
