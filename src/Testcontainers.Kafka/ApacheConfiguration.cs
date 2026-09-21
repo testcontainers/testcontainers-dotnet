@@ -50,12 +50,15 @@ internal sealed class ApacheConfiguration : IKafkaVendorConfiguration
     /// <inheritdoc />
     public string CreateStartupScript(KafkaConfiguration resourceConfiguration, KafkaContainer container)
     {
-        var additionalAdvertisedListeners = string.Join(",", container.AdvertisedListeners ?? Array.Empty<string>());
+        var additionalAdvertisedListeners = container.AdvertisedListeners ?? Array.Empty<string>();
 
         var startupScript = new StringWriter();
         startupScript.NewLine = "\n";
         startupScript.WriteLine("#!/bin/bash");
-        startupScript.WriteLine("export KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://" + container.Hostname + ":" + container.GetMappedPublicPort(KafkaBuilder.KafkaPort) + ",BROKER://" + container.IpAddress + ":" + KafkaBuilder.BrokerPort + "," + additionalAdvertisedListeners);
+        var advertisedListeners = new[] { "PLAINTEXT://" + container.Hostname + ":" + container.GetMappedPublicPort(KafkaBuilder.KafkaPort), "BROKER://" + container.IpAddress + ":" + KafkaBuilder.BrokerPort }
+            .Concat(additionalAdvertisedListeners.Where(listener => !string.IsNullOrEmpty(listener)));
+
+        startupScript.WriteLine("export KAFKA_ADVERTISED_LISTENERS=" + string.Join(",", advertisedListeners));
         startupScript.WriteLine("exec /etc/kafka/docker/run");
         return startupScript.ToString();
     }

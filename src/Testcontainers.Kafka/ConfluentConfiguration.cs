@@ -49,7 +49,7 @@ internal sealed class ConfluentConfiguration : IKafkaVendorConfiguration
     /// <inheritdoc />
     public string CreateStartupScript(KafkaConfiguration resourceConfiguration, KafkaContainer container)
     {
-        var additionalAdvertisedListeners = string.Join(",", container.AdvertisedListeners ?? Array.Empty<string>());
+        var additionalAdvertisedListeners = container.AdvertisedListeners ?? Array.Empty<string>();
 
         var isZooKeeperConsensus = resourceConfiguration.ConsensusProtocol == ConsensusProtocol.ZooKeeper;
 
@@ -68,7 +68,10 @@ internal sealed class ConfluentConfiguration : IKafkaVendorConfiguration
             startupScript.WriteLine("zookeeper-server-start zookeeper.properties &");
         }
 
-        startupScript.WriteLine("export KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://" + container.Hostname + ":" + container.GetMappedPublicPort(KafkaBuilder.KafkaPort) + ",BROKER://" + container.IpAddress + ":" + KafkaBuilder.BrokerPort + "," + additionalAdvertisedListeners);
+        var advertisedListeners = new[] { "PLAINTEXT://" + container.Hostname + ":" + container.GetMappedPublicPort(KafkaBuilder.KafkaPort), "BROKER://" + container.IpAddress + ":" + KafkaBuilder.BrokerPort }
+            .Concat(additionalAdvertisedListeners.Where(listener => !string.IsNullOrEmpty(listener)));
+
+        startupScript.WriteLine("export KAFKA_ADVERTISED_LISTENERS=" + string.Join(",", advertisedListeners));
         startupScript.WriteLine("exec /etc/confluent/docker/run");
         return startupScript.ToString();
     }

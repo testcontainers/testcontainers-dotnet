@@ -96,6 +96,23 @@ public abstract class KafkaContainerTest : IAsyncLifetime
         }
     }
 
+    /// <summary>
+    /// Confluent Platform 8.x runs on Kafka 4.x, which rejects an empty element in
+    /// <c>advertised.listeners</c> instead of ignoring it. Without additional advertised
+    /// listeners the startup script used to emit a trailing comma, so storage formatting
+    /// failed before the broker started.
+    /// </summary>
+    [UsedImplicitly]
+    public sealed class ConfluentKafkaV8Configuration : KafkaContainerTest
+    {
+        public ConfluentKafkaV8Configuration()
+            : base(new KafkaBuilder(TestSession.GetImageFromDockerfile(stage: "confluent-v8_2_3"))
+                .WithKRaft()
+                .Build())
+        {
+        }
+    }
+
     [UsedImplicitly]
     public sealed class ApacheKafkaConfiguration : KafkaContainerTest
     {

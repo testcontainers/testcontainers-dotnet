@@ -1,3 +1,4 @@
 FROM confluentinc/cp-kafka:7.5.12@sha256:997883c60e6f1207fb5f779c7a8fdae57312a17f446fd5ea3eb8b73f52d4a1cf
 FROM apache/kafka:4.1.1@sha256:0bc1bb2478f45b6cea78864df86acdc11e8df2c5172477819a4d12942cbe5d40 AS apache-v4_1_1
 FROM apache/kafka-native:4.1.1@sha256:b8faca36f5385f90e46861ea0b2f532ebed86e9b2868b717c75a67f6fda0c7ce AS apache-native-v4_1_1
+FROM confluentinc/cp-kafka:8.2.3@sha256:7c675640c2e917085e03f40a61b9dcc2dc362bc1ae41b4a9991658ce349c56ba AS confluent-v8_2_3
