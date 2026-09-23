@@ -19,6 +19,10 @@ public sealed class ElasticsearchContainer : DockerContainer
     /// <summary>
     /// Gets the Elasticsearch connection string.
     /// </summary>
+    /// <remarks>
+    /// If TLS is enabled, configure the client to trust the certificate authority
+    /// (CA) of <see cref="GetCertificateAsync" />.
+    /// </remarks>
     /// <returns>The Elasticsearch connection string.</returns>
     public string GetConnectionString()
     {
@@ -33,10 +37,28 @@ public sealed class ElasticsearchContainer : DockerContainer
     /// Gets the Elasticsearch OTLP endpoint.
     /// </summary>
     /// <remarks>
-    /// Elasticsearch 9.5 and later accept OTLP over HTTP at <c>/_otlp/v1/logs</c>,
-    /// <c>/_otlp/v1/metrics</c> and <c>/_otlp/v1/traces</c>. In contrast to the
-    /// connection string, the endpoint does not contain the credentials. Clients
-    /// must send them in the <c>Authorization</c> header.
+    /// Elasticsearch 9.5 and later accept OTLP over HTTP at:
+    /// <list type="bullet">
+    ///     <item>
+    ///         <description>
+    ///             <c>/_otlp/v1/metrics</c>
+    ///         </description>
+    ///     </item>
+    ///     <item>
+    ///         <description>
+    ///             <c>/_otlp/v1/logs</c>
+    ///         </description>
+    ///     </item>
+    ///     <item>
+    ///         <description>
+    ///             <c>/_otlp/v1/traces</c>
+    ///         </description>
+    ///     </item>
+    /// </list>
+    /// In contrast to the connection string, the endpoint does not contain the
+    /// credentials. Clients must send them in the <c>Authorization</c> header. If
+    /// TLS is enabled, configure the client to trust the certificate authority (CA)
+    /// of <see cref="GetCertificateAsync" />.
     /// </remarks>
     /// <returns>The Elasticsearch OTLP endpoint.</returns>
     public string GetOtlpEndpoint()
