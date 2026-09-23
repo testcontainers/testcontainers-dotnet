@@ -157,7 +157,7 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
     /// <inheritdoc cref="IWaitUntil" />
     private sealed class WaitUntil : IWaitUntil
     {
-        private static readonly string[] OtlpIndexTemplates = { "logs-otel@template", "metrics-otel@template", "traces-otel@template" };
+        private static readonly string[] OtlpIndexTemplates = { "metrics-otel@template", "logs-otel@template", "traces-otel@template" };
 
         private readonly bool _tlsEnabled;
 

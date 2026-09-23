@@ -33,6 +33,22 @@ To execute the tests, use the command `dotnet test` from a terminal.
 
 --8<-- "docs/modules/_call_out_test_projects.txt"
 
+## OpenTelemetry (OTLP)
+
+Elasticsearch 9.5 and later accept OTLP over HTTP. `ElasticsearchContainer.GetOtlpEndpoint()` returns the base endpoint the exporter sends the telemetry data to. If the endpoint is set via `OTEL_EXPORTER_OTLP_ENDPOINT`, the exporter appends the signal path, such as `v1/traces`. If the endpoint is set via `OtlpExporterOptions.Endpoint`, the exporter uses it as is, and the signal path must be appended manually. In contrast to the connection string, the endpoint does not contain the credentials. Clients must send them in the `Authorization` header:
+
+=== "Export Telemetry Data"
+    ```csharp
+    --8<-- "tests/Testcontainers.Elasticsearch.Tests/ElasticsearchContainerOtlpTest.cs:UseElasticsearchOtlpEndpoint"
+    ```
+
 ## A Note To Developers
 
-The Testcontainers module creates a container that listens to requests over **HTTPS**. To communicate with the Elasticsearch instance, developers must create a `ElasticsearchClientSettings` instance and set the `ServerCertificateValidationCallback` delegate to `CertificateValidations.AllowAll`. Failing to do so will result in a communication failure as the .NET will reject the certificate coming from the container.
+The Testcontainers module creates a container that listens to requests over **HTTPS**. Elasticsearch generates a self-signed certificate authority (CA) during the startup that signs the HTTP certificate. `ElasticsearchContainer.GetCertificateAsync()` reads this certificate authority (CA) from the container. Configure the client to trust it, otherwise .NET will reject the certificate coming from the container.
+
+Besides the Elasticsearch client, any other client can be configured to trust the certificate authority (CA) too. The example below uses the `CertificateValidations.AuthorityIsRoot(X509Certificate)` helper from `Elastic.Transport`. Without it, build an `X509Chain` with `X509ChainTrustMode.CustomRootTrust` and add the certificate authority (CA) to `ChainPolicy.CustomTrustStore`:
+
+=== "Trust The Certificate Authority"
+    ```csharp
+    --8<-- "tests/Testcontainers.Elasticsearch.Tests/ElasticsearchContainerTest.cs:UseElasticsearchCertificate"
+    ```
