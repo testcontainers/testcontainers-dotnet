@@ -205,13 +205,6 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
     }
 
     /// <inheritdoc />
-    /// <remarks>
-    /// Building sets the startup callback that copies the generated startup script, replacing a startup
-    /// callback set through <c>WithStartupCallback</c>. When no consensus protocol is set, building also
-    /// applies the vendor default, which replaces a wait strategy set through
-    /// <see cref="IContainerBuilder{TBuilderEntity,TContainerEntity,TConfigurationEntity}.WithWaitStrategy(IWaitForContainerOS)" />.
-    /// Set the consensus protocol explicitly with <see cref="WithKRaft" /> or <see cref="WithZooKeeper" /> to keep your wait strategy.
-    /// </remarks>
     public override KafkaContainer Build()
     {
         Validate();

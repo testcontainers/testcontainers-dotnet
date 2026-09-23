@@ -183,6 +183,17 @@ _ = new ContainerBuilder("alpine:3.20.0")
 
 The static class `Consume` offers pre-configured implementations of the `IOutputConsumer` interface for common use cases. If you need additional functionalities beyond those provided by the default implementations, you can create your own implementations of `IOutputConsumer`.
 
+## How builder configurations combine
+
+The container, image, network and volume builders all follow the same rules when you call a builder method more than once:
+
+- Builders are immutable. Every call returns a new builder with the updated configuration (see [reusing builder configurations](#reusing-builder-configurations)).
+- A `WithX` call that sets a single value, such as the image, wait strategy or startup callback, replaces the value set before it.
+- Lists and dictionaries, such as environment variables, port bindings, mounts and labels, append new values instead. A dictionary entry with the same key replaces the previous entry.
+- You cannot remove or modify existing list and dictionary values, except where the builder accepts a `ComposableEnumerable<T>` (see [composing command arguments](#composing-command-arguments)).
+
+Modules come pre-configured, and that configuration is opinionated. Overriding a module's configuration with the generic builder APIs, for example replacing its startup callback or wait strategy, is not supported and can leave the container unprovisioned or never ready. Use the generic `ContainerBuilder` when you need full control over the configuration.
+
 ## Composing command arguments
 
 Testcontainers for .NET provides the `WithCommand(ComposableEnumerable<string>)` API to give you flexible control over container command arguments. While currently used for container commands, the `ComposableEnumerable<T>` abstraction is designed to support other builder APIs in the future, allowing similar composition and override functionality.
@@ -213,10 +224,6 @@ Using `OverwriteEnumerable<string>(Array.Empty<string>())` removes all default c
 !!! tip
 
     You can create your own `ComposableEnumerable<T>` implementation to control exactly how configuration values are composed or modified.
-
-!!! warning "Not every configuration composes"
-
-    Commands compose, but most other configurations keep a single value and the last call wins. The startup callback is the one to watch: modules set their own to provision the container, so calling `WithStartupCallback` on a module builder replaces that provisioning and the container starts unprovisioned, usually surfacing as a wait strategy timeout rather than a clear error. A module can also set the callback while building, replacing yours. Use the generic container builder when you need full control over the startup callback.
 
 ## Reusing builder configurations
 
@@ -341,7 +348,7 @@ Assert.Equal(MagicNumber, magicNumber);
 | `WithPrivileged`              | Sets the `--privileged` flag.                                                                                                                                                        |
 | `WithOutputConsumer`          | Redirects `stdout` and `stderr` to capture the container output.                                                                                                                     |
 | `WithWaitStrategy`            | Sets the wait strategy to complete the container start and indicates when it is ready.                                                                                               |
-| `WithStartupCallback`         | Sets the startup callback to invoke after the container start. A container keeps one callback and the last call wins, so setting this on a module builder replaces the module's own provisioning. |
+| `WithStartupCallback`         | Sets the startup callback to invoke after the container start.                                                                                                                       |
 | `WithCreateParameterModifier` | Allows low level modifications of the Docker container create parameter.                                                                                                             |
 
 !!! tip
