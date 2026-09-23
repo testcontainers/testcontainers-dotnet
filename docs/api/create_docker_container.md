@@ -190,7 +190,7 @@ The container, image, network and volume builders all follow the same rules when
 - Builders are immutable. Every call returns a new builder with the updated configuration (see [reusing builder configurations](#reusing-builder-configurations)).
 - A `WithX` call that sets a single value, such as the image, wait strategy or startup callback, replaces the value set before it.
 - Lists and dictionaries, such as environment variables, port bindings, mounts and labels, append new values instead. A dictionary entry with the same key replaces the previous entry.
-- You cannot remove or modify existing list and dictionary values, except where the builder accepts a `ComposableEnumerable<T>` (see [composing command arguments](#composing-command-arguments)).
+- You cannot remove existing list and dictionary values, except where the builder accepts a `ComposableEnumerable<T>` (see [composing command arguments](#composing-command-arguments)).
 
 Modules come pre-configured, and that configuration is opinionated. Overriding a module's configuration with the generic builder APIs, for example replacing its startup callback or wait strategy, is not supported and can leave the container unprovisioned or never ready. Use the generic `ContainerBuilder` when you need full control over the configuration.
 
