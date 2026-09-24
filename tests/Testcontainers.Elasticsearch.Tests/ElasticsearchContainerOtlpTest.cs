@@ -21,27 +21,24 @@ public sealed class ElasticsearchContainerOtlpTest : IAsyncLifetime
     public async Task OtlpExportSpanIsIngested()
     {
         // Given
+        using var authenticatedHttpContext = await ElasticsearchAuthenticatedHttpContext.CreateAsync(_elasticsearchContainer, TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        using var httpClient = authenticatedHttpContext.CreateHttpClient();
+
         var serviceName = Guid.NewGuid().ToString("D");
 
         var spanName = Guid.NewGuid().ToString("D");
-
-        using var caCertificate = await _elasticsearchContainer.GetCertificateAsync(TestContext.Current.CancellationToken)
-            .ConfigureAwait(true);
-
-        using var httpMessageHandler = new HttpClientHandler();
-        httpMessageHandler.ServerCertificateCustomValidationCallback = CertificateValidations.AuthorityIsRoot(caCertificate);
-
-        var connectionString = new Uri(_elasticsearchContainer.GetConnectionString());
-
-        var authenticationHeaderValue = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.UTF8.GetBytes(Uri.UnescapeDataString(connectionString.UserInfo))));
 
         var resourceBuilder = ResourceBuilder
             .CreateDefault()
             .AddService(serviceName);
 
-        var otlpExporterConfiguration = new Dictionary<string, string>();
-        otlpExporterConfiguration.Add("OTEL_EXPORTER_OTLP_ENDPOINT", _elasticsearchContainer.GetOtlpEndpoint());
-        otlpExporterConfiguration.Add("OTEL_EXPORTER_OTLP_PROTOCOL", "http/protobuf");
+        var otlpExporterConfiguration = new Dictionary<string, string>
+        {
+            { "OTEL_EXPORTER_OTLP_ENDPOINT", _elasticsearchContainer.GetOtlpEndpoint() },
+            { "OTEL_EXPORTER_OTLP_PROTOCOL", "http/protobuf" },
+        };
 
         var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(otlpExporterConfiguration)
@@ -52,15 +49,7 @@ public sealed class ElasticsearchContainerOtlpTest : IAsyncLifetime
             .ConfigureServices(services => services.AddSingleton<IConfiguration>(configuration))
             .SetResourceBuilder(resourceBuilder)
             .AddSource(serviceName)
-            .AddOtlpExporter(options =>
-            {
-                options.HttpClientFactory = () =>
-                {
-                    var exporterHttpClient = new HttpClient(httpMessageHandler, false);
-                    exporterHttpClient.DefaultRequestHeaders.Authorization = authenticationHeaderValue;
-                    return exporterHttpClient;
-                };
-            });
+            .AddOtlpExporter(options => options.HttpClientFactory = () => httpClient);
 
         // When
         using (var _ = tracerProviderBuilder.Build())
@@ -71,10 +60,6 @@ public sealed class ElasticsearchContainerOtlpTest : IAsyncLifetime
         }
 
         // Then
-        using var httpClient = new HttpClient(httpMessageHandler, false);
-        httpClient.BaseAddress = connectionString;
-        httpClient.DefaultRequestHeaders.Authorization = authenticationHeaderValue;
-
         var spansJson = string.Empty;
 
         await WaitStrategy.WaitWhileAsync(async () =>

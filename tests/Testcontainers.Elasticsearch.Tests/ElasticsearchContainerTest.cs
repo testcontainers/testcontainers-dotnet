@@ -55,19 +55,10 @@ public abstract class ElasticsearchContainerTest : IAsyncLifetime
     public async Task ClusterHealthReturnsValidResponse()
     {
         // Given
-        using var caCertificate = await _elasticsearchContainer.GetCertificateAsync(TestContext.Current.CancellationToken)
+        using var authenticatedHttpContext = await ElasticsearchAuthenticatedHttpContext.CreateAsync(_elasticsearchContainer, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        using var httpMessageHandler = new HttpClientHandler();
-        httpMessageHandler.ServerCertificateCustomValidationCallback = CertificateValidations.AuthorityIsRoot(caCertificate);
-
-        var connectionString = new Uri(_elasticsearchContainer.GetConnectionString());
-
-        var authenticationHeaderValue = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.UTF8.GetBytes(Uri.UnescapeDataString(connectionString.UserInfo))));
-
-        using var httpClient = new HttpClient(httpMessageHandler);
-        httpClient.BaseAddress = connectionString;
-        httpClient.DefaultRequestHeaders.Authorization = authenticationHeaderValue;
+        using var httpClient = authenticatedHttpContext.CreateHttpClient();
 
         // When
         using var httpResponseMessage = await httpClient.GetAsync("/_cluster/health", TestContext.Current.CancellationToken)
