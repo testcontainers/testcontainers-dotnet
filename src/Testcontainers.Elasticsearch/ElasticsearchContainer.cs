@@ -56,9 +56,9 @@ public sealed class ElasticsearchContainer : DockerContainer
     ///     </item>
     /// </list>
     /// In contrast to the connection string, the endpoint does not contain the
-    /// credentials. Clients must send them in the <c>Authorization</c> header. If
-    /// TLS is enabled, configure the client to trust the certificate authority (CA)
-    /// of <see cref="GetCertificateAsync" />.
+    /// credentials. Clients must send them in the <c>Authorization</c> header.
+    /// If TLS is enabled, configure the client to trust the certificate authority
+    /// (CA) of <see cref="GetCertificateAsync" />.
     /// </remarks>
     /// <returns>The Elasticsearch OTLP endpoint.</returns>
     public string GetOtlpEndpoint()

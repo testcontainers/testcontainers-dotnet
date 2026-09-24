@@ -63,9 +63,11 @@ public abstract class ElasticsearchContainerTest : IAsyncLifetime
 
         var connectionString = new Uri(_elasticsearchContainer.GetConnectionString());
 
+        var authenticationHeaderValue = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.UTF8.GetBytes(Uri.UnescapeDataString(connectionString.UserInfo))));
+
         using var httpClient = new HttpClient(httpMessageHandler);
         httpClient.BaseAddress = connectionString;
-        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.UTF8.GetBytes(Uri.UnescapeDataString(connectionString.UserInfo))));
+        httpClient.DefaultRequestHeaders.Authorization = authenticationHeaderValue;
 
         // When
         using var httpResponseMessage = await httpClient.GetAsync("/_cluster/health", TestContext.Current.CancellationToken)

@@ -66,7 +66,6 @@ public sealed class ElasticsearchContainerOtlpTest : IAsyncLifetime
         using (var _ = tracerProviderBuilder.Build())
         {
             using var activitySource = new ActivitySource(serviceName);
-
             using var activity = activitySource.StartActivity(spanName);
             activity.SetTag("test.key", "test-value");
         }

@@ -207,21 +207,32 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
             using var httpMessageHandler = new HttpClientHandler();
             httpMessageHandler.ServerCertificateCustomValidationCallback = (_, _, _, _) => true;
 
-            var isNodeReady = await CreateHttpWaitStrategy(httpMessageHandler, "/_cluster/health")
-                .ForResponseMessageMatching(IsNodeReadyAsync)
+            var nodeWaitStrategy = CreateHttpWaitStrategy(httpMessageHandler)
+                .ForPath("/_cluster/health")
+                .ForResponseMessageMatching(IsNodeReadyAsync);
+
+            var isNodeReady = await nodeWaitStrategy
                 .UntilAsync(container)
                 .ConfigureAwait(false);
 
-            if (!isNodeReady || !_otlpEnabled)
+            if (!isNodeReady)
             {
-                return isNodeReady;
+                return false;
+            }
+
+            if (!_otlpEnabled)
+            {
+                return true;
             }
 
             // Elasticsearch reports a healthy cluster before it installs the built-in OTLP
             // index templates. Documents sent to the OTLP endpoint before are not indexed.
+            var templateWaitStrategy = CreateHttpWaitStrategy(httpMessageHandler);
+
             foreach (var otlpIndexTemplate in OtlpIndexTemplates)
             {
-                var isOtlpIndexTemplateInstalled = await CreateHttpWaitStrategy(httpMessageHandler, "/_index_template/" + otlpIndexTemplate)
+                var isOtlpIndexTemplateInstalled = await templateWaitStrategy
+                    .ForPath("/_index_template/" + otlpIndexTemplate)
                     .UntilAsync(container)
                     .ConfigureAwait(false);
 
@@ -234,13 +245,12 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
             return true;
         }
 
-        private HttpWaitStrategy CreateHttpWaitStrategy(HttpMessageHandler httpMessageHandler, string path)
+        private HttpWaitStrategy CreateHttpWaitStrategy(HttpMessageHandler httpMessageHandler)
         {
             return new HttpWaitStrategy()
                 .UsingHttpMessageHandler(httpMessageHandler)
                 .UsingTls(_tlsEnabled)
                 .ForPort(ElasticsearchHttpsPort)
-                .ForPath(path)
                 .WithHeader("Authorization", "Basic " + _authToken);
         }
     }

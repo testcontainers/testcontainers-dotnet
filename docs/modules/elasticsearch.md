@@ -44,7 +44,7 @@ Elasticsearch 9.5 and later accept OTLP over HTTP. `ElasticsearchContainer.GetOt
 
 ## A Note To Developers
 
-The Testcontainers module creates a container that listens to requests over **HTTPS**. Elasticsearch generates a self-signed certificate authority (CA) during the startup that signs the HTTP certificate. `ElasticsearchContainer.GetCertificateAsync()` reads this certificate authority (CA) from the container. Configure the client to trust it, otherwise .NET will reject the certificate coming from the container.
+The Testcontainers module creates a container that listens to requests over HTTPS. Elasticsearch generates a self-signed certificate authority (CA) during the startup that signs the HTTP certificate. `ElasticsearchContainer.GetCertificateAsync()` reads this certificate authority (CA) from the container. Configure the client to trust it, otherwise .NET will reject the certificate coming from the container.
 
 Besides the Elasticsearch client, any other client can be configured to trust the certificate authority (CA) too. The example below uses the `CertificateValidations.AuthorityIsRoot(X509Certificate)` helper from `Elastic.Transport`. Without it, build an `X509Chain` with `X509ChainTrustMode.CustomRootTrust` and add the certificate authority (CA) to `ChainPolicy.CustomTrustStore`:
 
