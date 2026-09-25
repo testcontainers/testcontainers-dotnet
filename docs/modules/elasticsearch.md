@@ -35,7 +35,7 @@ To execute the tests, use the command `dotnet test` from a terminal.
 
 ## OpenTelemetry (OTLP)
 
-Elasticsearch 9.5 and later accept OTLP over HTTP. `ElasticsearchContainer.GetOtlpEndpoint()` returns the base endpoint the exporter sends the telemetry data to. If the endpoint is set via `OTEL_EXPORTER_OTLP_ENDPOINT`, the exporter appends the signal path, such as `v1/traces`. If the endpoint is set via `OtlpExporterOptions.Endpoint`, the exporter uses it as is, and the signal path must be appended manually. In contrast to the connection string, the endpoint does not contain the credentials. Clients must send them in the `Authorization` header:
+Elasticsearch 9.5 and later accept OTLP over HTTP. `ElasticsearchContainer.GetOtlpEndpoint()` returns the base endpoint the exporter sends the telemetry data to. If the endpoint is set via `OTEL_EXPORTER_OTLP_ENDPOINT`, the exporter appends the signal path, such as `v1/metrics`. If the endpoint is set via `OtlpExporterOptions.Endpoint`, the exporter uses it as is, and the signal path must be appended manually. In contrast to the connection string, the endpoint does not contain the credentials. Clients must send them in the `Authorization` header:
 
 === "Export Telemetry Data"
     ```csharp
