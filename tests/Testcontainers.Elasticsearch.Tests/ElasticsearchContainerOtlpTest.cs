@@ -26,6 +26,8 @@ public sealed class ElasticsearchContainerOtlpTest : IAsyncLifetime
 
         using var httpClient = httpClientFactory.CreateHttpClient();
 
+        var spansJson = string.Empty;
+
         var serviceName = Guid.NewGuid().ToString("D");
 
         var spanName = Guid.NewGuid().ToString("D");
@@ -50,8 +52,6 @@ public sealed class ElasticsearchContainerOtlpTest : IAsyncLifetime
             .ConfigureServices(services => services.AddSingleton<IConfiguration>(configuration));
 
         // When
-        var spansJson = string.Empty;
-
         using (var _ = tracerProviderBuilder.Build())
         {
             using var activitySource = new ActivitySource(serviceName);

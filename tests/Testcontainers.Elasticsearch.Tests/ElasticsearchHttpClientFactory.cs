@@ -46,7 +46,7 @@ internal sealed class ElasticsearchHttpClientFactory : IDisposable
         {
             var connectionString = new Uri(elasticsearchContainer.GetConnectionString());
 
-            var parameter = Convert.ToBase64String(Encoding.UTF8.GetBytes(Uri.UnescapeDataString(connectionString.UserInfo)));
+            var parameter = Convert.ToBase64String(Encoding.Default.GetBytes(Uri.UnescapeDataString(connectionString.UserInfo)));
 
             var authorization = new AuthenticationHeaderValue("Basic", parameter);
 
@@ -66,8 +66,8 @@ internal sealed class ElasticsearchHttpClientFactory : IDisposable
     /// Creates an authenticated <see cref="HttpClient" /> for the Elasticsearch container.
     /// </summary>
     /// <remarks>
-    /// The client shares the handler owned by this factory, so disposing the
-    /// client does not dispose the handler; only disposing this factory does.
+    /// The client shares the handler owned by this factory. Disposing the
+    /// client does not dispose the handler, only disposing this factory does.
     /// This lets callers create multiple clients, or one client used by multiple
     /// consumers, from a single certificate and handler.
     /// </remarks>

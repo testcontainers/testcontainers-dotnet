@@ -110,11 +110,18 @@ public sealed class ElasticsearchConfiguration : ContainerConfiguration
                 hasStackTemplatesEnabled &&
                 "false".Equals(stackTemplatesEnabled, StringComparison.OrdinalIgnoreCase);
 
+            var hasOtelDataRegistryEnabled = Environments
+                .TryGetValue("xpack.otel_data.registry.enabled", out var otelDataRegistryEnabled);
+
+            var otelDataRegistryDisabled =
+                hasOtelDataRegistryEnabled &&
+                "false".Equals(otelDataRegistryEnabled, StringComparison.OrdinalIgnoreCase);
+
             var supportsOtlp =
                 Image.MatchLatestOrNightly() ||
                 Image.MatchVersion(v => v.Major > 9 || v.Major == 9 && v.Minor >= 5);
 
-            return supportsOtlp && !stackTemplatesDisabled;
+            return supportsOtlp && !stackTemplatesDisabled && !otelDataRegistryDisabled;
         }
     }
 }
