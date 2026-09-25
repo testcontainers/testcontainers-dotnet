@@ -21,18 +21,16 @@ public sealed class ElasticsearchContainerOtlpTest : IAsyncLifetime
     public async Task OtlpExportSpanIsIngested()
     {
         // Given
-        using var authenticatedHttpContext = await ElasticsearchAuthenticatedHttpContext.CreateAsync(_elasticsearchContainer, TestContext.Current.CancellationToken)
+        using var httpClientFactory = await ElasticsearchHttpClientFactory.CreateAsync(_elasticsearchContainer, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        using var httpClient = authenticatedHttpContext.CreateHttpClient();
+        using var httpClient = httpClientFactory.CreateHttpClient();
 
         var serviceName = Guid.NewGuid().ToString("D");
 
         var spanName = Guid.NewGuid().ToString("D");
 
-        var resourceBuilder = ResourceBuilder
-            .CreateDefault()
-            .AddService(serviceName);
+        var resourceBuilder = ResourceBuilder.CreateDefault().AddService(serviceName);
 
         var otlpExporterConfiguration = new Dictionary<string, string>
         {
@@ -46,12 +44,14 @@ public sealed class ElasticsearchContainerOtlpTest : IAsyncLifetime
 
         var tracerProviderBuilder = Sdk
             .CreateTracerProviderBuilder()
-            .ConfigureServices(services => services.AddSingleton<IConfiguration>(configuration))
             .SetResourceBuilder(resourceBuilder)
             .AddSource(serviceName)
-            .AddOtlpExporter(options => options.HttpClientFactory = () => httpClient);
+            .AddOtlpExporter(options => options.HttpClientFactory = () => httpClient)
+            .ConfigureServices(services => services.AddSingleton<IConfiguration>(configuration));
 
         // When
+        var spansJson = string.Empty;
+
         using (var _ = tracerProviderBuilder.Build())
         {
             using var activitySource = new ActivitySource(serviceName);
@@ -59,21 +59,21 @@ public sealed class ElasticsearchContainerOtlpTest : IAsyncLifetime
             activity.SetTag("test.key", "test-value");
         }
 
-        // Then
-        var spansJson = string.Empty;
+        var spanIsIndexed = async () =>
+        {
+            using var httpResponseMessage = await httpClient.PostAsync("/traces-*/_refresh", null, TestContext.Current.CancellationToken)
+                .ConfigureAwait(false);
 
-        await WaitStrategy.WaitWhileAsync(async () =>
-            {
-                using var httpResponseMessage = await httpClient.PostAsync("/traces-*/_refresh", null, TestContext.Current.CancellationToken)
-                    .ConfigureAwait(false);
+            spansJson = await httpClient.GetStringAsync("/traces-*/_search", TestContext.Current.CancellationToken)
+                .ConfigureAwait(false);
 
-                spansJson = await httpClient.GetStringAsync("/traces-*/_search", TestContext.Current.CancellationToken)
-                    .ConfigureAwait(false);
+            return spansJson.Contains(spanName);
+        };
 
-                return !spansJson.Contains(spanName);
-            }, TimeSpan.FromSeconds(1), TimeSpan.FromMinutes(1), ct: TestContext.Current.CancellationToken)
+        await WaitStrategy.WaitUntilAsync(spanIsIndexed, TimeSpan.FromSeconds(1), TimeSpan.FromMinutes(1), ct: TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
+        // Then
         Assert.Contains(serviceName, spansJson);
         Assert.Contains(spanName, spansJson);
     }

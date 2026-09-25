@@ -55,10 +55,10 @@ public abstract class ElasticsearchContainerTest : IAsyncLifetime
     public async Task ClusterHealthReturnsValidResponse()
     {
         // Given
-        using var authenticatedHttpContext = await ElasticsearchAuthenticatedHttpContext.CreateAsync(_elasticsearchContainer, TestContext.Current.CancellationToken)
+        using var httpClientFactory = await ElasticsearchHttpClientFactory.CreateAsync(_elasticsearchContainer, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        using var httpClient = authenticatedHttpContext.CreateHttpClient();
+        using var httpClient = httpClientFactory.CreateHttpClient();
 
         // When
         using var httpResponseMessage = await httpClient.GetAsync("/_cluster/health", TestContext.Current.CancellationToken)
