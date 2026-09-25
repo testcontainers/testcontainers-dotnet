@@ -20,10 +20,8 @@ public sealed class ElasticsearchContainer : DockerContainer
     /// Gets the Elasticsearch connection string.
     /// </summary>
     /// <remarks>
-    /// The Elasticsearch module does not export the SSL certificate from the container
-    /// by default. If you are trying to connect to the Elasticsearch service, you need
-    /// to override the certificate validation callback to establish the connection.
-    /// We will export the certificate and support trusted SSL connections in the future.
+    /// If TLS is enabled, configure the client to trust the certificate authority
+    /// (CA) of <see cref="GetCertificateAsync" />.
     /// </remarks>
     /// <returns>The Elasticsearch connection string.</returns>
     public string GetConnectionString()
@@ -33,5 +31,63 @@ public sealed class ElasticsearchContainer : DockerContainer
         endpoint.UserName = _configuration.Username;
         endpoint.Password = _configuration.Password;
         return endpoint.ToString();
+    }
+
+    /// <summary>
+    /// Gets the Elasticsearch OTLP endpoint.
+    /// </summary>
+    /// <remarks>
+    /// Elasticsearch 9.5 and later accept OTLP over HTTP at:
+    /// <list type="bullet">
+    ///     <item>
+    ///         <description>
+    ///             <c>/_otlp/v1/metrics</c>
+    ///         </description>
+    ///     </item>
+    ///     <item>
+    ///         <description>
+    ///             <c>/_otlp/v1/logs</c>
+    ///         </description>
+    ///     </item>
+    ///     <item>
+    ///         <description>
+    ///             <c>/_otlp/v1/traces</c>
+    ///         </description>
+    ///     </item>
+    /// </list>
+    /// In contrast to the connection string, the endpoint does not contain the
+    /// credentials. Clients must send them in the <c>Authorization</c> header.
+    /// If TLS is enabled, configure the client to trust the certificate authority
+    /// (CA) of <see cref="GetCertificateAsync" />.
+    /// </remarks>
+    /// <returns>The Elasticsearch OTLP endpoint.</returns>
+    public string GetOtlpEndpoint()
+    {
+        const string otlpPath = "/_otlp/";
+        var scheme = _configuration.TlsEnabled ? Uri.UriSchemeHttps : Uri.UriSchemeHttp;
+        return new UriBuilder(scheme, Hostname, GetMappedPublicPort(ElasticsearchBuilder.ElasticsearchHttpsPort), otlpPath).ToString();
+    }
+
+    /// <summary>
+    /// Gets the Elasticsearch HTTP certificate authority (CA).
+    /// </summary>
+    /// <remarks>
+    /// Elasticsearch generates a self-signed certificate authority (CA) during the
+    /// startup that signs the HTTP certificate. Configure the client to trust it
+    /// instead of accepting any certificate. The certificate is only available for
+    /// Elasticsearch 8.0 and later with TLS enabled.
+    /// </remarks>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the certificate has been read, returning the Elasticsearch HTTP certificate authority (CA).</returns>
+    public async Task<X509Certificate2> GetCertificateAsync(CancellationToken ct = default)
+    {
+        var certificateBytes = await ReadFileAsync(ElasticsearchBuilder.ElasticsearchHttpCaCertificateFilePath, ct)
+            .ConfigureAwait(false);
+
+#if NET5_0_OR_GREATER
+        return X509Certificate2.CreateFromPem(Encoding.Default.GetString(certificateBytes));
+#else
+        return new X509Certificate2(certificateBytes);
+#endif
     }
 }

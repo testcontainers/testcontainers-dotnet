@@ -91,4 +91,37 @@ public sealed class ElasticsearchConfiguration : ContainerConfiguration
             return !httpsDisabled;
         }
     }
+
+    /// <summary>
+    /// Gets a value indicating whether the OTLP endpoint is enabled or not.
+    /// </summary>
+    /// <remarks>
+    /// Elasticsearch 9.5 and later ship an OTLP endpoint that requires the built-in
+    /// stack index templates.
+    /// </remarks>
+    public bool OtlpEnabled
+    {
+        get
+        {
+            var hasStackTemplatesEnabled = Environments
+                .TryGetValue("stack.templates.enabled", out var stackTemplatesEnabled);
+
+            var stackTemplatesDisabled =
+                hasStackTemplatesEnabled &&
+                "false".Equals(stackTemplatesEnabled, StringComparison.OrdinalIgnoreCase);
+
+            var hasOtelDataRegistryEnabled = Environments
+                .TryGetValue("xpack.otel_data.registry.enabled", out var otelDataRegistryEnabled);
+
+            var otelDataRegistryDisabled =
+                hasOtelDataRegistryEnabled &&
+                "false".Equals(otelDataRegistryEnabled, StringComparison.OrdinalIgnoreCase);
+
+            var supportsOtlp =
+                Image.MatchLatestOrNightly() ||
+                Image.MatchVersion(v => v.Major > 9 || v.Major == 9 && v.Minor >= 5);
+
+            return supportsOtlp && !stackTemplatesDisabled && !otelDataRegistryDisabled;
+        }
+    }
 }
