@@ -4,6 +4,8 @@ namespace Testcontainers.Elasticsearch;
 [PublicAPI]
 public sealed class ElasticsearchConfiguration : ContainerConfiguration
 {
+    private const string FalseString = "false";
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ElasticsearchConfiguration" /> class.
     /// </summary>
@@ -85,8 +87,8 @@ public sealed class ElasticsearchConfiguration : ContainerConfiguration
             var httpsDisabled =
                 hasSecurityEnabled &&
                 hasHttpSslEnabled &&
-                "false".Equals(securityEnabled, StringComparison.OrdinalIgnoreCase) &&
-                "false".Equals(httpSslEnabled, StringComparison.OrdinalIgnoreCase);
+                FalseString.Equals(securityEnabled, StringComparison.OrdinalIgnoreCase) &&
+                FalseString.Equals(httpSslEnabled, StringComparison.OrdinalIgnoreCase);
 
             return !httpsDisabled;
         }
@@ -108,14 +110,14 @@ public sealed class ElasticsearchConfiguration : ContainerConfiguration
 
             var stackTemplatesDisabled =
                 hasStackTemplatesEnabled &&
-                "false".Equals(stackTemplatesEnabled, StringComparison.OrdinalIgnoreCase);
+                FalseString.Equals(stackTemplatesEnabled, StringComparison.OrdinalIgnoreCase);
 
             var hasOtelDataRegistryEnabled = Environments
                 .TryGetValue("xpack.otel_data.registry.enabled", out var otelDataRegistryEnabled);
 
             var otelDataRegistryDisabled =
                 hasOtelDataRegistryEnabled &&
-                "false".Equals(otelDataRegistryEnabled, StringComparison.OrdinalIgnoreCase);
+                FalseString.Equals(otelDataRegistryEnabled, StringComparison.OrdinalIgnoreCase);
 
             var supportsOtlp =
                 Image.MatchLatestOrNightly() ||
