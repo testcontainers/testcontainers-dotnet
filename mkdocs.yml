@@ -77,5 +77,6 @@ nav:
     - modules/redis.md
     - modules/toxiproxy.md
     - modules/valkey.md
+    - modules/zookeeper.md # Apache
   - contributing.md
   - contributing_docs.md
