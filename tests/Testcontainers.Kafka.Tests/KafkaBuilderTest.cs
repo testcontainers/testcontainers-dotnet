@@ -16,6 +16,28 @@ public sealed class KafkaBuilderTests
         ExpectArgEx(message, () => new KafkaBuilder("apache/kafka:3.9.1").WithZooKeeper().Build());
     }
 
+    [Theory]
+    [InlineData("confluentinc/cp-kafka:8.0.0")]
+    [InlineData("confluentinc/cp-kafka:latest")]
+    [InlineData("confluentinc/cp-kafka:latest-ubi9")]
+    [InlineData("confluentinc/cp-kafka:latest.arm64")]
+    public void ZooKeeperWithConfluent8ThrowsArgumentException(string image)
+    {
+        const string message = "ZooKeeper is not supported for Confluent Platform images with versions 8.0.0 and later. Use KRaft instead.";
+        ExpectArgEx(message, () => new KafkaBuilder(image).WithZooKeeper().Build());
+    }
+
+    [Theory]
+    [InlineData("confluentinc/cp-kafka:8.0.0")]
+    [InlineData("confluentinc/cp-kafka:latest")]
+    [InlineData("confluentinc/cp-kafka:latest-ubi9")]
+    [InlineData("confluentinc/cp-kafka:latest.arm64")]
+    public void DefaultWithConfluent8DoesNotThrow(string image)
+    {
+        var exception = Record.Exception(() => new KafkaBuilder(image).Build());
+        Assert.Null(exception);
+    }
+
     private static void ExpectArgEx(string message, Action testCode)
     {
         var exception = Assert.Throws<ArgumentException>(testCode);
