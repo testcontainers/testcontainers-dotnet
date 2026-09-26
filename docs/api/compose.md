@@ -39,7 +39,7 @@ An exposed service port does not need to be published in the Docker Compose file
 `WithScaledService(string, ushort)` runs more than one container for a Docker Compose service. Each container is one instance, addressed by the service name and an instance number starting at `1`. Every `*Service` member has an `*ServiceInstance` counterpart that takes the instance number, for example `WithExposedServiceInstance(string, ushort, ushort)` and `GetServiceInstanceContainer(string, ushort)`. Members without an instance number always address the first instance.
 
 ```csharp
-var composeContainer = new ComposeBuilder(image)
+var composeContainer = new ComposeBuilder("docker:29.8.1-cli")
   .WithComposeFile(composeFilePath)
   .WithScaledService("web", 2)
   .WithExposedServiceInstance("web", 1, 80)
@@ -52,7 +52,7 @@ var composeContainer = new ComposeBuilder(image)
 Testcontainers generates a random Docker Compose project name for every `ComposeContainer`, so concurrent test runs do not collide. Use `WithProjectNamePrefix(string)` to make the generated name easier to recognize, for example in Docker Desktop or `docker compose ls`. Testcontainers appends a random suffix to the prefix, and reads it back through `ComposeContainer.ProjectName`.
 
 ```csharp
-_ = new ComposeBuilder(image)
+_ = new ComposeBuilder("docker:29.8.1-cli")
   .WithComposeFile(composeFilePath)
   .WithProjectNamePrefix("checkout-service");
 ```
@@ -66,7 +66,7 @@ Testcontainers pulls the Docker Compose service images from the test host before
 `WithComposeUpOption(params string[])` and `WithComposeDownOption(params string[])` add options to the `docker compose up` and `docker compose down` commands. Each option is one command line argument. Pass an option and its value as two arguments, `"--pull", "always"`, or as one argument that contains the assignment, `"--pull=always"`.
 
 ```csharp
-_ = new ComposeBuilder(image)
+_ = new ComposeBuilder("docker:29.8.1-cli")
   .WithComposeFile(composeFilePath)
   .WithComposeUpOption("--build")
   .WithComposeDownOption("--rmi", "local");
@@ -77,7 +77,7 @@ A service that Docker Compose builds needs its build context inside the containe
 Options that apply to Docker Compose itself instead of to a command, such as `--profile` or `--env-file`, are set with their [pre-defined environment variable](https://docs.docker.com/compose/how-tos/environment-variables/envvars/). They apply to every command Testcontainers runs.
 
 ```csharp
-_ = new ComposeBuilder(image)
+_ = new ComposeBuilder("docker:29.8.1-cli")
   .WithComposeFile(composeFilePath)
   .WithEnvironment("COMPOSE_PROFILES", "debug");
 ```
