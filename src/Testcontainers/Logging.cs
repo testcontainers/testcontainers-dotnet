@@ -2,8 +2,11 @@ namespace DotNet.Testcontainers
 {
   using System;
   using System.Collections.Generic;
+  using System.Linq;
+  using System.Text;
   using System.Text.Json;
   using System.Text.RegularExpressions;
+  using DotNet.Testcontainers.Containers;
   using DotNet.Testcontainers.Images;
   using Microsoft.Extensions.Logging;
 
@@ -24,6 +27,8 @@ namespace DotNet.Testcontainers
 
   internal static partial class Logging
   {
+    private static readonly string[] LineEndings = { "\r\n", "\n" };
+
     [LoggerMessage(Level = LogLevel.Information, Message = "Pattern {IgnorePattern} added to the regex cache")]
     private static partial void IgnorePatternAddedCore(ILogger logger, Regex ignorePattern);
 
@@ -81,8 +86,8 @@ namespace DotNet.Testcontainers
     [LoggerMessage(Level = LogLevel.Debug, Message = "Build Docker image {FullName} with \"{Command}\"")]
     private static partial void BuildDockerImageCore(ILogger logger, string fullName, string command);
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "Docker image {FullName} build output:\n{BuildOutput}")]
-    private static partial void DockerImageBuildOutputCore(ILogger logger, string fullName, string buildOutput);
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Docker image {FullName} build output:{Output}")]
+    private static partial void DockerImageBuildOutputCore(ILogger logger, string fullName, string output);
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "The image build parameter {ParameterName} is not applied to the Docker image build because the Docker CLI does not provide an equivalent argument")]
     private static partial void ImageBuildParameterNotSupportedCore(ILogger logger, string parameterName);
@@ -259,9 +264,9 @@ namespace DotNet.Testcontainers
       BuildDockerImageCore(logger, image.FullName, commandLine);
     }
 
-    public static void DockerImageBuildOutput(this ILogger logger, IImage image, string buildOutput)
+    public static void DockerImageBuildOutput(this ILogger logger, IImage image, ExecResult execResult)
     {
-      DockerImageBuildOutputCore(logger, image.FullName, buildOutput);
+      DockerImageBuildOutputCore(logger, image.FullName, GetOutput(execResult));
     }
 
     public static void ImageBuildParameterNotSupported(this ILogger logger, string parameterName)
@@ -394,6 +399,30 @@ namespace DotNet.Testcontainers
     public static void ReusableResourceNotFound(this ILogger logger)
     {
       ReusableResourceNotFoundCore(logger);
+    }
+
+    private static string GetOutput(ExecResult execResult)
+    {
+      var output = new StringBuilder(256);
+      AppendOutput(output, "Stdout", execResult.Stdout);
+      AppendOutput(output, "Stderr", execResult.Stderr);
+      return output.ToString();
+    }
+
+    private static void AppendOutput(StringBuilder output, string name, string value)
+    {
+      if (string.IsNullOrEmpty(value))
+      {
+        return;
+      }
+
+      var lines = value
+        .Split(LineEndings, StringSplitOptions.RemoveEmptyEntries)
+        .Select(line => "    " + line);
+
+      output.AppendLine();
+      output.AppendLine($"  {name}: ");
+      output.Append(string.Join(Environment.NewLine, lines));
     }
   }
 }

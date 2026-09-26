@@ -67,7 +67,7 @@ namespace DotNet.Testcontainers.Builders
     /// </summary>
     /// <param name="image">
     /// The full Docker image name, including the image repository and tag
-    /// (e.g., <c>docker:28-cli</c>).
+    /// (e.g., <c>docker:29-cli</c>).
     /// </param>
     /// <remarks>
     /// The image requires the Docker Compose plugin. Docker image tags available at

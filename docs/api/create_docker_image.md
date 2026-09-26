@@ -112,7 +112,7 @@ _ = new ImageFromDockerfileBuilder()
 `BuildKitImageFromDockerfileBuilder` builds the image with BuildKit (`docker buildx build`) instead of the Docker Engine API. Its configuration is the same as the one of `ImageFromDockerfileBuilder`, plus the members that only BuildKit supports. Use it for a Dockerfile that depends on BuildKit, such as one that contains a here-document, mounts a build secret, or selects a frontend with `# syntax=`.
 
 ```csharp
-var futureImage = new BuildKitImageFromDockerfileBuilder()
+var futureImage = new BuildKitImageFromDockerfileBuilder("docker:29.8.1-cli")
   .WithDockerfileDirectory(CommonDirectoryPath.GetSolutionDirectory(), string.Empty)
   .WithDockerfile("Dockerfile")
   .Build();
@@ -125,11 +125,7 @@ The Docker CLI runs inside a container. Testcontainers copies the build context 
 
 The image is written to the image store of the Docker daemon (`--load`), so everything that follows the build behaves as it does with `ImageFromDockerfileBuilder`, including `WithImage(IImage)` and the Resource Reaper labels.
 
-The Docker CLI image is configurable and pinned to a default. Pass a different one to run a specific Docker CLI and Buildx version. The image requires the Buildx plugin.
-
-```csharp
-_ = new BuildKitImageFromDockerfileBuilder("docker:29-cli");
-```
+The constructor takes the Docker CLI image that runs the build. Pin it to a specific Docker CLI and Buildx version. The image requires the Buildx plugin.
 
 !!! warning
 
@@ -140,7 +136,7 @@ _ = new BuildKitImageFromDockerfileBuilder("docker:29-cli");
 `WithSecret(string, string)` and `WithSecret(string, FileInfo)` pass a build secret to the build. The Dockerfile mounts it with `RUN --mount=type=secret,id=<id>`, which makes it available at `/run/secrets/<id>` for the duration of that instruction only. BuildKit does not add it to a layer of the built image.
 
 ```csharp
-_ = new BuildKitImageFromDockerfileBuilder()
+_ = new BuildKitImageFromDockerfileBuilder("docker:29.8.1-cli")
   .WithDockerfileDirectory(CommonDirectoryPath.GetSolutionDirectory(), string.Empty)
   .WithSecret("nuget", new FileInfo("/path/to/nuget.config"));
 ```
@@ -158,7 +154,7 @@ Testcontainers copies the build secret into the Docker CLI container that runs t
 `WithSshAgent(string, params string[])` passes an SSH agent socket or private key to the build. The Dockerfile mounts it with `RUN --mount=type=ssh,id=<id>`. Use the id `default` for a mount that does not name an id. Each path is bind-mounted read-only into the Docker CLI container, keeping the path it has on the test host, so the paths must exist on the host that runs the Docker daemon. At least one path is required, because the Docker CLI container does not run an SSH agent that an id without a path could resolve to. A path cannot contain a comma, which the Docker CLI uses to separate the paths of an SSH agent.
 
 ```csharp
-_ = new BuildKitImageFromDockerfileBuilder()
+_ = new BuildKitImageFromDockerfileBuilder("docker:29.8.1-cli")
   .WithDockerfileDirectory(CommonDirectoryPath.GetSolutionDirectory(), string.Empty)
   .WithSshAgent("default", Environment.GetEnvironmentVariable("SSH_AUTH_SOCK"));
 ```

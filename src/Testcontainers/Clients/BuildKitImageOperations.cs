@@ -53,7 +53,7 @@ namespace DotNet.Testcontainers.Clients
     }
 
     /// <inheritdoc />
-    /// <exception cref="ImageBuildFailedException">The Docker image build failed.</exception>
+    /// <exception cref="ImageBuildFailedException">Thrown when the Docker image build fails.</exception>
     public async Task<string> BuildAsync(IBuildKitImageFromDockerfileConfiguration configuration, ImageBuildParameters buildParameters, ITarArchive dockerfileArchive, CancellationToken ct = default)
     {
       var image = configuration.Image;
@@ -118,7 +118,7 @@ namespace DotNet.Testcontainers.Clients
     /// <param name="cliContainer">The container that runs the Docker CLI.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the Docker image has been built.</returns>
-    /// <exception cref="ImageBuildFailedException">The Docker image build failed.</exception>
+    /// <exception cref="ImageBuildFailedException">Thrown when the Docker image build fails.</exception>
     private async Task RunBuildCommandAsync(IBuildKitImageFromDockerfileConfiguration configuration, ImageBuildParameters buildParameters, IContainer cliContainer, CancellationToken ct = default)
     {
       var image = configuration.Image;
@@ -135,7 +135,7 @@ namespace DotNet.Testcontainers.Clients
 
       // The Docker CLI writes the build output to stderr. Log it either way, it is
       // the only trace of the image build that the test host gets.
-      _logger.DockerImageBuildOutput(image, string.Concat(execResult.Stdout, execResult.Stderr));
+      _logger.DockerImageBuildOutput(image, execResult);
 
       if (!0L.Equals(execResult.ExitCode))
       {

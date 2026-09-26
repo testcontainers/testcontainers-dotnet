@@ -170,20 +170,6 @@ namespace DotNet.Testcontainers.Images
         .ConfigureAwait(false);
     }
 
-    /// <summary>
-    /// Builds the Docker image.
-    /// </summary>
-    /// <remarks>
-    /// Derived classes override this member to build the Docker image with BuildKit
-    /// instead of the Docker Engine API.
-    /// </remarks>
-    /// <param name="ct">Cancellation token.</param>
-    /// <returns>Task that completes when the Docker image has been built.</returns>
-    protected virtual Task BuildAsync(CancellationToken ct = default)
-    {
-      return _client.BuildAsync(_configuration, ct);
-    }
-
     /// <inheritdoc />
     protected override async Task UnsafeDeleteAsync(CancellationToken ct = default)
     {
@@ -198,6 +184,20 @@ namespace DotNet.Testcontainers.Images
         .ConfigureAwait(false);
 
       _image = new ImageInspectResponse();
+    }
+
+    /// <summary>
+    /// Builds the Docker image.
+    /// </summary>
+    /// <remarks>
+    /// Derived classes override this member to build the Docker image with BuildKit
+    /// instead of the Docker Engine API.
+    /// </remarks>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the Docker image has been built.</returns>
+    protected virtual Task BuildAsync(CancellationToken ct = default)
+    {
+      return _client.BuildAsync(_configuration, ct);
     }
   }
 }

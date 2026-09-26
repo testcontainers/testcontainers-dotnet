@@ -12,19 +12,6 @@ namespace DotNet.Testcontainers.Tests.Unit
     public void BuildsWithDefaultConfiguration()
     {
       // Given
-      var imageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder();
-
-      // When
-      var exception = Record.Exception(() => imageFromDockerfileBuilder.Build());
-
-      // Then
-      Assert.Null(exception);
-    }
-
-    [Fact]
-    public void BuildsWithCustomDockerCliImage()
-    {
-      // Given
       var imageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli);
 
       // When
@@ -38,7 +25,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     public void ThrowsArgumentExceptionWhenReuseIsEnabled()
     {
       // Given
-      var imageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder().WithReuse(true);
+      var imageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli).WithReuse(true);
 
       // When
       var exception = Assert.Throws<ArgumentException>(() => imageFromDockerfileBuilder.Build());
@@ -56,7 +43,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     public void ThrowsArgumentExceptionWhenSecretIdIsInvalid(string secretId)
     {
       // Given
-      var imageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder().WithSecret(secretId, "value");
+      var imageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli).WithSecret(secretId, "value");
 
       // When
       var exception = Assert.Throws<ArgumentException>(() => imageFromDockerfileBuilder.Build());
@@ -69,7 +56,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     public void ThrowsArgumentExceptionWhenSecretIdIsNotUnique()
     {
       // Given
-      var imageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder()
+      var imageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli)
         .WithSecret("mysecret", "value")
         .WithSecret("mysecret", new FileInfo("value"));
 
@@ -86,7 +73,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       // Given
       var secretFilePath = Path.Combine(TestSession.TempDirectoryPath, Guid.NewGuid().ToString("D"));
 
-      var imageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder().WithSecret("mysecret", new FileInfo(secretFilePath));
+      var imageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli).WithSecret("mysecret", new FileInfo(secretFilePath));
 
       // When
       var exception = Assert.Throws<FileNotFoundException>(() => imageFromDockerfileBuilder.Build());
@@ -99,7 +86,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     public void ThrowsArgumentExceptionWhenSshAgentIdIsInvalid()
     {
       // Given
-      var imageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder().WithSshAgent("invalid id");
+      var imageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli).WithSshAgent("invalid id");
 
       // When
       var exception = Assert.Throws<ArgumentException>(() => imageFromDockerfileBuilder.Build());
@@ -112,7 +99,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     public void ThrowsArgumentExceptionWhenSshAgentPathIsMissing()
     {
       // Given
-      var imageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder().WithSshAgent("default");
+      var imageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli).WithSshAgent("default");
 
       // When
       var exception = Assert.Throws<ArgumentException>(() => imageFromDockerfileBuilder.Build());
@@ -127,7 +114,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       // Given
       var sshAgentPath = Path.Combine(TestSession.TempDirectoryPath, "ssh,agent.sock");
 
-      var imageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder().WithSshAgent("default", sshAgentPath);
+      var imageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli).WithSshAgent("default", sshAgentPath);
 
       // When
       var exception = Assert.Throws<ArgumentException>(() => imageFromDockerfileBuilder.Build());

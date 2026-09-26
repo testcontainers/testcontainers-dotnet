@@ -361,37 +361,15 @@ namespace DotNet.Testcontainers.Clients
     }
 
     /// <inheritdoc />
-    public async Task<string> BuildAsync(IImageFromDockerfileConfiguration configuration, CancellationToken ct = default)
+    public Task<string> BuildAsync(IImageFromDockerfileConfiguration configuration, CancellationToken ct = default)
     {
-      var buildParameters = Image.GetBuildParameters(configuration);
-
-      var dockerfileArchive = await PrepareBuildAsync(configuration, buildParameters, ct)
-        .ConfigureAwait(false);
-
-      if (dockerfileArchive != null)
-      {
-        _ = await Image.BuildAsync(configuration, buildParameters, dockerfileArchive, ct)
-          .ConfigureAwait(false);
-      }
-
-      return configuration.Image.FullName;
+      return BuildAsync(Image, configuration, ct);
     }
 
     /// <inheritdoc />
-    public async Task<string> BuildAsync(IBuildKitImageFromDockerfileConfiguration configuration, CancellationToken ct = default)
+    public Task<string> BuildAsync(IBuildKitImageFromDockerfileConfiguration configuration, CancellationToken ct = default)
     {
-      var buildParameters = BuildKit.GetBuildParameters(configuration);
-
-      var dockerfileArchive = await PrepareBuildAsync(configuration, buildParameters, ct)
-        .ConfigureAwait(false);
-
-      if (dockerfileArchive != null)
-      {
-        _ = await BuildKit.BuildAsync(configuration, buildParameters, dockerfileArchive, ct)
-          .ConfigureAwait(false);
-      }
-
-      return configuration.Image.FullName;
+      return BuildAsync(BuildKit, configuration, ct);
     }
 
     /// <inheritdoc />
@@ -420,6 +398,31 @@ namespace DotNet.Testcontainers.Clients
     }
 
     /// <summary>
+    /// Builds a Docker image from a Dockerfile.
+    /// </summary>
+    /// <typeparam name="TConfiguration">The Dockerfile configuration type.</typeparam>
+    /// <param name="imageBuildOperations">The image builder that builds the Docker image.</param>
+    /// <param name="configuration">The Dockerfile configuration.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the Docker image has been built, returning the full Docker image name.</returns>
+    private async Task<string> BuildAsync<TConfiguration>(IImageBuildOperations<TConfiguration> imageBuildOperations, TConfiguration configuration, CancellationToken ct = default)
+      where TConfiguration : IImageFromDockerfileConfiguration
+    {
+      var buildParameters = imageBuildOperations.GetBuildParameters(configuration);
+
+      var dockerfileArchive = await PrepareBuildAsync(configuration, buildParameters, ct)
+        .ConfigureAwait(false);
+
+      if (dockerfileArchive != null)
+      {
+        _ = await imageBuildOperations.BuildAsync(configuration, buildParameters, dockerfileArchive, ct)
+          .ConfigureAwait(false);
+      }
+
+      return configuration.Image.FullName;
+    }
+
+    /// <summary>
     /// Creates the build context of the Docker image build.
     /// </summary>
     /// <remarks>
@@ -427,12 +430,12 @@ namespace DotNet.Testcontainers.Clients
     /// itself, but it does not have access to the Docker configuration of the test
     /// host, so its Docker credentials and credential helpers would not apply.
     ///
-    /// A base image that does not declare a platform, such as <c>FROM --platform</c>,
-    /// is pulled for the platform the image build targets. Otherwise, the Docker
+    /// A base image that does not declare a platform (<c>FROM --platform</c>) is
+    /// pulled for the platform the image build targets. Otherwise, the Docker
     /// daemon resolves it for the platform of the test host, which does not
-    /// necessarily match the platform of the image build. An image build that
-    /// targets multiple platforms does not apply, the Docker daemon pulls an image
-    /// for a single platform only.
+    /// necessarily match the platform of the image build. This does not apply to
+    /// an image build that targets multiple platforms, because the Docker daemon
+    /// pulls an image for a single platform only.
     /// </remarks>
     /// <param name="configuration">The Dockerfile configuration.</param>
     /// <param name="buildParameters">The image build parameters.</param>

@@ -29,7 +29,7 @@ namespace DotNet.Testcontainers.Builders
   /// <example>
   ///   The default configuration is equivalent to:
   ///   <code>
-  ///   _ = new BuildKitImageFromDockerfileBuilder()
+  ///   _ = new BuildKitImageFromDockerfileBuilder(cliImage)
   ///     .WithDockerEndpoint(TestcontainersSettings.OS.DockerEndpointAuthConfig)
   ///     .WithLabel(DefaultLabels.Instance)
   ///     .WithCleanUp(true)
@@ -44,11 +44,6 @@ namespace DotNet.Testcontainers.Builders
   public sealed class BuildKitImageFromDockerfileBuilder : AbstractBuilder<BuildKitImageFromDockerfileBuilder, IFutureDockerImage, ImageBuildParameters, IBuildKitImageFromDockerfileConfiguration>, IImageFromDockerfileBuilder<BuildKitImageFromDockerfileBuilder>
   {
     /// <summary>
-    /// The Docker CLI image that is used if no image is set.
-    /// </summary>
-    private const string DefaultCliImage = "docker:29.7.2-cli";
-
-    /// <summary>
     /// The pattern that a build secret id and an SSH agent id must match.
     /// </summary>
     /// <remarks>
@@ -56,14 +51,6 @@ namespace DotNet.Testcontainers.Builders
     /// Docker CLI container, and part of the Docker CLI argument that references it.
     /// </remarks>
     private static readonly Regex IdRegex = new Regex("^[A-Za-z0-9][A-Za-z0-9_.-]*$", RegexOptions.None, TimeSpan.FromSeconds(1));
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="BuildKitImageFromDockerfileBuilder" /> class.
-    /// </summary>
-    public BuildKitImageFromDockerfileBuilder()
-      : this(new DockerImage(DefaultCliImage))
-    {
-    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BuildKitImageFromDockerfileBuilder" /> class.
@@ -85,8 +72,8 @@ namespace DotNet.Testcontainers.Builders
     /// Initializes a new instance of the <see cref="BuildKitImageFromDockerfileBuilder" /> class.
     /// </summary>
     /// <param name="cliImage">
-    /// An <see cref="IImage" /> instance that specifies the Docker image that runs
-    /// the image build.
+    /// An <see cref="IImage" /> instance that specifies the Docker image to be used
+    /// for the image builder configuration.
     /// </param>
     /// <remarks>
     /// The image requires the Docker Buildx plugin. Docker image tags available at
@@ -183,7 +170,7 @@ namespace DotNet.Testcontainers.Builders
     /// binary, such as a <c>RUN</c> instruction, requires emulation, such as QEMU.
     /// A Dockerfile that only copies files and sets metadata builds without it.
     /// </remarks>
-    /// <param name="platform">The platform to build the image for e.g. <c>--platform "linux/arm64"</c>.</param>
+    /// <param name="platform">The platform to build the image for (e.g., <c>--platform "linux/arm64"</c>).</param>
     /// <returns>A configured instance of <see cref="BuildKitImageFromDockerfileBuilder" />.</returns>
     public BuildKitImageFromDockerfileBuilder WithPlatform(string platform)
     {
@@ -203,7 +190,7 @@ namespace DotNet.Testcontainers.Builders
     /// image build. It is not part of the build context, and is not passed as a
     /// build argument or an environment variable.
     /// </remarks>
-    /// <param name="id">The build secret id e.g. <c>--secret "id=aws,src=$HOME/.aws/credentials"</c>.</param>
+    /// <param name="id">The build secret id (e.g., <c>--secret "id=aws,src=$HOME/.aws/credentials"</c>).</param>
     /// <param name="value">The build secret value.</param>
     /// <returns>A configured instance of <see cref="BuildKitImageFromDockerfileBuilder" />.</returns>
     public BuildKitImageFromDockerfileBuilder WithSecret(string id, string value)
@@ -225,7 +212,7 @@ namespace DotNet.Testcontainers.Builders
     /// image build. It is not part of the build context, and is not passed as a
     /// build argument or an environment variable.
     /// </remarks>
-    /// <param name="id">The build secret id e.g. <c>--secret "id=aws,src=$HOME/.aws/credentials"</c>.</param>
+    /// <param name="id">The build secret id (e.g., <c>--secret "id=aws,src=$HOME/.aws/credentials"</c>).</param>
     /// <param name="source">The file on the test host that contains the build secret value.</param>
     /// <returns>A configured instance of <see cref="BuildKitImageFromDockerfileBuilder" />.</returns>
     public BuildKitImageFromDockerfileBuilder WithSecret(string id, FileInfo source)
@@ -248,7 +235,7 @@ namespace DotNet.Testcontainers.Builders
     /// At least one path is required, because the Docker CLI container does not
     /// run an SSH agent that an id without a path could resolve to.
     /// </remarks>
-    /// <param name="id">The SSH agent id e.g. <c>--ssh "default=$SSH_AUTH_SOCK"</c>.</param>
+    /// <param name="id">The SSH agent id (e.g., <c>--ssh "default=$SSH_AUTH_SOCK"</c>).</param>
     /// <param name="paths">A list of SSH agent socket or private key paths on the test host.</param>
     /// <returns>A configured instance of <see cref="BuildKitImageFromDockerfileBuilder" />.</returns>
     public BuildKitImageFromDockerfileBuilder WithSshAgent(string id, params string[] paths)
@@ -343,7 +330,7 @@ namespace DotNet.Testcontainers.Builders
     /// Checks whether a build secret or SSH agent id is valid or not.
     /// </summary>
     /// <param name="id">The build secret or SSH agent id.</param>
-    /// <returns>True if the id is valid, false otherwise.</returns>
+    /// <returns>True if the id is valid; otherwise, false.</returns>
     private static bool IsIdValid(string id)
     {
       return !string.IsNullOrEmpty(id) && IdRegex.IsMatch(id);
@@ -353,7 +340,7 @@ namespace DotNet.Testcontainers.Builders
     /// Checks whether the file that contains the build secret value is missing or not.
     /// </summary>
     /// <param name="secret">The build secret.</param>
-    /// <returns>True if the build secret reads its value from a file that does not exist, false otherwise.</returns>
+    /// <returns>True if the build secret reads its value from a file that does not exist; otherwise, false.</returns>
     private static bool IsSecretSourceMissing(BuildSecret secret)
     {
       return !string.IsNullOrEmpty(secret.SourceFilePath) && !File.Exists(secret.SourceFilePath);
@@ -367,7 +354,7 @@ namespace DotNet.Testcontainers.Builders
     /// <c>SSH_AUTH_SOCK</c>, which the Docker CLI container does not set.
     /// </remarks>
     /// <param name="sshAgent">The SSH agent and its socket and private key paths.</param>
-    /// <returns>True if the SSH agent does not set a path, false otherwise.</returns>
+    /// <returns>True if the SSH agent does not set a path; otherwise, false.</returns>
     private static bool IsSshAgentPathMissing(KeyValuePair<string, IEnumerable<string>> sshAgent)
     {
       return !sshAgent.Value.Any();
@@ -381,7 +368,7 @@ namespace DotNet.Testcontainers.Builders
     /// path that contains a comma cannot be encoded.
     /// </remarks>
     /// <param name="path">The SSH agent socket or private key path.</param>
-    /// <returns>True if the path is invalid, false otherwise.</returns>
+    /// <returns>True if the path is invalid; otherwise, false.</returns>
     private static bool IsPathInvalid(string path)
     {
       return path.IndexOf(',') > -1;

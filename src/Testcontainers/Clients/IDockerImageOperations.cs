@@ -6,14 +6,10 @@ namespace DotNet.Testcontainers.Clients
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Images;
 
-  internal interface IDockerImageOperations : IHasListOperations<ImagesListResponse, ImageInspectResponse>
+  internal interface IDockerImageOperations : IHasListOperations<ImagesListResponse, ImageInspectResponse>, IImageBuildOperations<IImageFromDockerfileConfiguration>
   {
     Task CreateAsync(IImage image, IDockerRegistryAuthenticationConfiguration dockerRegistryAuthConfig, CancellationToken ct = default);
 
     Task DeleteAsync(IImage image, CancellationToken ct = default);
-
-    ImageBuildParameters GetBuildParameters(IImageFromDockerfileConfiguration configuration);
-
-    Task<string> BuildAsync(IImageFromDockerfileConfiguration configuration, ImageBuildParameters buildParameters, ITarArchive dockerfileArchive, CancellationToken ct = default);
   }
 }

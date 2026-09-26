@@ -7,7 +7,7 @@ namespace DotNet.Testcontainers.Configurations
   using JetBrains.Annotations;
 
   /// <summary>
-  /// A build secret that BuildKit exposes to the Docker image build.
+  /// Represents a build secret that BuildKit exposes to the Docker image build.
   /// </summary>
   /// <remarks>
   /// The secret is mounted into the build with
@@ -17,6 +17,8 @@ namespace DotNet.Testcontainers.Configurations
   [PublicAPI]
   public sealed class BuildSecret
   {
+    private readonly string _id;
+
     private readonly IResourceMapping _resourceMapping;
 
     /// <summary>
@@ -25,7 +27,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="id">The build secret id.</param>
     /// <param name="value">The build secret value.</param>
     public BuildSecret(string id, string value)
-      : this(id, new BinaryResourceMapping(Encoding.UTF8.GetBytes(value), GetFilePath(id), 0, 0, Unix.FileMode600))
+      : this(id, new BinaryResourceMapping(Encoding.Default.GetBytes(value), GetFilePath(id), 0, 0, Unix.FileMode600))
     {
     }
 
@@ -46,14 +48,20 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="resourceMapping">The resource mapping that provides the build secret value.</param>
     private BuildSecret(string id, IResourceMapping resourceMapping)
     {
-      Id = id;
+      _id = id;
       _resourceMapping = resourceMapping;
     }
 
     /// <summary>
     /// Gets the build secret id.
     /// </summary>
-    public string Id { get; }
+    public string Id
+    {
+      get
+      {
+        return _id;
+      }
+    }
 
     /// <summary>
     /// Gets the path of the file inside the Docker CLI container that contains the
@@ -64,7 +72,7 @@ namespace DotNet.Testcontainers.Configurations
     /// image build, not into the build context. It never becomes part of the build
     /// context tar archive or of a layer of the built image.
     /// </remarks>
-    internal string FilePath
+    public string FilePath
     {
       get
       {
@@ -79,7 +87,7 @@ namespace DotNet.Testcontainers.Configurations
     /// The path is empty if the build secret value is set directly instead of read
     /// from a file.
     /// </remarks>
-    internal string SourceFilePath
+    public string SourceFilePath
     {
       get
       {
@@ -91,7 +99,7 @@ namespace DotNet.Testcontainers.Configurations
     /// Gets the Unix file mode of the file inside the Docker CLI container that
     /// contains the build secret value.
     /// </summary>
-    internal UnixFileModes FileMode
+    public UnixFileModes FileMode
     {
       get
       {
@@ -104,7 +112,7 @@ namespace DotNet.Testcontainers.Configurations
     /// </summary>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the build secret value has been read.</returns>
-    internal Task<byte[]> GetAllBytesAsync(CancellationToken ct = default)
+    public Task<byte[]> GetAllBytesAsync(CancellationToken ct = default)
     {
       return _resourceMapping.GetAllBytesAsync(ct);
     }

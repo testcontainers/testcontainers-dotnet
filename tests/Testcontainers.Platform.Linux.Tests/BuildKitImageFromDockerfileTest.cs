@@ -25,7 +25,7 @@ public sealed class BuildKitImageFromDockerfileTest
             ENTRYPOINT ["/entrypoint.sh"]
             """);
 
-        await using var image = new BuildKitImageFromDockerfileBuilder()
+        await using var image = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli)
             .WithDockerfileDirectory(dockerfileDirectoryPath)
             .Build();
 
@@ -74,7 +74,7 @@ public sealed class BuildKitImageFromDockerfileTest
             RUN [ ! -e /run/secrets/{secretId} ]
             """);
 
-        await using var image = new BuildKitImageFromDockerfileBuilder()
+        await using var image = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli)
             .WithDockerfileDirectory(dockerfileDirectoryPath)
             .WithSecret(secretId, secretValue)
             .Build();
@@ -188,7 +188,7 @@ public sealed class BuildKitImageFromDockerfileTest
             ENV TESTCONTAINERS_PLATFORM="{platform}"
             """);
 
-        await using var image = new BuildKitImageFromDockerfileBuilder()
+        await using var image = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli)
             .WithDockerfileDirectory(dockerfileDirectoryPath)
             .WithPlatform(platform)
             .Build();
@@ -220,7 +220,7 @@ public sealed class BuildKitImageFromDockerfileTest
             COPY hello.txt /hello.txt
             """);
 
-        await using var image = new BuildKitImageFromDockerfileBuilder()
+        await using var image = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli)
             .WithContextDirectory(contextDirectoryPath)
             .WithDockerfileDirectory(dockerfileDirectoryPath)
             .Build();
@@ -253,7 +253,7 @@ public sealed class BuildKitImageFromDockerfileTest
             RUN touch /build
             """);
 
-        await using var image = new BuildKitImageFromDockerfileBuilder()
+        await using var image = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli)
             .WithDockerfileDirectory(dockerfileDirectoryPath)
             .WithLogger(fakeLogger)
             .WithCreateParameterModifier(parameters =>
@@ -300,7 +300,7 @@ public sealed class BuildKitImageFromDockerfileTest
             RUN touch /build
             """);
 
-        await using var image = new BuildKitImageFromDockerfileBuilder()
+        await using var image = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli)
             .WithDockerfileDirectory(dockerfileDirectoryPath)
             .WithBuildArgument("MAGIC_NUMBER", "42")
             .WithCreateParameterModifier(parameters =>
@@ -336,7 +336,7 @@ public sealed class BuildKitImageFromDockerfileTest
             ARG TOKEN
             """);
 
-        await using var image = new BuildKitImageFromDockerfileBuilder()
+        await using var image = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli)
             .WithDockerfileDirectory(dockerfileDirectoryPath)
             .WithBuildArgument("TOKEN", buildArgumentValue)
             .WithLogger(fakeLogger)
@@ -374,7 +374,7 @@ public sealed class BuildKitImageFromDockerfileTest
             RUN --mount=type=secret,id={secretId} [ "$(cat /run/secrets/{secretId})" = "{secretValue}" ]
             """);
 
-        await using var image = new BuildKitImageFromDockerfileBuilder()
+        await using var image = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli)
             .WithDockerfileDirectory(dockerfileDirectoryPath)
             .WithSecret(secretId, new FileInfo(secretFilePath))
             .Build();
@@ -399,7 +399,7 @@ public sealed class BuildKitImageFromDockerfileTest
             LABEL "org.testcontainers.magic-number"=$MAGIC_NUMBER
             """);
 
-        await using var image = new BuildKitImageFromDockerfileBuilder()
+        await using var image = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli)
             .WithDockerfileDirectory(dockerfileDirectoryPath)
             .WithBuildArgument("MAGIC_NUMBER", buildArgumentValue)
             .WithLabel("org.testcontainers.buildkit", bool.TrueString.ToLowerInvariant())
@@ -432,7 +432,7 @@ public sealed class BuildKitImageFromDockerfileTest
             RUN touch /final
             """);
 
-        await using var image = new BuildKitImageFromDockerfileBuilder()
+        await using var image = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli)
             .WithDockerfileDirectory(dockerfileDirectoryPath)
             .WithTarget("build")
             .Build();
@@ -462,7 +462,7 @@ public sealed class BuildKitImageFromDockerfileTest
             RUN command-that-does-not-exist
             """);
 
-        await using var image = new BuildKitImageFromDockerfileBuilder()
+        await using var image = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli)
             .WithDockerfileDirectory(dockerfileDirectoryPath)
             .Build();
 
