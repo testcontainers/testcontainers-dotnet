@@ -96,6 +96,20 @@ public abstract class KafkaContainerTest : IAsyncLifetime
         }
     }
 
+    // Confluent Platform 8.x runs on Kafka 4.x, which rejects empty elements in
+    // `advertised.listeners`. A trailing comma made the container exit on startup:
+    // https://github.com/testcontainers/testcontainers-dotnet/issues/1771.
+    [UsedImplicitly]
+    public sealed class ConfluentKafkaV8Configuration : KafkaContainerTest
+    {
+        public ConfluentKafkaV8Configuration()
+            : base(new KafkaBuilder(TestSession.GetImageFromDockerfile(stage: "confluent-v8_2_4"))
+                .WithKRaft()
+                .Build())
+        {
+        }
+    }
+
     [UsedImplicitly]
     public sealed class ApacheKafkaConfiguration : KafkaContainerTest
     {
