@@ -260,13 +260,20 @@ namespace DotNet.Testcontainers
 
     public static void BuildDockerImage(this ILogger logger, IImage image, IEnumerable<string> command)
     {
-      var commandLine = string.Join(" ", command);
-      BuildDockerImageCore(logger, image.FullName, commandLine);
+      if (logger.IsEnabled(LogLevel.Debug))
+      {
+        var commandLine = string.Join(" ", command);
+        BuildDockerImageCore(logger, image.FullName, commandLine);
+      }
     }
 
     public static void DockerImageBuildOutput(this ILogger logger, IImage image, ExecResult execResult)
     {
-      DockerImageBuildOutputCore(logger, image.FullName, GetOutput(execResult));
+      if (logger.IsEnabled(LogLevel.Debug))
+      {
+        var output = GetOutput(execResult);
+        DockerImageBuildOutputCore(logger, image.FullName, output);
+      }
     }
 
     public static void ImageBuildParameterNotSupported(this ILogger logger, string parameterName)

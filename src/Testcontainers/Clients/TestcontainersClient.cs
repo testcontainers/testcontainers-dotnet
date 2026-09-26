@@ -472,7 +472,7 @@ namespace DotNet.Testcontainers.Clients
 
       var baseImages = dockerfileArchive.GetBaseImages();
 
-      if (!string.IsNullOrEmpty(platform) && platform.IndexOf(',') == -1)
+      if (!string.IsNullOrEmpty(platform) && !platform.Contains(","))
       {
         baseImages = baseImages.Select(image => string.IsNullOrEmpty(image.Platform) ? new DockerImage(image.Repository, image.Registry, image.Tag, image.Digest, platform) : image);
       }

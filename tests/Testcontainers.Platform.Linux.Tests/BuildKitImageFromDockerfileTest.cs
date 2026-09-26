@@ -282,7 +282,7 @@ public sealed class BuildKitImageFromDockerfileTest
         // The build secret value does not appear in the Dockerfile. The Dockerfile
         // instructions become the history of the built image, which would report the
         // build secret value that this test asserts is not reported.
-        var secretValueHash = BitConverter.ToString(SHA256.HashData(Encoding.UTF8.GetBytes(secretValue))).Replace("-", string.Empty).ToLowerInvariant();
+        var secretValueHash = Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(secretValue)));
 
         // The first instruction fails the build if the build secret is not readable,
         // the second one fails it if the build secret outlives the instruction that

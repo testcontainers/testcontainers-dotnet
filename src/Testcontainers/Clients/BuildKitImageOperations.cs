@@ -28,12 +28,12 @@ namespace DotNet.Testcontainers.Clients
     /// <summary>
     /// The directory inside the Docker CLI container that contains the build context.
     /// </summary>
-    private const string ContextDirectoryPath = "/tmp/testcontainers/context";
+    private const string ContextDirectoryPath = "/testcontainers/context";
 
     /// <summary>
     /// The tar archive inside the Docker CLI container that contains the build context.
     /// </summary>
-    private const string ContextArchiveFilePath = "/tmp/testcontainers/context.tar";
+    private const string ContextArchiveFilePath = "/testcontainers/context.tar";
 
     private static readonly string[] BuildCommand = { "docker", "buildx", "build", "--load", "--progress", "plain" };
 
