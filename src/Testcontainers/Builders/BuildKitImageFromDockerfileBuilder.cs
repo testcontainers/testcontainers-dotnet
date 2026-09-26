@@ -206,9 +206,9 @@ namespace DotNet.Testcontainers.Builders
     /// <param name="id">The build secret id (e.g., <c>--secret "id=aws,src=$HOME/.aws/credentials"</c>).</param>
     /// <param name="source">The file on the test host that contains the build secret value.</param>
     /// <returns>A configured instance of <see cref="BuildKitImageFromDockerfileBuilder" />.</returns>
-    public BuildKitImageFromDockerfileBuilder WithSecret(string id, FileInfo source)
+    public BuildKitImageFromDockerfileBuilder WithSecret(string id, FilePath source)
     {
-      var secrets = new Dictionary<string, IResourceMapping> { { id, new FileResourceMapping(source.FullName, GetSecretFilePath(id), 0, 0, Unix.FileMode600) } };
+      var secrets = new Dictionary<string, IResourceMapping> { { id, new FileResourceMapping(Path.GetFullPath(source.Value), GetSecretFilePath(id), 0, 0, Unix.FileMode600) } };
       return Merge(DockerResourceConfiguration, new BuildKitImageFromDockerfileConfiguration(secrets: secrets));
     }
 

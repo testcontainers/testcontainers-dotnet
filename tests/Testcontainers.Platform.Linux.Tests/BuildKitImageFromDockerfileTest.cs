@@ -344,7 +344,7 @@ public sealed class BuildKitImageFromDockerfileTest
 
         await using var image = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli)
             .WithDockerfileDirectory(dockerfileDirectoryPath)
-            .WithSecret(secretId, new FileInfo(secretFilePath))
+            .WithSecret(secretId, FilePath.Of(secretFilePath))
             .Build();
 
         // When

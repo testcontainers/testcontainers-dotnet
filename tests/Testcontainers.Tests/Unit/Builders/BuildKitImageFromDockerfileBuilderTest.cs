@@ -58,7 +58,7 @@ namespace DotNet.Testcontainers.Tests.Unit
       // Given
       var secretFilePath = Path.Combine(TestSession.TempDirectoryPath, Guid.NewGuid().ToString("D"));
 
-      var buildKitImageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli).WithSecret("mysecret", new FileInfo(secretFilePath));
+      var buildKitImageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli).WithSecret("mysecret", FilePath.Of(secretFilePath));
 
       // When
       var exception = Assert.Throws<FileNotFoundException>(buildKitImageFromDockerfileBuilder.Build);

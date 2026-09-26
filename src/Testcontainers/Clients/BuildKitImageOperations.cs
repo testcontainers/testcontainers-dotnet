@@ -307,7 +307,7 @@ namespace DotNet.Testcontainers.Clients
         .WithEntrypoint("/bin/sh", "-c")
         .WithCommand("trap 'exit 0' TERM; sleep infinity & wait $!")
         .WithMount(new UnixSocketMount(configuration.DockerEndpointAuthConfig.Endpoint))
-        .WithResourceMapping(new FileInfo(contextArchiveFilePath), new FileInfo(ContextArchiveFilePath));
+        .WithResourceMapping(FilePath.Of(contextArchiveFilePath), FilePath.Of(ContextArchiveFilePath));
 
       // Bind-mount the SSH agent sockets and private keys, keeping the path they have
       // on the test host. The Docker daemon resolves the mount source, which is the

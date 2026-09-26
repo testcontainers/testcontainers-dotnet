@@ -2,7 +2,7 @@
 
 Testcontainers for .NET uses the builder design pattern to configure, create and delete Docker resources. It prepares and initializes your test environment and disposes of everything after your tests are finished — whether the tests are successful or not. To create a container image from a Dockerfile use `ImageFromDockerfileBuilder`.
 
-!!! warning
+!!! note
 
     `ImageFromDockerfileBuilder` builds the image through the Docker Engine API, which does not support BuildKit. As a result, Dockerfile instructions and options that depend on BuildKit cannot be used with it. For more details, see this [discussion](https://github.com/testcontainers/testcontainers-dotnet/discussions/1193#discussioncomment-10315903). Use [`BuildKitImageFromDockerfileBuilder`](#building-with-buildkit) to build such a Dockerfile.
 
@@ -141,14 +141,14 @@ The constructor takes the Docker CLI image that runs the build. Pin it to a spec
 
     The Docker socket is bind-mounted into the Docker CLI container. The Docker daemon resolves the mount source, which is why a Docker daemon that is reached over TCP works too, as long as it listens on a Unix socket as well. A Docker daemon that does not provide a Unix socket at all, such as a Docker daemon that is reached over a Windows named pipe and runs Windows containers, cannot be used. Set `TestcontainersSettings.DockerSocketOverride` (or `TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE`) if the Docker socket is not at `/var/run/docker.sock`, or keep using `ImageFromDockerfileBuilder`.
 
-### Build secrets
+### Secrets
 
-`WithSecret(string, string)` and `WithSecret(string, FileInfo)` pass a build secret to the build. The Dockerfile mounts it with `RUN --mount=type=secret,id=<id>`, which makes it available at `/run/secrets/<id>` for the duration of that instruction only. BuildKit does not add it to a layer of the built image.
+`WithSecret(string, string)` and `WithSecret(string, FilePath)` pass a build secret to the build. The Dockerfile mounts it with `RUN --mount=type=secret,id=<id>`, which makes it available at `/run/secrets/<id>` for the duration of that instruction only. BuildKit does not add it to a layer of the built image.
 
 ```csharp
 _ = new BuildKitImageFromDockerfileBuilder("docker:29.8.1-cli")
   .WithDockerfileDirectory(CommonDirectoryPath.GetSolutionDirectory(), string.Empty)
-  .WithSecret("nuget", new FileInfo("/path/to/nuget.config"));
+  .WithSecret("nuget", FilePath.Of("/path/to/nuget.config"));
 ```
 
 ```dockerfile
