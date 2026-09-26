@@ -183,6 +183,17 @@ _ = new ContainerBuilder("alpine:3.20.0")
 
 The static class `Consume` offers pre-configured implementations of the `IOutputConsumer` interface for common use cases. If you need additional functionalities beyond those provided by the default implementations, you can create your own implementations of `IOutputConsumer`.
 
+## How builder configurations combine
+
+The container, image, network and volume builders all follow the same rules when you call a builder method more than once:
+
+- Builders are immutable. Every call returns a new builder with the updated configuration (see [reusing builder configurations](#reusing-builder-configurations)).
+- A `WithX` call that sets a single value, such as the image, wait strategy or startup callback, replaces the value set before it.
+- Lists and dictionaries, such as environment variables, port bindings, mounts and labels, append new values instead. A dictionary entry with the same key replaces the previous entry.
+- You cannot remove existing list and dictionary values, except where the builder accepts a `ComposableEnumerable<T>` (see [composing command arguments](#composing-command-arguments)).
+
+Modules come pre-configured, and that configuration is opinionated. Overriding a module's configuration with the generic builder APIs, for example replacing its startup callback or wait strategy, is not supported and can leave the container unprovisioned or never ready. Use the generic `ContainerBuilder` when you need full control over the configuration.
+
 ## Composing command arguments
 
 Testcontainers for .NET provides the `WithCommand(ComposableEnumerable<string>)` API to give you flexible control over container command arguments. While currently used for container commands, the `ComposableEnumerable<T>` abstraction is designed to support other builder APIs in the future, allowing similar composition and override functionality.
