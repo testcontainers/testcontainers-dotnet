@@ -12,10 +12,10 @@ namespace DotNet.Testcontainers.Tests.Unit
     public void BuildsWithDefaultConfiguration()
     {
       // Given
-      var imageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli);
+      var buildKitImageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli);
 
       // When
-      var exception = Record.Exception(() => imageFromDockerfileBuilder.Build());
+      var exception = Record.Exception(buildKitImageFromDockerfileBuilder.Build);
 
       // Then
       Assert.Null(exception);
@@ -25,10 +25,10 @@ namespace DotNet.Testcontainers.Tests.Unit
     public void ThrowsArgumentExceptionWhenReuseIsEnabled()
     {
       // Given
-      var imageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli).WithReuse(true);
+      var buildKitImageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli).WithReuse(true);
 
       // When
-      var exception = Assert.Throws<ArgumentException>(() => imageFromDockerfileBuilder.Build());
+      var exception = Assert.Throws<ArgumentException>(buildKitImageFromDockerfileBuilder.Build);
 
       // Then
       Assert.StartsWith("Building an image does not support the reuse feature.", exception.Message);
@@ -43,10 +43,10 @@ namespace DotNet.Testcontainers.Tests.Unit
     public void ThrowsArgumentExceptionWhenSecretIdIsInvalid(string secretId)
     {
       // Given
-      var imageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli).WithSecret(secretId, "value");
+      var buildKitImageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli).WithSecret(secretId, "value");
 
       // When
-      var exception = Assert.Throws<ArgumentException>(() => imageFromDockerfileBuilder.Build());
+      var exception = Assert.Throws<ArgumentException>(buildKitImageFromDockerfileBuilder.Build);
 
       // Then
       Assert.StartsWith($"The build secret id '{secretId}' must start with", exception.Message);
@@ -56,12 +56,12 @@ namespace DotNet.Testcontainers.Tests.Unit
     public void ThrowsArgumentExceptionWhenSecretIdIsNotUnique()
     {
       // Given
-      var imageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli)
+      var buildKitImageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli)
         .WithSecret("mysecret", "value")
         .WithSecret("mysecret", new FileInfo("value"));
 
       // When
-      var exception = Assert.Throws<ArgumentException>(() => imageFromDockerfileBuilder.Build());
+      var exception = Assert.Throws<ArgumentException>(buildKitImageFromDockerfileBuilder.Build);
 
       // Then
       Assert.StartsWith("The build secret id 'mysecret' is set more than once.", exception.Message);
@@ -73,10 +73,10 @@ namespace DotNet.Testcontainers.Tests.Unit
       // Given
       var secretFilePath = Path.Combine(TestSession.TempDirectoryPath, Guid.NewGuid().ToString("D"));
 
-      var imageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli).WithSecret("mysecret", new FileInfo(secretFilePath));
+      var buildKitImageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli).WithSecret("mysecret", new FileInfo(secretFilePath));
 
       // When
-      var exception = Assert.Throws<FileNotFoundException>(() => imageFromDockerfileBuilder.Build());
+      var exception = Assert.Throws<FileNotFoundException>(buildKitImageFromDockerfileBuilder.Build);
 
       // Then
       Assert.Equal($"The build secret file '{secretFilePath}' does not exist.", exception.Message);
@@ -86,10 +86,10 @@ namespace DotNet.Testcontainers.Tests.Unit
     public void ThrowsArgumentExceptionWhenSshAgentIdIsInvalid()
     {
       // Given
-      var imageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli).WithSshAgent("invalid id");
+      var buildKitImageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli).WithSshAgent("invalid id");
 
       // When
-      var exception = Assert.Throws<ArgumentException>(() => imageFromDockerfileBuilder.Build());
+      var exception = Assert.Throws<ArgumentException>(buildKitImageFromDockerfileBuilder.Build);
 
       // Then
       Assert.StartsWith("The SSH agent id 'invalid id' must start with", exception.Message);
@@ -99,10 +99,10 @@ namespace DotNet.Testcontainers.Tests.Unit
     public void ThrowsArgumentExceptionWhenSshAgentPathIsMissing()
     {
       // Given
-      var imageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli).WithSshAgent("default");
+      var buildKitImageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli).WithSshAgent("default");
 
       // When
-      var exception = Assert.Throws<ArgumentException>(() => imageFromDockerfileBuilder.Build());
+      var exception = Assert.Throws<ArgumentException>(buildKitImageFromDockerfileBuilder.Build);
 
       // Then
       Assert.StartsWith("The SSH agent 'default' does not set a path.", exception.Message);
@@ -114,10 +114,10 @@ namespace DotNet.Testcontainers.Tests.Unit
       // Given
       var sshAgentPath = Path.Combine(TestSession.TempDirectoryPath, "ssh,agent.sock");
 
-      var imageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli).WithSshAgent("default", sshAgentPath);
+      var buildKitImageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli).WithSshAgent("default", sshAgentPath);
 
       // When
-      var exception = Assert.Throws<ArgumentException>(() => imageFromDockerfileBuilder.Build());
+      var exception = Assert.Throws<ArgumentException>(buildKitImageFromDockerfileBuilder.Build);
 
       // Then
       Assert.StartsWith($"The SSH agent path '{sshAgentPath}' cannot contain a comma", exception.Message);
