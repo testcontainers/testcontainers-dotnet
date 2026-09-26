@@ -25,8 +25,10 @@ internal sealed class ApacheConfiguration : IKafkaVendorConfiguration
         => KafkaVendor.ApacheSoftwareFoundation;
 
     /// <inheritdoc />
-    public ConsensusProtocol ConsensusProtocol
-        => ConsensusProtocol.KRaft;
+    public ConsensusProtocol GetConsensusProtocol(IImage image)
+    {
+        return ConsensusProtocol.KRaft;
+    }
 
     /// <inheritdoc />
     public bool IsImageFromVendor(IImage image)

@@ -219,11 +219,11 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
         {
             kafkaBuilder = this;
         }
-        else if (vendorConfiguration.ConsensusProtocol == ConsensusProtocol.KRaft)
+        else if (vendorConfiguration.GetConsensusProtocol(DockerResourceConfiguration.Image) == ConsensusProtocol.KRaft)
         {
             kafkaBuilder = WithKRaft();
         }
-        else if (vendorConfiguration.ConsensusProtocol == ConsensusProtocol.ZooKeeper)
+        else if (vendorConfiguration.GetConsensusProtocol(DockerResourceConfiguration.Image) == ConsensusProtocol.ZooKeeper)
         {
             kafkaBuilder = WithZooKeeper();
         }
@@ -233,7 +233,7 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
         }
 
         // Validate that the configuration is compatible with the vendor's image.
-        vendorConfiguration.Validate(DockerResourceConfiguration);
+        vendorConfiguration.Validate(kafkaBuilder.DockerResourceConfiguration);
 
         var startupKafkaBuilder = kafkaBuilder.WithStartupCallback((container, ct) =>
         {

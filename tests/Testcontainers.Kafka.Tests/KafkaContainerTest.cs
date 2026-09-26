@@ -110,6 +110,18 @@ public abstract class KafkaContainerTest : IAsyncLifetime
         }
     }
 
+    // Confluent Platform 8.x removed ZooKeeper, so the default consensus protocol
+    // must be KRaft: https://github.com/testcontainers/testcontainers-dotnet/issues/1773.
+    [UsedImplicitly]
+    public sealed class ConfluentKafkaV8DefaultConfiguration : KafkaContainerTest
+    {
+        public ConfluentKafkaV8DefaultConfiguration()
+            : base(new KafkaBuilder(TestSession.GetImageFromDockerfile(stage: "confluent-v8_2_4"))
+                .Build())
+        {
+        }
+    }
+
     [UsedImplicitly]
     public sealed class ApacheKafkaConfiguration : KafkaContainerTest
     {
