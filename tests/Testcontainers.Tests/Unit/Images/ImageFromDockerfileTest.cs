@@ -233,9 +233,7 @@ namespace DotNet.Testcontainers.Tests.Unit
     public async Task BuildsImageForPlatform()
     {
       // Given
-      using var dockerClient = TestcontainersSettings.OS.DockerEndpointAuthConfig
-        .GetDockerClientBuilder()
-        .Build();
+      using var dockerClient = TestcontainersSettings.OS.DockerEndpointAuthConfig.GetDockerClientBuilder(Guid.NewGuid()).Build();
 
       var versionResponse = await dockerClient.System.GetVersionAsync(TestContext.Current.CancellationToken)
         .ConfigureAwait(true);

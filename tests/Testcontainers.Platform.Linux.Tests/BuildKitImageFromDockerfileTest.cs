@@ -127,9 +127,7 @@ public sealed class BuildKitImageFromDockerfileTest
     public async Task BuildsForExpectedPlatform()
     {
         // Given
-        using var dockerClient = TestcontainersSettings.OS.DockerEndpointAuthConfig
-            .GetDockerClientBuilder()
-            .Build();
+        using var dockerClient = TestcontainersSettings.OS.DockerEndpointAuthConfig.GetDockerClientBuilder(Guid.NewGuid()).Build();
 
         var versionResponse = await dockerClient.System.GetVersionAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
@@ -166,9 +164,7 @@ public sealed class BuildKitImageFromDockerfileTest
     public async Task AppliesLabelsAndBuildArgumentsToImage()
     {
         // Given
-        using var dockerClient = TestcontainersSettings.OS.DockerEndpointAuthConfig
-            .GetDockerClientBuilder()
-            .Build();
+        using var dockerClient = TestcontainersSettings.OS.DockerEndpointAuthConfig.GetDockerClientBuilder(Guid.NewGuid()).Build();
 
         var buildArgumentValue = Guid.NewGuid().ToString("D");
 
@@ -279,9 +275,7 @@ public sealed class BuildKitImageFromDockerfileTest
         // Given
         const string secretId = "mysecret";
 
-        using var dockerClient = TestcontainersSettings.OS.DockerEndpointAuthConfig
-            .GetDockerClientBuilder()
-            .Build();
+        using var dockerClient = TestcontainersSettings.OS.DockerEndpointAuthConfig.GetDockerClientBuilder(Guid.NewGuid()).Build();
 
         var secretValue = Guid.NewGuid().ToString("D");
 
@@ -364,9 +358,7 @@ public sealed class BuildKitImageFromDockerfileTest
         // The Docker CLI container is an implementation detail of the image build.
         // Disabling the cleanup keeps the built image, it does not keep the container
         // that built it, which carries the build secrets.
-        using var dockerClient = TestcontainersSettings.OS.DockerEndpointAuthConfig
-            .GetDockerClientBuilder()
-            .Build();
+        using var dockerClient = TestcontainersSettings.OS.DockerEndpointAuthConfig.GetDockerClientBuilder(Guid.NewGuid()).Build();
 
         // Derive a Docker CLI image for this test only. The ancestor filter resolves
         // the image id, so an image of its own makes the Docker CLI container of this
