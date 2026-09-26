@@ -38,6 +38,11 @@ namespace DotNet.Testcontainers.Configurations
     string Target { get; }
 
     /// <summary>
+    /// Gets the platform to build the image for.
+    /// </summary>
+    string Platform { get; }
+
+    /// <summary>
     /// Gets the image.
     /// </summary>
     IImage Image { get; }

@@ -72,6 +72,19 @@ namespace DotNet.Testcontainers.Builders
     TBuilderEntity WithTarget(string target);
 
     /// <summary>
+    /// Sets the platform to build the image for.
+    /// </summary>
+    /// <remarks>
+    /// A build step that executes a target platform binary, such as a <c>RUN</c>
+    /// instruction, requires emulation, such as QEMU. A Dockerfile that only copies
+    /// files and sets metadata builds without it.
+    /// </remarks>
+    /// <param name="platform">The platform to build the image for (e.g., <c>--platform "linux/arm64"</c>).</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithPlatform(string platform);
+
+    /// <summary>
     /// Sets the image build policy.
     /// </summary>
     /// <param name="imageBuildPolicy">The image build policy.</param>

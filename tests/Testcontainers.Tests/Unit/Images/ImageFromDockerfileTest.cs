@@ -8,6 +8,7 @@ namespace DotNet.Testcontainers.Tests.Unit
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Commons;
+  using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Images;
   using ICSharpCode.SharpZipLib.Tar;
   using Microsoft.Extensions.Logging;
@@ -226,6 +227,36 @@ namespace DotNet.Testcontainers.Tests.Unit
       Assert.Contains(logger.Logs, line => line.Contains("FROM scratch AS base"));
       Assert.Contains(logger.Logs, line => line.Contains("FROM base AS build"));
       Assert.DoesNotContain(logger.Logs, line => line.Contains("FROM build AS final"));
+    }
+
+    [Fact]
+    public async Task BuildsImageForPlatform()
+    {
+      // Given
+      using var dockerClient = TestcontainersSettings.OS.DockerEndpointAuthConfig.GetDockerClientBuilder(Guid.NewGuid()).Build();
+
+      var versionResponse = await dockerClient.System.GetVersionAsync(TestContext.Current.CancellationToken)
+        .ConfigureAwait(true);
+
+      // Build the image for a platform other than the platform of the Docker host.
+      // The Dockerfile does not run an instruction, which keeps the build
+      // independent of an emulator such as QEMU.
+      var platform = "arm64".Equals(versionResponse.Arch, StringComparison.OrdinalIgnoreCase) ? "linux/amd64" : "linux/arm64";
+
+      var imageFromDockerfileBuilder = new ImageFromDockerfileBuilder()
+        .WithDockerfileDirectory("Assets/platform/")
+        .WithPlatform(platform)
+        .Build();
+
+      await imageFromDockerfileBuilder.CreateAsync(TestContext.Current.CancellationToken)
+        .ConfigureAwait(true);
+
+      // When
+      var imageInspectResponse = await dockerClient.Images.InspectImageAsync(imageFromDockerfileBuilder.FullName, TestContext.Current.CancellationToken)
+        .ConfigureAwait(true);
+
+      // Then
+      Assert.Equal(platform, string.Join("/", imageInspectResponse.Os, imageInspectResponse.Architecture));
     }
 
     [Fact]
