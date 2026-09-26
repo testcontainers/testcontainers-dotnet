@@ -272,13 +272,13 @@ namespace DotNet.Testcontainers.Clients
       foreach (var secret in configuration.Secrets)
       {
         buildCommand.Add("--secret");
-        buildCommand.Add($"id={secret.Id},src={secret.FilePath}");
+        buildCommand.Add($"id={secret.Key},src={secret.Value.Target}");
       }
 
-      foreach (var sshAgent in configuration.SshAgents)
+      foreach (var ssh in configuration.Ssh)
       {
         buildCommand.Add("--ssh");
-        buildCommand.Add($"{sshAgent.Key}={string.Join(",", sshAgent.Value)}");
+        buildCommand.Add($"{ssh.Key}={string.Join(",", ssh.Value)}");
       }
 
       buildCommand.Add(ContextDirectoryPath);
@@ -312,7 +312,7 @@ namespace DotNet.Testcontainers.Clients
       // Bind-mount the SSH agent sockets and private keys, keeping the path they have
       // on the test host. The Docker daemon resolves the mount source, which is the
       // same reason the Docker socket can be mounted.
-      cliBuilder = configuration.SshAgents.Values
+      cliBuilder = configuration.Ssh.Values
         .SelectMany(paths => paths)
         .Distinct()
         .Aggregate(cliBuilder, (builder, path) => builder.WithBindMount(path, path, AccessMode.ReadOnly));
@@ -334,12 +334,12 @@ namespace DotNet.Testcontainers.Clients
     /// <returns>Task that completes when the build secrets have been copied.</returns>
     private static async Task CopySecretsAsync(IBuildKitImageFromDockerfileConfiguration configuration, IContainer cliContainer, CancellationToken ct = default)
     {
-      foreach (var secret in configuration.Secrets)
+      foreach (var secret in configuration.Secrets.Values)
       {
         var secretValue = await secret.GetAllBytesAsync(ct)
           .ConfigureAwait(false);
 
-        await cliContainer.CopyAsync(secretValue, secret.FilePath, 0, 0, secret.FileMode, ct)
+        await cliContainer.CopyAsync(secretValue, secret.Target, secret.UserId, secret.GroupId, secret.FileMode, ct)
           .ConfigureAwait(false);
       }
     }

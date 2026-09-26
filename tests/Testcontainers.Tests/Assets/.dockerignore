@@ -4,6 +4,7 @@ credsStore
 buildFailure
 context
 healthWaitStrategy
+platform
 pullBaseImages
 scratch
 target

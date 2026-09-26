@@ -95,6 +95,7 @@ namespace DotNet.Testcontainers.Clients
       {
         Dockerfile = configuration.Dockerfile,
         Target = configuration.Target,
+        Platform = configuration.Platform,
         Tags = new List<string> { configuration.Image.FullName },
         BuildArgs = configuration.BuildArguments.ToDictionary(item => item.Key, item => item.Value),
         Labels = configuration.Labels.ToDictionary(item => item.Key, item => item.Value),

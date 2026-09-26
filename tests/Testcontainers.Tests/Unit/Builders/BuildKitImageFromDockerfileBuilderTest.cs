@@ -53,21 +53,6 @@ namespace DotNet.Testcontainers.Tests.Unit
     }
 
     [Fact]
-    public void ThrowsArgumentExceptionWhenSecretIdIsNotUnique()
-    {
-      // Given
-      var buildKitImageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli)
-        .WithSecret("mysecret", "value")
-        .WithSecret("mysecret", new FileInfo("value"));
-
-      // When
-      var exception = Assert.Throws<ArgumentException>(buildKitImageFromDockerfileBuilder.Build);
-
-      // Then
-      Assert.StartsWith("The build secret id 'mysecret' is set more than once.", exception.Message);
-    }
-
-    [Fact]
     public void ThrowsFileNotFoundExceptionWhenSecretFileDoesNotExist()
     {
       // Given
@@ -83,44 +68,59 @@ namespace DotNet.Testcontainers.Tests.Unit
     }
 
     [Fact]
-    public void ThrowsArgumentExceptionWhenSshAgentIdIsInvalid()
+    public void ThrowsArgumentExceptionWhenSshIdIsInvalid()
     {
       // Given
-      var buildKitImageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli).WithSshAgent("invalid id");
+      var buildKitImageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli).WithSsh("invalid id");
 
       // When
       var exception = Assert.Throws<ArgumentException>(buildKitImageFromDockerfileBuilder.Build);
 
       // Then
-      Assert.StartsWith("The SSH agent id 'invalid id' must start with", exception.Message);
+      Assert.StartsWith("The SSH id 'invalid id' must start with", exception.Message);
     }
 
     [Fact]
-    public void ThrowsArgumentExceptionWhenSshAgentPathIsMissing()
+    public void ThrowsArgumentExceptionWhenSshPathIsMissing()
     {
       // Given
-      var buildKitImageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli).WithSshAgent("default");
+      var buildKitImageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli).WithSsh("default");
 
       // When
       var exception = Assert.Throws<ArgumentException>(buildKitImageFromDockerfileBuilder.Build);
 
       // Then
-      Assert.StartsWith("The SSH agent 'default' does not set a path.", exception.Message);
+      Assert.StartsWith("The SSH id 'default' does not set a path.", exception.Message);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    public void ThrowsArgumentExceptionWhenSshPathIsEmpty(string sshPath)
+    {
+      // Given
+      var buildKitImageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli).WithSsh("default", sshPath);
+
+      // When
+      var exception = Assert.Throws<ArgumentException>(buildKitImageFromDockerfileBuilder.Build);
+
+      // Then
+      Assert.StartsWith("The SSH id 'default' does not set a path.", exception.Message);
     }
 
     [Fact]
-    public void ThrowsArgumentExceptionWhenSshAgentPathContainsComma()
+    public void ThrowsArgumentExceptionWhenSshPathContainsComma()
     {
       // Given
-      var sshAgentPath = Path.Combine(TestSession.TempDirectoryPath, "ssh,agent.sock");
+      var sshPath = Path.Combine(TestSession.TempDirectoryPath, "ssh,agent.sock");
 
-      var buildKitImageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli).WithSshAgent("default", sshAgentPath);
+      var buildKitImageFromDockerfileBuilder = new BuildKitImageFromDockerfileBuilder(CommonImages.DockerCli).WithSsh("default", sshPath);
 
       // When
       var exception = Assert.Throws<ArgumentException>(buildKitImageFromDockerfileBuilder.Build);
 
       // Then
-      Assert.StartsWith($"The SSH agent path '{sshAgentPath}' cannot contain a comma", exception.Message);
+      Assert.StartsWith($"The SSH path '{sshPath}' cannot contain a comma", exception.Message);
     }
   }
 }

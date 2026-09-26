@@ -16,19 +16,18 @@ namespace DotNet.Testcontainers.Configurations
     IImage CliImage { get; }
 
     /// <summary>
-    /// Gets the platform to build the image for.
+    /// Gets a dictionary of build secrets, indexed by their build secret id.
     /// </summary>
-    string Platform { get; }
-
-    /// <summary>
-    /// Gets a list of build secrets.
-    /// </summary>
-    IEnumerable<BuildSecret> Secrets { get; }
+    /// <remarks>
+    /// The resource mapping target is the file inside the Docker CLI container that
+    /// contains the build secret value.
+    /// </remarks>
+    IReadOnlyDictionary<string, IResourceMapping> Secrets { get; }
 
     /// <summary>
     /// Gets a dictionary of SSH agent sockets or private keys on the test host,
-    /// indexed by their SSH agent id.
+    /// indexed by their SSH id.
     /// </summary>
-    IReadOnlyDictionary<string, IEnumerable<string>> SshAgents { get; }
+    IReadOnlyDictionary<string, IEnumerable<string>> Ssh { get; }
   }
 }

@@ -36,6 +36,8 @@ namespace DotNet.Testcontainers.Clients
 
     private readonly DockerRegistryAuthenticationProvider _registryAuthenticationProvider;
 
+    private readonly IBuildKitImageOperations _buildKitImageOperations;
+
     private readonly ILogger _logger;
 
     /// <summary>
@@ -66,13 +68,13 @@ namespace DotNet.Testcontainers.Clients
       ILogger logger)
     {
       _registryAuthenticationProvider = registryAuthenticationProvider;
+      _buildKitImageOperations = new BuildKitImageOperations(imageOperations, logger);
       _logger = logger;
       Container = containerOperations;
       Image = imageOperations;
       Network = networkOperations;
       Volume = volumeOperations;
       System = systemOperations;
-      BuildKit = new BuildKitImageOperations(imageOperations, logger);
     }
 
     /// <inheritdoc />
@@ -89,9 +91,6 @@ namespace DotNet.Testcontainers.Clients
 
     /// <inheritdoc />
     public IDockerSystemOperations System { get; }
-
-    /// <inheritdoc />
-    public IBuildKitImageOperations BuildKit { get; }
 
     /// <inheritdoc />
     public bool IsRunningInsideDocker => File.Exists(Path.Combine(OSRootDirectory, ".dockerenv"));
@@ -363,13 +362,14 @@ namespace DotNet.Testcontainers.Clients
     /// <inheritdoc />
     public Task<string> BuildAsync(IImageFromDockerfileConfiguration configuration, CancellationToken ct = default)
     {
-      return BuildAsync(Image, configuration, ct);
-    }
-
-    /// <inheritdoc />
-    public Task<string> BuildAsync(IBuildKitImageFromDockerfileConfiguration configuration, CancellationToken ct = default)
-    {
-      return BuildAsync(BuildKit, configuration, ct);
+      if (configuration is IBuildKitImageFromDockerfileConfiguration buildKitConfiguration)
+      {
+        return BuildAsync(_buildKitImageOperations, buildKitConfiguration, ct);
+      }
+      else
+      {
+        return BuildAsync(Image, configuration, ct);
+      }
     }
 
     /// <inheritdoc />

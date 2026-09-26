@@ -84,6 +84,16 @@ _ = new ImageFromDockerfileBuilder()
   .WithDockerfileDirectory("/path/to/dockerfile/directory");
 ```
 
+### Choosing a platform
+
+You can use `WithPlatform(string)` to build the image for a platform other than the platform of the Docker host, for example `linux/arm64`. A build step that executes a target platform binary, such as a `RUN` instruction, requires emulation, such as QEMU. A Dockerfile that only copies files and sets metadata builds without it.
+
+```csharp
+_ = new ImageFromDockerfileBuilder()
+  .WithDockerfileDirectory("/path/to/dockerfile/directory")
+  .WithPlatform("linux/arm64");
+```
+
 ## Delete multi-stage intermediate layers
 
 A multi-stage Docker image build generates intermediate layers that serve as caches. Testcontainers' Resource Reaper is unable to automatically delete these layers after the test execution. The necessary label is not forwarded by the Docker image build. Testcontainers is unable to track the intermediate layers during the test. To delete the intermediate layers after the test execution, pass the Resource Reaper session to each stage.
@@ -149,21 +159,19 @@ RUN --mount=type=secret,id=nuget dotnet restore --configfile /run/secrets/nuget
 
 Testcontainers copies the build secret into the Docker CLI container that runs the build. It is not part of the build context, and is not passed as a build argument or an environment variable. The container that runs the build is removed after the build, no matter whether the cleanup of the image is enabled or not.
 
-### SSH agents
+### SSH
 
-`WithSshAgent(string, params string[])` passes an SSH agent socket or private key to the build. The Dockerfile mounts it with `RUN --mount=type=ssh,id=<id>`. Use the id `default` for a mount that does not name an id. Each path is bind-mounted read-only into the Docker CLI container, keeping the path it has on the test host, so the paths must exist on the host that runs the Docker daemon. At least one path is required, because the Docker CLI container does not run an SSH agent that an id without a path could resolve to. A path cannot contain a comma, which the Docker CLI uses to separate the paths of an SSH agent.
+`WithSsh(string, params string[])` exposes an SSH agent socket or private key to the build. The Dockerfile mounts it with `RUN --mount=type=ssh,id=<id>`. Use the id `default` for a mount that does not name an id. Each path is bind-mounted read-only into the Docker CLI container, keeping the path it has on the test host, so the paths must exist on the host that runs the Docker daemon. At least one path is required, because the Docker CLI container does not run an SSH agent that an id without a path could resolve to. A path cannot contain a comma, which the Docker CLI uses to separate the paths of an SSH id.
 
 ```csharp
 _ = new BuildKitImageFromDockerfileBuilder("docker:29.8.1-cli")
   .WithDockerfileDirectory(CommonDirectoryPath.GetSolutionDirectory(), string.Empty)
-  .WithSshAgent("default", Environment.GetEnvironmentVariable("SSH_AUTH_SOCK"));
+  .WithSsh("default", Environment.GetEnvironmentVariable("SSH_AUTH_SOCK"));
 ```
 
-### Platform
+### Multi-platform images
 
-`WithPlatform(string)` builds the image for a platform other than the platform of the Docker host, for example `linux/arm64`. A build step that executes a target platform binary, such as a `RUN` instruction, requires emulation, such as QEMU. A Dockerfile that only copies files and sets metadata builds without it.
-
-A comma-separated value builds a manifest list, for example `linux/amd64,linux/arm64`. Loading one into the image store of the Docker daemon requires the containerd image store. The classic image store takes a single platform only and the build fails.
+`WithPlatform(string)` takes a comma-separated value, which builds a manifest list, for example `linux/amd64,linux/arm64`. Loading one into the image store of the Docker daemon requires the containerd image store. The classic image store takes a single platform only and the build fails.
 
 ## Supported commands
 
@@ -179,6 +187,7 @@ A comma-separated value builds a manifest list, for example `linux/amd64,linux/a
 | `WithImageBuildPolicy`        | Specifies an image build policy to determine when an image is built.         |
 | `WithDeleteIfExists`          | Will remove the image if it already exists.                                  |
 | `WithBuildArgument`           | Sets build-time variables e.g `--build-arg "MAGIC_NUMBER=42"`.               |
+| `WithPlatform`                | Sets the platform to build the image for e.g. `--platform "linux/arm64"`.    |
 | `WithCreateParameterModifier` | Allows low level modifications of the Docker image build parameter.          |
 
 `BuildKitImageFromDockerfileBuilder` supports the same members, and additionally:
@@ -186,8 +195,7 @@ A comma-separated value builds a manifest list, for example `linux/amd64,linux/a
 | Builder method | Description                                                                    |
 |----------------|--------------------------------------------------------------------------------|
 | `WithSecret`   | Sets a build secret e.g. `--secret "id=aws,src=$HOME/.aws/credentials"`.       |
-| `WithSshAgent` | Sets an SSH agent socket or private key e.g. `--ssh "default=$SSH_AUTH_SOCK"`. |
-| `WithPlatform` | Sets the platform to build the image for e.g. `--platform "linux/arm64"`.      |
+| `WithSsh`      | Sets an SSH agent socket or private key e.g. `--ssh "default=$SSH_AUTH_SOCK"`. |
 
 !!! tip
 

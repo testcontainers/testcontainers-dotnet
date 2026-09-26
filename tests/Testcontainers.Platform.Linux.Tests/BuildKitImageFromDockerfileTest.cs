@@ -136,11 +136,13 @@ public sealed class BuildKitImageFromDockerfileTest
 
         // Build the image for a platform other than the platform of the Docker host.
         // The Dockerfile does not run an instruction, which keeps the build
-        // independent of an emulator such as QEMU.
+        // independent of an emulator such as QEMU. The base image is only used by
+        // the platform tests. With the classic image store, pulling it for a foreign
+        // platform repoints its tag, which would break a container that runs it.
         var platform = "arm64".Equals(versionResponse.Arch, StringComparison.OrdinalIgnoreCase) ? "linux/amd64" : "linux/arm64";
 
         var dockerfileDirectoryPath = CreateDockerfileDirectory($"""
-            FROM {CommonImages.Alpine.FullName}
+            FROM busybox:1.36.1
             ENV TESTCONTAINERS_PLATFORM="{platform}"
             """);
 
