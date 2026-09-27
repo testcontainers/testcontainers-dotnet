@@ -183,22 +183,11 @@ _ = new ContainerBuilder("alpine:3.20.0")
 
 The static class `Consume` offers pre-configured implementations of the `IOutputConsumer` interface for common use cases. If you need additional functionalities beyond those provided by the default implementations, you can create your own implementations of `IOutputConsumer`.
 
-## How builder configurations combine
-
-The container, image, network and volume builders all follow the same rules when you call a builder method more than once:
-
-- Builders are immutable. Every call returns a new builder with the updated configuration (see [reusing builder configurations](#reusing-builder-configurations)).
-- A `WithX` call that sets a single value, such as the image, wait strategy or startup callback, replaces the value set before it.
-- Lists and dictionaries, such as environment variables, port bindings, mounts and labels, append new values instead. A dictionary entry with the same key replaces the previous entry.
-- You cannot remove existing list and dictionary values, except where the builder accepts a `ComposableEnumerable<T>` (see [composing command arguments](#composing-command-arguments)).
-
-Modules come pre-configured, and that configuration is opinionated. Overriding a module's configuration with the generic builder APIs, for example replacing its startup callback or wait strategy, is not supported and can leave the container unprovisioned or never ready. Use the generic `ContainerBuilder` when you need full control over the configuration.
-
 ## Composing command arguments
 
 Testcontainers for .NET provides the `WithCommand(ComposableEnumerable<string>)` API to give you flexible control over container command arguments. While currently used for container commands, the `ComposableEnumerable<T>` abstraction is designed to support other builder APIs in the future, allowing similar composition and override functionality.
 
-Because our builders are immutable, this feature allows you to extend or override pre-configured configurations, such as those in Testcontainers [modules](../modules/index.md), without modifying the original builder.
+Because our [builders are immutable](builder_configurations.md#builders-are-immutable), this feature allows you to extend or override pre-configured configurations, such as those in Testcontainers [modules](../modules/index.md), without modifying the original builder.
 
 `ComposableEnumerable<T>` lets you decide how new API arguments should be combined with existing ones. You can choose to append, overwrite, or apply other strategies based on your needs.
 
@@ -227,9 +216,7 @@ Using `OverwriteEnumerable<string>(Array.Empty<string>())` removes all default c
 
 ## Reusing builder configurations
 
-Testcontainers builders are immutable. Every builder method returns a new instance that includes the updated configuration. The existing builder instance remains unchanged.
-
-This behavior is by design. It allows you to share a common configuration and derive multiple containers from it without modifying the original builder, for example for A/B testing:
+Because [builders are immutable](builder_configurations.md#builders-are-immutable), you can share a common configuration and derive multiple containers from it, for example for A/B testing:
 
 ```csharp
 var baseBuilder = new PostgreSqlBuilder()
