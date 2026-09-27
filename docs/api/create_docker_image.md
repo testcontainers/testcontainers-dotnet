@@ -2,9 +2,9 @@
 
 Testcontainers for .NET uses the builder design pattern to configure, create and delete Docker resources. It prepares and initializes your test environment and disposes of everything after your tests are finished — whether the tests are successful or not. To create a container image from a Dockerfile use `ImageFromDockerfileBuilder`.
 
-!!! warning
+!!! note
 
-    BuildKit features are not supported through the Docker Engine API. As a result, Dockerfile instructions and options that depend on BuildKit cannot be used with Testcontainers' image builder API. For more details, see this [discussion](https://github.com/testcontainers/testcontainers-dotnet/discussions/1193#discussioncomment-10315903).
+    `ImageFromDockerfileBuilder` builds the image through the Docker Engine API, which does not support BuildKit. As a result, Dockerfile instructions and options that depend on BuildKit cannot be used with it. For more details, see this [discussion](https://github.com/testcontainers/testcontainers-dotnet/discussions/1193#discussioncomment-10315903). Use [`BuildKitImageFromDockerfileBuilder`](#building-with-buildkit) to build such a Dockerfile.
 
 ## Examples
 
@@ -84,6 +84,16 @@ _ = new ImageFromDockerfileBuilder()
   .WithDockerfileDirectory("/path/to/dockerfile/directory");
 ```
 
+### Choosing a platform
+
+You can use `WithPlatform(string)` to build the image for a platform other than the platform of the Docker host, for example `linux/arm64`. A build step that executes a target platform binary, such as a `RUN` instruction, requires emulation, such as QEMU. A Dockerfile that only copies files and sets metadata builds without it.
+
+```csharp
+_ = new ImageFromDockerfileBuilder()
+  .WithDockerfileDirectory("/path/to/dockerfile/directory")
+  .WithPlatform("linux/arm64");
+```
+
 ## Delete multi-stage intermediate layers
 
 A multi-stage Docker image build generates intermediate layers that serve as caches. Testcontainers' Resource Reaper is unable to automatically delete these layers after the test execution. The necessary label is not forwarded by the Docker image build. Testcontainers is unable to track the intermediate layers during the test. To delete the intermediate layers after the test execution, pass the Resource Reaper session to each stage.
@@ -107,6 +117,62 @@ _ = new ImageFromDockerfileBuilder()
   .WithBuildArgument("RESOURCE_REAPER_SESSION_ID", ResourceReaper.DefaultSessionId.ToString("D"));
 ```
 
+## Building with BuildKit
+
+`BuildKitImageFromDockerfileBuilder` builds the image with BuildKit (`docker buildx build`) instead of the Docker Engine API. Its configuration is the same as the one of `ImageFromDockerfileBuilder`, plus the members that only BuildKit supports. Use it for a Dockerfile that depends on BuildKit, such as one that contains a here-document, mounts a build secret, or selects a frontend with `# syntax=`.
+
+```csharp
+var futureImage = new BuildKitImageFromDockerfileBuilder("docker:29.8.1-cli")
+  .WithDockerfileDirectory(CommonDirectoryPath.GetSolutionDirectory(), string.Empty)
+  .WithDockerfile("Dockerfile")
+  .Build();
+
+await futureImage.CreateAsync()
+  .ConfigureAwait(false);
+```
+
+The Docker CLI runs inside a container. Testcontainers copies the build context into that container, and mounts the Docker socket so the Docker CLI can reach the Docker daemon. You do not need a Docker CLI installation on the test host. The build itself runs in the BuildKit instance of the Docker daemon (the default `docker` Buildx driver), which is also where the build cache lives. The cache therefore outlives the container that starts the build, and is shared across builds the same way it is when you run `docker build` yourself.
+
+The image is written to the image store of the Docker daemon (`--load`), so everything that follows the build behaves as it does with `ImageFromDockerfileBuilder`, including `WithImage(IImage)` and the Resource Reaper labels.
+
+The constructor takes the Docker CLI image that runs the build. Pin it to a specific Docker CLI and Buildx version. The image requires the Buildx plugin.
+
+!!! warning
+
+    The Docker socket is bind-mounted into the Docker CLI container. The Docker daemon resolves the mount source, which is why a Docker daemon that is reached over TCP works too, as long as it listens on a Unix socket as well. A Docker daemon that does not provide a Unix socket at all, such as a Docker daemon that is reached over a Windows named pipe and runs Windows containers, cannot be used. Set `TestcontainersSettings.DockerSocketOverride` (or `TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE`) if the Docker socket is not at `/var/run/docker.sock`, or keep using `ImageFromDockerfileBuilder`.
+
+### Secrets
+
+`WithSecret(string, string)` and `WithSecret(string, FilePath)` pass a build secret to the build. The Dockerfile mounts it with `RUN --mount=type=secret,id=<id>`, which makes it available at `/run/secrets/<id>` for the duration of that instruction only. BuildKit does not add it to a layer of the built image.
+
+```csharp
+_ = new BuildKitImageFromDockerfileBuilder("docker:29.8.1-cli")
+  .WithDockerfileDirectory(CommonDirectoryPath.GetSolutionDirectory(), string.Empty)
+  .WithSecret("nuget", FilePath.Of("/path/to/nuget.config"));
+```
+
+```dockerfile
+FROM mcr.microsoft.com/dotnet/sdk:8.0
+COPY . .
+RUN --mount=type=secret,id=nuget dotnet restore --configfile /run/secrets/nuget
+```
+
+Testcontainers copies the build secret into the Docker CLI container that runs the build. It is not part of the build context, and is not passed as a build argument or an environment variable. The container that runs the build is removed after the build, no matter whether the cleanup of the image is enabled or not.
+
+### SSH
+
+`WithSsh(string, params string[])` exposes an SSH agent socket or private key to the build. The Dockerfile mounts it with `RUN --mount=type=ssh,id=<id>`. Use the id `default` for a mount that does not name an id. Each path is bind-mounted read-only into the Docker CLI container, keeping the path it has on the test host, so the paths must exist on the host that runs the Docker daemon. At least one path is required, because the Docker CLI container does not run an SSH agent that an id without a path could resolve to. A path cannot contain a comma, which the Docker CLI uses to separate the paths of an SSH id.
+
+```csharp
+_ = new BuildKitImageFromDockerfileBuilder("docker:29.8.1-cli")
+  .WithDockerfileDirectory(CommonDirectoryPath.GetSolutionDirectory(), string.Empty)
+  .WithSsh("default", Environment.GetEnvironmentVariable("SSH_AUTH_SOCK"));
+```
+
+### Multi-platform images
+
+`WithPlatform(string)` takes a comma-separated value, which builds a manifest list, for example `linux/amd64,linux/arm64`. Loading one into the image store of the Docker daemon requires the containerd image store. The classic image store takes a single platform only and the build fails.
+
 ## Supported commands
 
 | Builder method                | Description                                                                  |
@@ -121,11 +187,40 @@ _ = new ImageFromDockerfileBuilder()
 | `WithImageBuildPolicy`        | Specifies an image build policy to determine when an image is built.         |
 | `WithDeleteIfExists`          | Will remove the image if it already exists.                                  |
 | `WithBuildArgument`           | Sets build-time variables e.g `--build-arg "MAGIC_NUMBER=42"`.               |
+| `WithPlatform`                | Sets the platform to build the image for e.g. `--platform "linux/arm64"`.    |
 | `WithCreateParameterModifier` | Allows low level modifications of the Docker image build parameter.          |
+
+`BuildKitImageFromDockerfileBuilder` supports the same members, and additionally:
+
+| Builder method | Description                                                                    |
+|----------------|--------------------------------------------------------------------------------|
+| `WithSecret`   | Sets a build secret e.g. `--secret "id=aws,src=$HOME/.aws/credentials"`.       |
+| `WithSsh`      | Sets an SSH agent socket or private key e.g. `--ssh "default=$SSH_AUTH_SOCK"`. |
 
 !!! tip
 
     Testcontainers for .NET detects your Docker host configuration. You do **not** have to set the Docker daemon socket.
+
+`BuildKitImageFromDockerfileBuilder` translates the image build parameter (`WithCreateParameterModifier`) into Docker CLI arguments:
+
+| Image build parameter | Docker CLI argument |
+|-----------------------|---------------------|
+| `Dockerfile`          | `--file`            |
+| `Target`              | `--target`          |
+| `Platform`            | `--platform`        |
+| `NetworkMode`         | `--network`         |
+| `ShmSize`             | `--shm-size`        |
+| `NoCache`             | `--no-cache`        |
+| `Pull`                | `--pull`            |
+| `ExtraHosts`          | `--add-host`        |
+| `CacheFrom`           | `--cache-from`      |
+| `Tags`                | `--tag`             |
+| `BuildArgs`           | `--build-arg`       |
+| `Labels`              | `--label`           |
+
+!!! note
+
+    A parameter that the Docker CLI does not provide an equivalent argument for, such as the resource limits of the Docker Engine API image build (`Memory`, `CPUShares`) or `Squash`, is logged as a warning instead of being applied.
 
 ## Known issues
 
