@@ -11,9 +11,11 @@ internal interface IKafkaVendorConfiguration
     public KafkaVendor Vendor { get; }
 
     /// <summary>
-    /// Gets the consensus protocol.
+    /// Gets the default consensus protocol for the specified Docker image.
     /// </summary>
-    public ConsensusProtocol ConsensusProtocol { get; }
+    /// <param name="image">The Docker image.</param>
+    /// <returns>The default consensus protocol.</returns>
+    public ConsensusProtocol GetConsensusProtocol(IImage image);
 
     /// <summary>
     /// Determines whether the specified Docker image belongs to this vendor.
