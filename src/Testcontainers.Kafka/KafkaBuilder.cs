@@ -214,16 +214,18 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
         // Instead of this approach, should we consider using a builder for each vendor?
         var vendorConfiguration = VendorConfigurations.Single(v => v.Vendor.Equals(DockerResourceConfiguration.Vendor) || v.IsImageFromVendor(DockerResourceConfiguration.Image));
 
+        var defaultConsensusProtocol = vendorConfiguration.GetConsensusProtocol(DockerResourceConfiguration.Image);
+
         // If the user hasn't set a consensus protocol, use the vendor's default configuration.
         if (DockerResourceConfiguration.ConsensusProtocol.HasValue)
         {
             kafkaBuilder = this;
         }
-        else if (vendorConfiguration.GetConsensusProtocol(DockerResourceConfiguration.Image) == ConsensusProtocol.KRaft)
+        else if (defaultConsensusProtocol == ConsensusProtocol.KRaft)
         {
             kafkaBuilder = WithKRaft();
         }
-        else if (vendorConfiguration.GetConsensusProtocol(DockerResourceConfiguration.Image) == ConsensusProtocol.ZooKeeper)
+        else if (defaultConsensusProtocol == ConsensusProtocol.ZooKeeper)
         {
             kafkaBuilder = WithZooKeeper();
         }

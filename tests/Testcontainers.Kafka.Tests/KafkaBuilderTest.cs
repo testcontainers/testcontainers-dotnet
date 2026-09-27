@@ -5,7 +5,7 @@ public sealed class KafkaBuilderTests
     [Fact]
     public void KRaftWithConfluentPre7ThrowsArgumentException()
     {
-        const string message = "KRaft is not supported for Confluent Platform images with versions earlier than 7.0.0.";
+        const string message = "KRaft is not supported for Confluent Platform images with versions earlier than 7.0.0. Use ZooKeeper instead.";
         ExpectArgEx(message, () => new KafkaBuilder("confluentinc/cp-kafka:6.1.9").WithKRaft().Build());
     }
 
