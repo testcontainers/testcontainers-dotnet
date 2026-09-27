@@ -25,8 +25,10 @@ internal sealed class ConfluentConfiguration : IKafkaVendorConfiguration
         => KafkaVendor.Confluent;
 
     /// <inheritdoc />
-    public ConsensusProtocol ConsensusProtocol
-        => ConsensusProtocol.ZooKeeper;
+    public ConsensusProtocol GetConsensusProtocol(IImage image)
+    {
+        return IsEarlierThanVersion8(image) ? ConsensusProtocol.ZooKeeper : ConsensusProtocol.KRaft;
+    }
 
     /// <inheritdoc />
     public bool IsImageFromVendor(IImage image)
@@ -37,13 +39,19 @@ internal sealed class ConfluentConfiguration : IKafkaVendorConfiguration
     /// <inheritdoc />
     public void Validate(KafkaConfiguration resourceConfiguration)
     {
-        const string message = "KRaft is not supported for Confluent Platform images with versions earlier than 7.0.0.";
+        const string kraftMessage = "KRaft is not supported for Confluent Platform images with versions earlier than 7.0.0. Use ZooKeeper instead.";
 
-        Predicate<KafkaConfiguration> isUnsupportedImage = value => value.ConsensusProtocol == ConsensusProtocol.KRaft
+        const string zooKeeperMessage = "ZooKeeper is not supported for Confluent Platform images with versions 8.0.0 and later. Use KRaft instead.";
+
+        Predicate<KafkaConfiguration> isUnsupportedKRaftImage = value => value.ConsensusProtocol == ConsensusProtocol.KRaft
             && IsImageFromVendor(value.Image) && value.Image.MatchVersion(v => v.Major < 7);
 
+        Predicate<KafkaConfiguration> isUnsupportedZooKeeperImage = value => value.ConsensusProtocol == ConsensusProtocol.ZooKeeper
+            && IsImageFromVendor(value.Image) && IsVersion8OrLater(value.Image);
+
         _ = Guard.Argument(resourceConfiguration, nameof(IContainerConfiguration.Image))
-            .ThrowIf(argument => isUnsupportedImage(argument.Value), argument => new ArgumentException(message, argument.Name));
+            .ThrowIf(argument => isUnsupportedKRaftImage(argument.Value), argument => new ArgumentException(kraftMessage, argument.Name))
+            .ThrowIf(argument => isUnsupportedZooKeeperImage(argument.Value), argument => new ArgumentException(zooKeeperMessage, argument.Name));
     }
 
     /// <inheritdoc />
@@ -74,5 +82,30 @@ internal sealed class ConfluentConfiguration : IKafkaVendorConfiguration
         startupScript.WriteLine("export KAFKA_ADVERTISED_LISTENERS=" + string.Join(",", advertisedListeners));
         startupScript.WriteLine("exec /etc/confluent/docker/run");
         return startupScript.ToString();
+    }
+
+    /// <summary>
+    /// Determines whether the image tag is a Confluent Platform version earlier
+    /// than 8.0.0, which still ships ZooKeeper. Tags without a version, such
+    /// as <c>latest</c> or custom tags, and digest-only references return
+    /// <c>false</c>, so the default consensus protocol falls back to KRaft.
+    /// </summary>
+    /// <param name="image">The Docker image.</param>
+    /// <returns><c>true</c> if the tag is a version earlier than 8.0.0; otherwise, <c>false</c>.</returns>
+    private static bool IsEarlierThanVersion8(IImage image)
+    {
+        return image.MatchVersion(v => v.Major < 8);
+    }
+
+    /// <summary>
+    /// Determines whether the image tag is known to point to Confluent Platform
+    /// 8.0.0 or later, which removed ZooKeeper. This includes <c>latest</c> and
+    /// its suffixed variants, such as <c>latest-ubi9</c> and <c>latest.arm64</c>.
+    /// </summary>
+    /// <param name="image">The Docker image.</param>
+    /// <returns><c>true</c> if the tag points to 8.0.0 or later; otherwise, <c>false</c>.</returns>
+    private static bool IsVersion8OrLater(IImage image)
+    {
+        return image.MatchVersion(v => v.Major >= 8) || image.MatchVersion((string tag) => tag != null && tag.StartsWith("latest", StringComparison.Ordinal));
     }
 }
