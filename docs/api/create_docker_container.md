@@ -187,7 +187,7 @@ The static class `Consume` offers pre-configured implementations of the `IOutput
 
 Testcontainers for .NET provides the `WithCommand(ComposableEnumerable<string>)` API to give you flexible control over container command arguments. While currently used for container commands, the `ComposableEnumerable<T>` abstraction is designed to support other builder APIs in the future, allowing similar composition and override functionality.
 
-Because our builders are immutable, this feature allows you to extend or override pre-configured configurations, such as those in Testcontainers [modules](../modules/index.md), without modifying the original builder.
+Because our [builders are immutable](builder_configurations.md#builders-are-immutable), this feature allows you to extend or override pre-configured configurations, such as those in Testcontainers [modules](../modules/index.md), without modifying the original builder.
 
 `ComposableEnumerable<T>` lets you decide how new API arguments should be combined with existing ones. You can choose to append, overwrite, or apply other strategies based on your needs.
 
@@ -216,9 +216,7 @@ Using `OverwriteEnumerable<string>(Array.Empty<string>())` removes all default c
 
 ## Reusing builder configurations
 
-Testcontainers builders are immutable. Every builder method returns a new instance that includes the updated configuration. The existing builder instance remains unchanged.
-
-This behavior is by design. It allows you to share a common configuration and derive multiple containers from it without modifying the original builder, for example for A/B testing:
+Because [builders are immutable](builder_configurations.md#builders-are-immutable), you can share a common configuration and derive multiple containers from it, for example for A/B testing:
 
 ```csharp
 var baseBuilder = new PostgreSqlBuilder()
