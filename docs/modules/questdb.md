@@ -10,7 +10,7 @@ dotnet add package Testcontainers.QuestDb
 
 You can start a QuestDB container instance from any .NET application. To create and start a container instance with the default configuration, use the module-specific builder as shown below:
 
-=== "Start a QuestDB container"
+=== "Start a QuestDB Container"
     ```csharp
     var questDbContainer = new QuestDbBuilder("questdb/questdb:10.0.1").Build();
     await questDbContainer.StartAsync();

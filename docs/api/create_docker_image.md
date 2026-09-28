@@ -175,20 +175,23 @@ _ = new BuildKitImageFromDockerfileBuilder("docker:29.8.1-cli")
 
 ## Supported commands
 
-| Builder method                | Description                                                                  |
-|-------------------------------|------------------------------------------------------------------------------|
-| `WithDockerEndpoint`          | Sets the Docker daemon socket to connect to.                                 |
-| `WithCleanUp`                 | Will remove the image automatically after all tests have been run.           |
-| `WithLabel`                   | Applies metadata to the image e.g. `-l`, `--label "testcontainers=awesome"`. |
-| `WithName`                    | Sets the image name e.g. `-t`, `--tag "testcontainers:0.1.0"`.               |
-| `WithContextDirectory`        | Sets the Docker build context directory.                                     |
-| `WithDockerfile`              | Sets the name of the `Dockerfile`.                                           |
-| `WithDockerfileDirectory`     | Sets the directory path that contains the `Dockerfile`.                      |
-| `WithImageBuildPolicy`        | Specifies an image build policy to determine when an image is built.         |
-| `WithDeleteIfExists`          | Will remove the image if it already exists.                                  |
-| `WithBuildArgument`           | Sets build-time variables e.g `--build-arg "MAGIC_NUMBER=42"`.               |
-| `WithPlatform`                | Sets the platform to build the image for e.g. `--platform "linux/arm64"`.    |
-| `WithCreateParameterModifier` | Allows low level modifications of the Docker image build parameter.          |
+| Builder method                | Description                                                                        |
+|-------------------------------|------------------------------------------------------------------------------------|
+| `WithDockerEndpoint`          | Sets the Docker daemon socket to connect to.                                       |
+| `WithCleanUp`                 | Will remove the image automatically after all tests have been run.                 |
+| `WithReuse`                   | Reuses an existing image instead of building a new one (experimental).             |
+| `WithLabel`                   | Applies metadata to the image e.g. `-l`, `--label "testcontainers=awesome"`.       |
+| `WithName`                    | Sets the image name e.g. `-t`, `--tag "testcontainers:0.1.0"`.                     |
+| `WithContextDirectory`        | Sets the Docker build context directory.                                           |
+| `WithDockerfile`              | Sets the name of the `Dockerfile`.                                                 |
+| `WithDockerfileDirectory`     | Sets the directory path that contains the `Dockerfile`.                            |
+| `WithTarget`                  | Sets the target build stage of a multi-stage `Dockerfile` e.g. `--target "build"`. |
+| `WithImageBuildPolicy`        | Specifies an image build policy to determine when an image is built.               |
+| `WithDeleteIfExists`          | Will remove the image if it already exists.                                        |
+| `WithBuildArgument`           | Sets build-time variables e.g `--build-arg "MAGIC_NUMBER=42"`.                     |
+| `WithPlatform`                | Sets the platform to build the image for e.g. `--platform "linux/arm64"`.          |
+| `WithCreateParameterModifier` | Allows low level modifications of the Docker image build parameter.                |
+| `WithLogger`                  | Sets the logger that replaces the default console logger.                          |
 
 `BuildKitImageFromDockerfileBuilder` supports the same members, and additionally:
 
