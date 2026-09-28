@@ -30,14 +30,14 @@ To execute the tests, use the command `dotnet test` from a terminal.
 
 To set and configure an API key, use the following container builder method:
 
-=== "Configure the API key"
+=== "Configure the API Key"
     ```csharp
     --8<-- "tests/Testcontainers.Qdrant.Tests/QdrantSecureContainerTest.cs:ConfigureQdrantContainerApiKey"
     ```
 
 Make sure the underlying Qdrant HTTP or gRPC client adds the API key to the HTTP header or gRPC metadata:
 
-=== "Configure the Qdrant client"
+=== "Configure the Qdrant Client"
     ```csharp
     --8<-- "tests/Testcontainers.Qdrant.Tests/QdrantSecureContainerTest.cs:ConfigureQdrantClientApiKey"
     ```
@@ -50,21 +50,21 @@ The following example generates a self-signed certificate and configures the mod
 
     Please ensure that both the certificate and private key are provided in PEM format.
 
-=== "Configure the TLS certificate"
+=== "Configure the TLS Certificate"
     ```csharp
     --8<-- "tests/Testcontainers.Qdrant.Tests/QdrantSecureContainerTest.cs:ConfigureQdrantContainerCertificate"
     ```
 
 The Qdrant client is configured to validate the TLS certificate using its thumbprint:
 
-=== "Configure the Qdrant client"
+=== "Configure the Qdrant Client"
     ```csharp
     --8<-- "tests/Testcontainers.Qdrant.Tests/QdrantSecureContainerTest.cs:ConfigureQdrantClientCertificate-1"
 
     --8<-- "tests/Testcontainers.Qdrant.Tests/QdrantSecureContainerTest.cs:ConfigureQdrantClientCertificate-2"
     ```
 
-## A Note To Developers
+## A note to developers
 
 The module creates a container that listens to requests over **HTTP**. The official Qdrant client uses the gRPC APIs to communicate with Qdrant. **.NET Core** and **.NET** support the above example with no additional configuration. However, **.NET Framework** has limited supported for gRPC over HTTP/2, but it can be enabled by:
 

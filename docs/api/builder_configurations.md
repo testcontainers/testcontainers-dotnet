@@ -1,4 +1,4 @@
-# Builder configurations
+# Combining builder configurations
 
 Testcontainers for .NET creates every Docker resource through a builder: containers, images, networks, volumes, and Docker Compose projects. All builders, including the ones that [modules](../modules/index.md) provide, share the same design. The rules below explain what happens when you call builder methods and how multiple calls combine.
 
