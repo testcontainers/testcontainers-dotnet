@@ -10,7 +10,7 @@ dotnet add package Testcontainers.PostgreSql
 
 You can start a PostgreSQL container instance from any .NET application. To create and start a container instance with the default configuration, use the module-specific builder as shown below:
 
-=== "Start a PostgreSQL container"
+=== "Start a PostgreSQL Container"
     ```csharp
     var postgreSqlContainer = new PostgreSqlBuilder("postgres:15.1").Build();
     await postgreSqlContainer.StartAsync();

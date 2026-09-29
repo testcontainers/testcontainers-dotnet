@@ -8,9 +8,9 @@ Add the following dependency to your project file:
 dotnet add package Testcontainers.MsSql
 ```
 
-You can start a MSSQL container instance from any .NET application. To create and start a container instance with the default configuration, use the module-specific builder as shown below:
+You can start an MSSQL container instance from any .NET application. To create and start a container instance with the default configuration, use the module-specific builder as shown below:
 
-=== "Start a MSSQL container"
+=== "Start an MSSQL Container"
     ```csharp
     var msSqlContainer = new MsSqlBuilder("mcr.microsoft.com/mssql/server:2022-CU14-ubuntu-22.04").Build();
     await msSqlContainer.StartAsync();
@@ -34,6 +34,6 @@ To execute the tests, use the command `dotnet test` from a terminal.
 
 --8<-- "docs/modules/_call_out_test_projects.txt"
 
-## A Note To Developers
+## A note to developers
 
 Once Testcontainers creates a server instance, developers may use the connection string with any of the popular data-access technologies found in the .NET ecosystem. Some of these libraries include [Entity Framework Core](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore), [Dapper](https://www.nuget.org/packages/Dapper), and [NHibernate](https://www.nuget.org/packages/NHibernate). At which point, developers can execute database migrations and SQL scripts.

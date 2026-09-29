@@ -14,7 +14,7 @@ dotnet add package Testcontainers.Db2
 
 You can start a Db2 container instance from any .NET application. To create and start a container instance with the default configuration, use the module-specific builder as shown below:
 
-=== "Start a Db2 container"
+=== "Start a Db2 Container"
     ```csharp
     var db2Container = new Db2Builder("icr.io/db2_community/db2:12.1.0.0").Build();
     await db2Container.StartAsync();

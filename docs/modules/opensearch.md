@@ -10,7 +10,7 @@ dotnet add package Testcontainers.OpenSearch
 
 You can start an OpenSearch container instance from any .NET application. To create and start a container instance with the default configuration, use the module-specific builder as shown below:
 
-=== "Start an OpenSearch container"
+=== "Start an OpenSearch Container"
     ```csharp
     var openSearchContainer = new OpenSearchBuilder("opensearchproject/opensearch:2.12.0").Build();
     await openSearchContainer.StartAsync();
@@ -18,45 +18,45 @@ You can start an OpenSearch container instance from any .NET application. To cre
 
 This example uses xUnit.net's `IAsyncLifetime` interface to manage the lifecycle of the container. The container is started in the `InitializeAsync` method before the test method runs, ensuring that the environment is ready for testing. After the test completes, the container is removed in the `DisposeAsync` method.
 
-=== "Base test class"
+=== "Base Test Class"
     ```csharp
     --8<-- "tests/Testcontainers.OpenSearch.Tests/OpenSearchContainerTest.cs:BaseClass"
     }
     ```
-=== "Insecure no auth"
+=== "Insecure No Auth"
     ```csharp
     --8<-- "tests/Testcontainers.OpenSearch.Tests/OpenSearchContainerTest.cs:InsecureNoAuth"
     ```
-=== "SSL default credentials"
+=== "SSL Default Credentials"
     ```csharp
     --8<-- "tests/Testcontainers.OpenSearch.Tests/OpenSearchContainerTest.cs:SslBasicAuthDefaultCredentials"
     ```
-=== "SSL custom credentials"
+=== "SSL Custom Credentials"
     ```csharp
     --8<-- "tests/Testcontainers.OpenSearch.Tests/OpenSearchContainerTest.cs:SslBasicAuthCustomCredentials"
     ```
 
 How to check if the client has established a connection:
 
-=== "Ping example"
+=== "Ping Example"
     ```csharp
     --8<-- "tests/Testcontainers.OpenSearch.Tests/OpenSearchContainerTest.cs:PingExample"
     ```
 
 Creating an index and alias:
 
-=== "Create index and alias"
+=== "Create Index and Alias"
     ```csharp
     --8<-- "tests/Testcontainers.OpenSearch.Tests/OpenSearchContainerTest.cs:CreateIndexAndAlias"
     ```
-=== "Create index implementation"
+=== "Create Index Implementation"
     ```csharp
     --8<-- "tests/Testcontainers.OpenSearch.Tests/OpenSearchContainerTest.cs:CreateIndexImplementation"
     ```
 
 Indexing and searching a document:
 
-=== "Indexing document"
+=== "Indexing Document"
     ```csharp
     --8<-- "tests/Testcontainers.OpenSearch.Tests/OpenSearchContainerTest.cs:IndexingDocument"
     ```
