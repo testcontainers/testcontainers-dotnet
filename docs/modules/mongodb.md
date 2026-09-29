@@ -33,7 +33,7 @@ To execute the tests, use the command `dotnet test` from a terminal.
 
 --8<-- "docs/modules/_call_out_test_projects.txt"
 
-## MongoDb Replica Set
+## MongoDB replica set
 
 By default, MongoDB runs as a standalone instance. If your tests require a MongoDB replica set, use the following configuration which will initialize a single-node replica set:
 

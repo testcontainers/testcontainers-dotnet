@@ -10,27 +10,27 @@ dotnet add package Testcontainers.ActiveMq
 
 You can start an Apache ActiveMQ Artemis container instance from any .NET application. This example uses xUnit.net's `IAsyncLifetime` interface to manage the lifecycle of the container. The container is started in the `InitializeAsync` method before the test method runs, ensuring that the environment is ready for testing. After the test completes, the container is removed in the `DisposeAsync` method.
 
-=== "Base test class"
+=== "Base Test Class"
     ```csharp
     --8<-- "tests/Testcontainers.ActiveMq.Tests/ArtemisContainerTest.cs:UseArtemisContainer"
     }
     ```
-=== "Without auth"
+=== "Without Auth"
     ```csharp
     --8<-- "tests/Testcontainers.ActiveMq.Tests/ArtemisContainerTest.cs:UseArtemisContainerNoAuth"
     ```
-=== "Default credentials"
+=== "Default Credentials"
     ```csharp
     --8<-- "tests/Testcontainers.ActiveMq.Tests/ArtemisContainerTest.cs:UseArtemisContainerDefaultAuth"
     ```
-=== "Custom credentials"
+=== "Custom Credentials"
     ```csharp
     --8<-- "tests/Testcontainers.ActiveMq.Tests/ArtemisContainerTest.cs:UseArtemisContainerCustomAuth"
     ```
 
 Connect to the container and produce a message:
 
-=== "Establish connection"
+=== "Establish Connection"
     ```csharp
     --8<-- "tests/Testcontainers.ActiveMq.Tests/ArtemisContainerTest.cs:EstablishConnection"
     ```

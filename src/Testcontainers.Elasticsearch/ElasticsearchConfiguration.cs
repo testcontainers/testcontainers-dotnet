@@ -4,6 +4,8 @@ namespace Testcontainers.Elasticsearch;
 [PublicAPI]
 public sealed class ElasticsearchConfiguration : ContainerConfiguration
 {
+    private const string FalseString = "false";
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ElasticsearchConfiguration" /> class.
     /// </summary>
@@ -85,10 +87,43 @@ public sealed class ElasticsearchConfiguration : ContainerConfiguration
             var httpsDisabled =
                 hasSecurityEnabled &&
                 hasHttpSslEnabled &&
-                "false".Equals(securityEnabled, StringComparison.OrdinalIgnoreCase) &&
-                "false".Equals(httpSslEnabled, StringComparison.OrdinalIgnoreCase);
+                FalseString.Equals(securityEnabled, StringComparison.OrdinalIgnoreCase) &&
+                FalseString.Equals(httpSslEnabled, StringComparison.OrdinalIgnoreCase);
 
             return !httpsDisabled;
+        }
+    }
+
+    /// <summary>
+    /// Gets a value indicating whether the OTLP endpoint is enabled or not.
+    /// </summary>
+    /// <remarks>
+    /// Elasticsearch 9.5 and later ship an OTLP endpoint that requires the built-in
+    /// stack index templates.
+    /// </remarks>
+    public bool OtlpEnabled
+    {
+        get
+        {
+            var hasStackTemplatesEnabled = Environments
+                .TryGetValue("stack.templates.enabled", out var stackTemplatesEnabled);
+
+            var stackTemplatesDisabled =
+                hasStackTemplatesEnabled &&
+                FalseString.Equals(stackTemplatesEnabled, StringComparison.OrdinalIgnoreCase);
+
+            var hasOtelDataRegistryEnabled = Environments
+                .TryGetValue("xpack.otel_data.registry.enabled", out var otelDataRegistryEnabled);
+
+            var otelDataRegistryDisabled =
+                hasOtelDataRegistryEnabled &&
+                FalseString.Equals(otelDataRegistryEnabled, StringComparison.OrdinalIgnoreCase);
+
+            var supportsOtlp =
+                Image.MatchLatestOrNightly() ||
+                Image.MatchVersion(v => v.Major > 9 || v.Major == 9 && v.Minor >= 5);
+
+            return supportsOtlp && !stackTemplatesDisabled && !otelDataRegistryDisabled;
         }
     }
 }
