@@ -33,7 +33,7 @@ public sealed class MongoDbAtlasLocalContainer : DockerContainer
         var endpoint = new UriBuilder("mongodb", Hostname, GetMappedPublicPort(MongoDbAtlasLocalBuilder.MongoDbAtlasLocalPort));
         endpoint.UserName = Uri.EscapeDataString(_configuration.Username ?? string.Empty);
         endpoint.Password = Uri.EscapeDataString(_configuration.Password ?? string.Empty);
-        endpoint.Query = "?directConnection=true";
+        endpoint.Query = "directConnection=true";
         return endpoint.ToString();
     }
 
@@ -47,7 +47,7 @@ public sealed class MongoDbAtlasLocalContainer : DockerContainer
     {
         var scriptFilePath = string.Join("/", string.Empty, "tmp", Guid.NewGuid().ToString("D"), Path.GetRandomFileName());
 
-        await CopyAsync(Encoding.Default.GetBytes(scriptContent), scriptFilePath, fileMode: Unix.FileMode644, ct: ct)
+        await CopyAsync(Encoding.UTF8.GetBytes(scriptContent), scriptFilePath, fileMode: Unix.FileMode644, ct: ct)
             .ConfigureAwait(false);
 
         var command = new List<string>();
