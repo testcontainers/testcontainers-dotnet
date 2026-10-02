@@ -1,0 +1,11 @@
+global using System;
+global using System.Linq;
+global using System.Threading;
+global using System.Threading.Tasks;
+global using DotNet.Testcontainers.Commons;
+global using DotNet.Testcontainers.Configurations;
+global using JetBrains.Annotations;
+global using MongoDB.Bson;
+global using MongoDB.Driver;
+global using MongoDB.Driver.Search;
+global using Xunit;
