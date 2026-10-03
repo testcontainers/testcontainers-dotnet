@@ -119,10 +119,19 @@ namespace DotNet.Testcontainers.Images
     ///   FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
     ///   FROM build
     /// </code>
+    ///
+    /// A base image that does not declare a platform (<c>FROM --platform</c>) resolves
+    /// to the <paramref name="targetPlatform" />. A base image that declares a platform
+    /// with a variable that does not resolve, such as the built-in build argument
+    /// <c>$BUILDPLATFORM</c>, resolves to no platform, which is the platform of the
+    /// Docker host that runs the image build.
     /// </remarks>
+    /// <param name="targetPlatform">The platform the image build targets, or <c>null</c> if it does not target a single platform.</param>
     /// <returns>An <see cref="IEnumerable{T}" /> of <see cref="IImage" />.</returns>
-    public IEnumerable<IImage> GetBaseImages()
+    public IEnumerable<IImage> GetBaseImages([CanBeNull] string targetPlatform = null)
     {
+      const string targetPlatformArg = "TARGETPLATFORM";
+
       const string nameGroup = "name";
 
       const string valueGroup = "value";
@@ -147,8 +156,14 @@ namespace DotNet.Testcontainers.Images
         .Where(match => match.Success)
         .ToArray();
 
-      var args = argMatches
-        .Select(match => new KeyValuePair<string, string>(match.Groups[nameGroup].Value, match.Groups[valueGroup].Value))
+      // The image builder sets the built-in build argument. The Dockerfile and the
+      // build arguments override it.
+      var builtInArgs = string.IsNullOrEmpty(targetPlatform)
+        ? Array.Empty<KeyValuePair<string, string>>()
+        : new[] { new KeyValuePair<string, string>(targetPlatformArg, targetPlatform) };
+
+      var args = builtInArgs
+        .Concat(argMatches.Select(match => new KeyValuePair<string, string>(match.Groups[nameGroup].Value, match.Groups[valueGroup].Value)))
         .Concat(_buildArguments)
         .GroupBy(kvp => kvp.Key)
         .ToDictionary(group => group.Key, group => group.Last().Value);
@@ -169,7 +184,18 @@ namespace DotNet.Testcontainers.Images
         .Select(item =>
         {
           var fromArgs = ParseFromArgs(item.FromArgs).ToDictionary(arg => arg.Name, arg => arg.Value);
-          _ = fromArgs.TryGetValue("platform", out var platform);
+
+          if (!fromArgs.TryGetValue("platform", out var platform))
+          {
+            platform = targetPlatform;
+          }
+          else if (platform != null && platform.IndexOf('$') != -1)
+          {
+            // The Docker daemon rejects a variable that does not resolve, such as
+            // the built-in build argument $BUILDPLATFORM.
+            platform = null;
+          }
+
           return new DockerImage(item.Image, new Platform(platform));
         })
         .ToArray();
