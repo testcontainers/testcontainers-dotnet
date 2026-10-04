@@ -54,7 +54,7 @@ Sometimes, creating and disposing of a test resource can be an expensive operati
 
 xUnit.net's fixture implementation does not rely on the `ITestOutputHelper` interface to capture and forward log messages; instead, it expects an implementation of `IMessageSink`. Make sure your fixture's default constructor accepts the interface implementation and forwards it to the base class.
 
-=== "Configure Redis Container"
+=== "Configure a Redis Container"
     ```csharp
     --8<-- "tests/Testcontainers.Xunit.Tests/RedisContainerTest`2.cs:ConfigureRedisContainer"
     ```

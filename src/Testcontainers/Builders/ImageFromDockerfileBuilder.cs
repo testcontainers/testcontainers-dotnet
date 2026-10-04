@@ -96,6 +96,12 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
+    public ImageFromDockerfileBuilder WithPlatform(string platform)
+    {
+      return Merge(DockerResourceConfiguration, new ImageFromDockerfileConfiguration(platform: platform));
+    }
+
+    /// <inheritdoc />
     public ImageFromDockerfileBuilder WithImageBuildPolicy(Func<ImageInspectResponse, bool> imageBuildPolicy)
     {
       return Merge(DockerResourceConfiguration, new ImageFromDockerfileConfiguration(imageBuildPolicy: imageBuildPolicy));
