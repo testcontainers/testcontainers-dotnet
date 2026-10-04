@@ -31,6 +31,7 @@ questdb
 ramsize
 rebalance
 redpanda
+rustfs
 ryuk
 servercore
 shm
