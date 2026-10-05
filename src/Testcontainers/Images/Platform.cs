@@ -20,7 +20,7 @@ namespace DotNet.Testcontainers.Images
     /// </summary>
     /// <param name="value">The platform identifier.</param>
     [PublicAPI]
-    public Platform(string value)
+    public Platform([CanBeNull] string value)
     {
       Value = value;
     }
