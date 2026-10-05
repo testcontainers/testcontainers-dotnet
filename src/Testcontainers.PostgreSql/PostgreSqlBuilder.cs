@@ -79,6 +79,18 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
     /// <inheritdoc />
     protected override PostgreSqlConfiguration DockerResourceConfiguration { get; }
 
+    /// <inheritdoc />
+    protected override string SslCertificateFilePath { get; } = CertificateFilePath;
+
+    /// <inheritdoc />
+    protected override string SslCertificateKeyFilePath { get; } = CertificateKeyFilePath;
+
+    /// <inheritdoc />
+    protected override uint SslCertificateUid { get; } = PostgresUid;
+
+    /// <inheritdoc />
+    protected override uint SslCertificateGid { get; } = PostgresGid;
+
     /// <summary>
     /// Sets the PostgreSql database.
     /// </summary>
@@ -118,10 +130,9 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
     /// <param name="certificateFilePath">The SSL certificate file.</param>
     /// <param name="certificateKeyFilePath">The SSL certificate private key file.</param>
     /// <returns>A configured instance of <see cref="PostgreSqlBuilder" />.</returns>
-    public PostgreSqlBuilder WithSsl(string certificateFilePath, string certificateKeyFilePath)
+    public override PostgreSqlBuilder WithSsl(string certificateFilePath, string certificateKeyFilePath)
     {
-        return WithResourceMapping(new FileInfo(certificateFilePath), new FileInfo(CertificateFilePath), PostgresUid, PostgresGid, Unix.FileMode600)
-            .WithResourceMapping(new FileInfo(certificateKeyFilePath), new FileInfo(CertificateKeyFilePath), PostgresUid, PostgresGid, Unix.FileMode600)
+        return WithSslCertificates(certificateFilePath, certificateKeyFilePath)
             .WithCommand("-c", "ssl=on")
             .WithCommand("-c", "ssl_cert_file=" + CertificateFilePath)
             .WithCommand("-c", "ssl_key_file=" + CertificateKeyFilePath);

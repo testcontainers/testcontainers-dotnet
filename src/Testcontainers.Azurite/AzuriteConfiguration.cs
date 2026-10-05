@@ -7,8 +7,11 @@ public sealed class AzuriteConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="AzuriteConfiguration" /> class.
     /// </summary>
-    public AzuriteConfiguration()
+    /// <param name="tlsEnabled">A boolean value indicating whether TLS is enabled.</param>
+    public AzuriteConfiguration(
+        bool? tlsEnabled = null)
     {
+        TlsEnabled = tlsEnabled;
     }
 
     /// <summary>
@@ -49,5 +52,11 @@ public sealed class AzuriteConfiguration : ContainerConfiguration
     public AzuriteConfiguration(AzuriteConfiguration oldValue, AzuriteConfiguration newValue)
         : base(oldValue, newValue)
     {
+        TlsEnabled = BuildConfiguration.Combine(oldValue.TlsEnabled, newValue.TlsEnabled);
     }
+
+    /// <summary>
+    /// Gets a value indicating whether TLS is enabled or not.
+    /// </summary>
+    public bool? TlsEnabled { get; }
 }

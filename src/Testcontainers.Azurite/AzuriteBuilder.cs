@@ -17,6 +17,10 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
 
     public const string AccountKey = "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==";
 
+    public const string CertificateFilePath = "/azurite/certs/server.crt";
+
+    public const string CertificateKeyFilePath = "/azurite/certs/server.key";
+
     private static readonly ISet<AzuriteService> EnabledServices = new HashSet<AzuriteService>();
 
     static AzuriteBuilder()
@@ -78,6 +82,12 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
     /// <inheritdoc />
     protected override AzuriteConfiguration DockerResourceConfiguration { get; }
 
+    /// <inheritdoc />
+    protected override string SslCertificateFilePath { get; } = CertificateFilePath;
+
+    /// <inheritdoc />
+    protected override string SslCertificateKeyFilePath { get; } = CertificateKeyFilePath;
+
     /// <summary>
     /// Enables in-memory persistence.
     /// </summary>
@@ -96,6 +106,23 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
         {
             return WithCommand("--inMemoryPersistence");
         }
+    }
+
+    /// <summary>
+    /// Enables HTTPS for Azurite.
+    /// </summary>
+    /// <remarks>
+    /// The Blob, Queue and Table endpoints, including the connection string, use the
+    /// <c>https</c> scheme. The client must trust the server certificate.
+    /// </remarks>
+    /// <param name="certificateFilePath">The SSL certificate file in PEM format.</param>
+    /// <param name="certificateKeyFilePath">The SSL certificate private key file in PEM format.</param>
+    /// <returns>A configured instance of <see cref="AzuriteBuilder" />.</returns>
+    public override AzuriteBuilder WithSsl(string certificateFilePath, string certificateKeyFilePath)
+    {
+        return Merge(DockerResourceConfiguration, new AzuriteConfiguration(tlsEnabled: true))
+            .WithSslCertificates(certificateFilePath, certificateKeyFilePath)
+            .WithCommand("--cert", CertificateFilePath, "--key", CertificateKeyFilePath);
     }
 
     /// <inheritdoc />
