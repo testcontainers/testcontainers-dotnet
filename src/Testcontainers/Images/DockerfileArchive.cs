@@ -147,7 +147,10 @@ namespace DotNet.Testcontainers.Images
         .Where(line => !line.StartsWith("#", StringComparison.Ordinal))
         .ToArray();
 
+      // Only ARG instructions declared before the first FROM instruction are in
+      // scope for FROM instructions. Stage-local declarations are not.
       var argMatches = lines
+        .TakeWhile(line => !FromLinePattern.IsMatch(line))
         .Select(line => ArgLinePattern.Match(line))
         .Where(match => match.Success)
         .ToArray();

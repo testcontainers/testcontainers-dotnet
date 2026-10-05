@@ -2,6 +2,11 @@ ARG REPO=mcr.microsoft.com/dotnet/aspnet
 ARG PLATFORM=linux/arm64
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+
+# Stage-local build arguments are out of scope for FROM instructions.
+ARG REPO=stage-local
+ARG TARGETPLATFORM=linux/stage-local
+
 FROM mcr.microsoft.com/dotnet/runtime:8.0 AS runtime
 FROM build
 FROM build AS publish
