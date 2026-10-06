@@ -10,14 +10,17 @@ public sealed class PostgreSqlConfiguration : ContainerConfiguration
     /// <param name="database">The PostgreSql database.</param>
     /// <param name="username">The PostgreSql username.</param>
     /// <param name="password">The PostgreSql password.</param>
+    /// <param name="sslCertificate">The SSL certificate.</param>
     public PostgreSqlConfiguration(
         string database = null,
         string username = null,
-        string password = null)
+        string password = null,
+        SslCertificate sslCertificate = null)
     {
         Database = database;
         Username = username;
         Password = password;
+        SslCertificate = sslCertificate;
     }
 
     /// <summary>
@@ -61,6 +64,7 @@ public sealed class PostgreSqlConfiguration : ContainerConfiguration
         Database = BuildConfiguration.Combine(oldValue.Database, newValue.Database);
         Username = BuildConfiguration.Combine(oldValue.Username, newValue.Username);
         Password = BuildConfiguration.Combine(oldValue.Password, newValue.Password);
+        SslCertificate = BuildConfiguration.Combine(oldValue.SslCertificate, newValue.SslCertificate);
     }
 
     /// <summary>
@@ -77,4 +81,20 @@ public sealed class PostgreSqlConfiguration : ContainerConfiguration
     /// Gets the PostgreSql password.
     /// </summary>
     public string Password { get; }
+
+    /// <summary>
+    /// Gets the SSL certificate.
+    /// </summary>
+    public SslCertificate SslCertificate { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether TLS is enabled or not.
+    /// </summary>
+    public bool TlsEnabled
+    {
+        get
+        {
+            return SslCertificate != null;
+        }
+    }
 }

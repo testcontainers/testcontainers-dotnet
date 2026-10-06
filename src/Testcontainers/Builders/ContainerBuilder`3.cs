@@ -51,31 +51,6 @@ namespace DotNet.Testcontainers.Builders
     /// </summary>
     protected virtual string DeclineLicenseAgreement { get; }
 
-    /// <summary>
-    /// Gets the target file path in the container to copy the SSL certificate to.
-    /// </summary>
-    protected virtual string SslCertificateFilePath { get; }
-
-    /// <summary>
-    /// Gets the target file path in the container to copy the SSL certificate private key to.
-    /// </summary>
-    protected virtual string SslCertificateKeyFilePath { get; }
-
-    /// <summary>
-    /// Gets the user ID to set for the copied SSL certificate files.
-    /// </summary>
-    protected virtual uint SslCertificateUid { get; }
-
-    /// <summary>
-    /// Gets the group ID to set for the copied SSL certificate files.
-    /// </summary>
-    protected virtual uint SslCertificateGid { get; }
-
-    /// <summary>
-    /// Gets the POSIX file mode permission to set for the copied SSL certificate files.
-    /// </summary>
-    protected virtual UnixFileModes SslCertificateFileMode { get; } = Unix.FileMode600;
-
     /// <inheritdoc />
     public virtual TBuilderEntity WithAcceptLicenseAgreement(bool acceptLicenseAgreement)
     {
@@ -85,6 +60,12 @@ namespace DotNet.Testcontainers.Builders
 
     /// <inheritdoc />
     public virtual TBuilderEntity WithSsl(string certificateFilePath, string certificateKeyFilePath)
+    {
+      return WithSsl(FilePath.Of(certificateFilePath), FilePath.Of(certificateKeyFilePath));
+    }
+
+    /// <inheritdoc />
+    public virtual TBuilderEntity WithSsl(FilePath certificateFilePath, FilePath certificateKeyFilePath)
     {
       const string sslNotSupported = "The module does not support SSL.";
       throw new InvalidOperationException(sslNotSupported);
@@ -549,22 +530,6 @@ namespace DotNet.Testcontainers.Builders
 
       _ = Guard.Argument(DockerResourceConfiguration, nameof(DockerResourceConfiguration.Image))
         .ThrowIf(argument => licenseAgreementNotAccepted(argument.Value), argument => new ArgumentException(string.Format(message, argument.Value.Image.FullName), argument.Name));
-    }
-
-    /// <summary>
-    /// Copies the SSL certificate and private key to the container.
-    /// </summary>
-    /// <remarks>
-    /// The files are copied to <see cref="SslCertificateFilePath" /> and <see cref="SslCertificateKeyFilePath" />
-    /// using <see cref="SslCertificateUid" />, <see cref="SslCertificateGid" /> and <see cref="SslCertificateFileMode" />.
-    /// </remarks>
-    /// <param name="certificateFilePath">The SSL certificate file.</param>
-    /// <param name="certificateKeyFilePath">The SSL certificate private key file.</param>
-    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
-    protected TBuilderEntity WithSslCertificates(string certificateFilePath, string certificateKeyFilePath)
-    {
-      return WithResourceMapping(new FileInfo(certificateFilePath), new FileInfo(SslCertificateFilePath), SslCertificateUid, SslCertificateGid, SslCertificateFileMode)
-        .WithResourceMapping(new FileInfo(certificateKeyFilePath), new FileInfo(SslCertificateKeyFilePath), SslCertificateUid, SslCertificateGid, SslCertificateFileMode);
     }
 
     /// <summary>

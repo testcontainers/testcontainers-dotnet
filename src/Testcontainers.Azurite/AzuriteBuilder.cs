@@ -82,12 +82,6 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
     /// <inheritdoc />
     protected override AzuriteConfiguration DockerResourceConfiguration { get; }
 
-    /// <inheritdoc />
-    protected override string SslCertificateFilePath { get; } = CertificateFilePath;
-
-    /// <inheritdoc />
-    protected override string SslCertificateKeyFilePath { get; } = CertificateKeyFilePath;
-
     /// <summary>
     /// Enables in-memory persistence.
     /// </summary>
@@ -118,11 +112,10 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
     /// <param name="certificateFilePath">The SSL certificate file in PEM format.</param>
     /// <param name="certificateKeyFilePath">The SSL certificate private key file in PEM format.</param>
     /// <returns>A configured instance of <see cref="AzuriteBuilder" />.</returns>
-    public override AzuriteBuilder WithSsl(string certificateFilePath, string certificateKeyFilePath)
+    public override AzuriteBuilder WithSsl(FilePath certificateFilePath, FilePath certificateKeyFilePath)
     {
-        return Merge(DockerResourceConfiguration, new AzuriteConfiguration(tlsEnabled: true))
-            .WithSslCertificates(certificateFilePath, certificateKeyFilePath)
-            .WithCommand("--cert", CertificateFilePath, "--key", CertificateKeyFilePath);
+        var sslCertificate = new SslCertificate(certificateFilePath, certificateKeyFilePath);
+        return Merge(DockerResourceConfiguration, new AzuriteConfiguration(sslCertificate: sslCertificate));
     }
 
     /// <inheritdoc />
@@ -148,6 +141,17 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
         }
 
         var azuriteBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(waitStrategy);
+
+        if (DockerResourceConfiguration.TlsEnabled)
+        {
+            var sslCertificate = DockerResourceConfiguration.SslCertificate;
+
+            azuriteBuilder = azuriteBuilder
+                .WithResourceMapping(sslCertificate.CertificateFilePath, FilePath.Of(CertificateFilePath), fileMode: Unix.FileMode600)
+                .WithResourceMapping(sslCertificate.CertificateKeyFilePath, FilePath.Of(CertificateKeyFilePath), fileMode: Unix.FileMode600)
+                .WithCommand("--cert", CertificateFilePath, "--key", CertificateKeyFilePath);
+        }
+
         return new AzuriteContainer(azuriteBuilder.DockerResourceConfiguration);
     }
 

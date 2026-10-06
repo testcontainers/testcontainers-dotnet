@@ -62,5 +62,11 @@ public sealed class AzuriteContainer : DockerContainer
     /// <summary>
     /// Gets the URI scheme, <c>https</c> when TLS is enabled, otherwise <c>http</c>.
     /// </summary>
-    private string Scheme => _configuration.TlsEnabled.GetValueOrDefault() ? Uri.UriSchemeHttps : Uri.UriSchemeHttp;
+    private string Scheme
+    {
+        get
+        {
+            return _configuration.TlsEnabled ? Uri.UriSchemeHttps : Uri.UriSchemeHttp;
+        }
+    }
 }
