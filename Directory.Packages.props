@@ -47,6 +47,7 @@
         <PackageVersion Include="Azure.Storage.Blobs" Version="12.29.1"/>
         <PackageVersion Include="Azure.Storage.Queues" Version="12.27.1"/>
         <PackageVersion Include="CassandraCSharpDriver" Version="3.22.0"/>
+        <PackageVersion Include="ChromaDotNet.Client" Version="2.11.0"/>
         <PackageVersion Include="ClickHouse.Client" Version="7.14.0"/>
         <PackageVersion Include="Confluent.Kafka" Version="2.15.0"/>
         <PackageVersion Include="Confluent.SchemaRegistry.Serdes.Json" Version="2.15.0"/>
