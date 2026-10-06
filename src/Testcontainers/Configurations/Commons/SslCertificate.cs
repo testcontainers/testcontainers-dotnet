@@ -38,6 +38,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Gets the CA certificate file.
     /// </summary>
+    [CanBeNull]
     public FilePath? CaCertificateFilePath { get; }
   }
 }

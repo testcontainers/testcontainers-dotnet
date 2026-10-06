@@ -154,29 +154,30 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
     {
         Validate();
 
-        // By default, the base builder waits until the container is running. However, for PostgreSql, a more advanced waiting strategy is necessary that requires access to the configured database and username.
-        // If the user does not provide a custom waiting strategy, append the default PostgreSql waiting strategy.
-        var postgreSqlBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration)));
+        var postgreSqlBuilder = this;
+
+        var sslCertificate = DockerResourceConfiguration.SslCertificate;
 
         if (DockerResourceConfiguration.TlsEnabled)
         {
-            var sslCertificate = DockerResourceConfiguration.SslCertificate;
-
             postgreSqlBuilder = postgreSqlBuilder
                 .WithResourceMapping(sslCertificate.CertificateFilePath, FilePath.Of(CertificateFilePath), PostgresUid, PostgresGid, Unix.FileMode600)
                 .WithResourceMapping(sslCertificate.CertificateKeyFilePath, FilePath.Of(CertificateKeyFilePath), PostgresUid, PostgresGid, Unix.FileMode600)
                 .WithCommand("-c", "ssl=on")
                 .WithCommand("-c", "ssl_cert_file=" + CertificateFilePath)
                 .WithCommand("-c", "ssl_key_file=" + CertificateKeyFilePath);
-
-            if (sslCertificate.CaCertificateFilePath.HasValue)
-            {
-                postgreSqlBuilder = postgreSqlBuilder
-                    .WithResourceMapping(sslCertificate.CaCertificateFilePath.Value, FilePath.Of(CaCertificateFilePath), PostgresUid, PostgresGid, Unix.FileMode600)
-                    .WithCommand("-c", "ssl_ca_file=" + CaCertificateFilePath);
-            }
         }
 
+        if (DockerResourceConfiguration.TlsEnabled && sslCertificate.CaCertificateFilePath.HasValue)
+        {
+            postgreSqlBuilder = postgreSqlBuilder
+                .WithResourceMapping(sslCertificate.CaCertificateFilePath.Value, FilePath.Of(CaCertificateFilePath), PostgresUid, PostgresGid, Unix.FileMode600)
+                .WithCommand("-c", "ssl_ca_file=" + CaCertificateFilePath);
+        }
+
+        // By default, the base builder waits until the container is running. However, for PostgreSql, a more advanced waiting strategy is necessary that requires access to the configured database and username.
+        // If the user does not provide a custom waiting strategy, append the default PostgreSql waiting strategy.
+        postgreSqlBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? postgreSqlBuilder : postgreSqlBuilder.WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration)));
         return new PostgreSqlContainer(postgreSqlBuilder.DockerResourceConfiguration);
     }
 

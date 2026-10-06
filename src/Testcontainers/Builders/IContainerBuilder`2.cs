@@ -40,7 +40,8 @@ namespace DotNet.Testcontainers.Builders
     /// Enables SSL/TLS using the certificate and private key.
     /// </summary>
     /// <remarks>
-    /// Calling this method multiple times overrides the previously configured certificate.
+    /// Calling this method multiple times overrides the
+    /// previously configured certificate.
     /// </remarks>
     /// <param name="certificateFilePath">The SSL certificate file.</param>
     /// <param name="certificateKeyFilePath">The SSL certificate private key file.</param>

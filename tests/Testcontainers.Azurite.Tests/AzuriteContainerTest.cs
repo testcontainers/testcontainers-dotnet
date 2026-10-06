@@ -2,13 +2,39 @@ namespace Testcontainers.Azurite;
 
 public abstract class AzuriteContainerTest : IAsyncLifetime
 {
+    private static readonly string CertificateFilePath = Certificates.Instance.GetFilePath("server", "server.crt");
+
+    private static readonly string CertificateKeyFilePath = Certificates.Instance.GetFilePath("server", "server.key");
+
+    private static readonly string CaCertificateFilePath = Certificates.Instance.GetFilePath("ca", "ca.crt");
+
     private readonly AzuriteContainer _azuriteContainer;
 
-    private AzuriteContainerTest(AzuriteContainer azuriteContainer)
+    private readonly string _scheme;
+
+    private readonly X509Certificate2 _caCertificate;
+
+    private readonly HttpClientTransport _transport;
+
+    private AzuriteContainerTest(AzuriteContainer azuriteContainer, bool tlsEnabled = false)
     {
         _azuriteContainer = azuriteContainer;
+        _scheme = tlsEnabled ? Uri.UriSchemeHttps : Uri.UriSchemeHttp;
+
+        // # --8<-- [start:ConfigureAzuriteClientCertificate]
+        _caCertificate = X509CertificateLoader.LoadCertificateFromFile(CaCertificateFilePath);
+
+        var httpMessageHandler = new SocketsHttpHandler();
+        httpMessageHandler.SslOptions.CertificateChainPolicy = new X509ChainPolicy();
+        httpMessageHandler.SslOptions.CertificateChainPolicy.TrustMode = X509ChainTrustMode.CustomRootTrust;
+        httpMessageHandler.SslOptions.CertificateChainPolicy.CustomTrustStore.Add(_caCertificate);
+        httpMessageHandler.SslOptions.CertificateChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
+
+        _transport = new HttpClientTransport(httpMessageHandler);
+        // # --8<-- [end:ConfigureAzuriteClientCertificate]
     }
 
+    // # --8<-- [start:UseAzuriteContainer]
     public async ValueTask InitializeAsync()
     {
         await _azuriteContainer.StartAsync()
@@ -23,13 +49,15 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
         GC.SuppressFinalize(this);
     }
 
-    // # --8<-- [start:UseAzuriteContainer]
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task EstablishesBlobServiceConnection()
     {
-        // Give
-        var client = new BlobServiceClient(_azuriteContainer.GetConnectionString(), ConfigureClientOptions(new BlobClientOptions(BlobClientOptions.ServiceVersion.V2025_11_05)));
+        // Given
+        var options = new BlobClientOptions(BlobClientOptions.ServiceVersion.V2025_11_05);
+        options.Transport = _transport;
+
+        var client = new BlobServiceClient(_azuriteContainer.GetConnectionString(), options);
 
         // When
         var properties = await client.GetPropertiesAsync(TestContext.Current.CancellationToken)
@@ -37,6 +65,7 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
 
         // Then
         Assert.False(HasError(properties));
+        Assert.Equal(_scheme, new Uri(_azuriteContainer.GetBlobEndpoint()).Scheme);
         Assert.Equal(_azuriteContainer.GetConnectionString(), _azuriteContainer.GetConnectionString(ConnectionMode.Host));
     }
 
@@ -44,8 +73,11 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task EstablishesQueueServiceConnection()
     {
-        // Give
-        var client = new QueueServiceClient(_azuriteContainer.GetConnectionString(), ConfigureClientOptions(new QueueClientOptions(QueueClientOptions.ServiceVersion.V2025_11_05)));
+        // Given
+        var options = new QueueClientOptions(QueueClientOptions.ServiceVersion.V2025_11_05);
+        options.Transport = _transport;
+
+        var client = new QueueServiceClient(_azuriteContainer.GetConnectionString(), options);
 
         // When
         var properties = await client.GetPropertiesAsync(TestContext.Current.CancellationToken)
@@ -53,14 +85,18 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
 
         // Then
         Assert.False(HasError(properties));
+        Assert.Equal(_scheme, new Uri(_azuriteContainer.GetQueueEndpoint()).Scheme);
     }
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
     public async Task EstablishesTableServiceConnection()
     {
-        // Give
-        var client = new TableServiceClient(_azuriteContainer.GetConnectionString(), ConfigureClientOptions(new TableClientOptions()));
+        // Given
+        var options = new TableClientOptions();
+        options.Transport = _transport;
+
+        var client = new TableServiceClient(_azuriteContainer.GetConnectionString(), options);
 
         // When
         var properties = await client.GetPropertiesAsync(TestContext.Current.CancellationToken)
@@ -68,18 +104,17 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
 
         // Then
         Assert.False(HasError(properties));
+        Assert.Equal(_scheme, new Uri(_azuriteContainer.GetTableEndpoint()).Scheme);
     }
     // # --8<-- [end:UseAzuriteContainer]
 
-    protected virtual ValueTask DisposeAsyncCore()
+    protected virtual async ValueTask DisposeAsyncCore()
     {
-        return _azuriteContainer.DisposeAsync();
-    }
+        await _azuriteContainer.DisposeAsync()
+            .ConfigureAwait(false);
 
-    protected virtual TClientOptions ConfigureClientOptions<TClientOptions>(TClientOptions clientOptions)
-        where TClientOptions : ClientOptions
-    {
-        return clientOptions;
+        _transport.Dispose();
+        _caCertificate.Dispose();
     }
 
     private static bool HasError<TResponseEntity>(NullableResponse<TResponseEntity> response)
@@ -90,6 +125,7 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
         }
     }
 
+    // # --8<-- [start:CreateAzuriteContainer]
     [UsedImplicitly]
     public sealed class AzuriteDefaultConfiguration : AzuriteContainerTest
     {
@@ -98,7 +134,20 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
         {
         }
     }
+    // # --8<-- [end:CreateAzuriteContainer]
 
+    // # --8<-- [start:ConfigureAzuriteContainerCertificate]
+    [UsedImplicitly]
+    public sealed class AzuriteSslConfiguration : AzuriteContainerTest
+    {
+        public AzuriteSslConfiguration()
+            : base(new AzuriteBuilder(TestSession.GetImageFromDockerfile()).WithSsl(CertificateFilePath, CertificateKeyFilePath).Build(), true)
+        {
+        }
+    }
+    // # --8<-- [end:ConfigureAzuriteContainerCertificate]
+
+    // # --8<-- [start:InMemoryContainerConfiguration]
     [UsedImplicitly]
     public sealed class AzuriteInMemoryConfiguration : AzuriteContainerTest
     {
@@ -107,68 +156,7 @@ public abstract class AzuriteContainerTest : IAsyncLifetime
         {
         }
     }
-
-    [UsedImplicitly]
-    public sealed class AzuriteSslConfiguration : AzuriteContainerTest
-    {
-        private readonly X509Certificate2 _caCertificate;
-
-        private readonly HttpClientTransport _transport;
-
-        public AzuriteSslConfiguration()
-            : base(Configure().Build())
-        {
-            // # --8<-- [start:AzuriteSslClientTransport]
-            _caCertificate = X509CertificateLoader.LoadCertificateFromFile(Certificates.Instance.GetFilePath("ca", "ca.crt"));
-
-            var httpMessageHandler = new SocketsHttpHandler();
-            httpMessageHandler.SslOptions.CertificateChainPolicy = new X509ChainPolicy();
-            httpMessageHandler.SslOptions.CertificateChainPolicy.TrustMode = X509ChainTrustMode.CustomRootTrust;
-            httpMessageHandler.SslOptions.CertificateChainPolicy.CustomTrustStore.Add(_caCertificate);
-            httpMessageHandler.SslOptions.CertificateChainPolicy.RevocationMode = X509RevocationMode.NoCheck;
-
-            _transport = new HttpClientTransport(httpMessageHandler);
-            // # --8<-- [end:AzuriteSslClientTransport]
-        }
-
-        [Fact]
-        [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-        public void ConnectionStringUsesHttpsScheme()
-        {
-            // Given
-            var connectionString = _azuriteContainer.GetConnectionString();
-
-            // When
-            var endpoints = new[] { _azuriteContainer.GetBlobEndpoint(), _azuriteContainer.GetQueueEndpoint(), _azuriteContainer.GetTableEndpoint() };
-
-            // Then
-            Assert.Contains("DefaultEndpointsProtocol=https", connectionString);
-            Assert.All(endpoints, endpoint => Assert.StartsWith("https://", endpoint));
-        }
-
-        protected override async ValueTask DisposeAsyncCore()
-        {
-            await base.DisposeAsyncCore()
-                .ConfigureAwait(false);
-
-            _transport.Dispose();
-            _caCertificate.Dispose();
-        }
-
-        // # --8<-- [start:AzuriteSslClientOptions]
-        protected override TClientOptions ConfigureClientOptions<TClientOptions>(TClientOptions clientOptions)
-        {
-            clientOptions.Transport = _transport;
-            return clientOptions;
-        }
-        // # --8<-- [end:AzuriteSslClientOptions]
-
-        // # --8<-- [start:AzuriteSslBuilder]
-        private static AzuriteBuilder Configure()
-            => new AzuriteBuilder(TestSession.GetImageFromDockerfile())
-                .WithSsl(Certificates.Instance.GetFilePath("server", "server.crt"), Certificates.Instance.GetFilePath("server", "server.key"));
-        // # --8<-- [end:AzuriteSslBuilder]
-    }
+    // # --8<-- [end:InMemoryContainerConfiguration]
 
     [UsedImplicitly]
     public sealed class AzuriteMemoryLimitConfiguration : AzuriteContainerTest
