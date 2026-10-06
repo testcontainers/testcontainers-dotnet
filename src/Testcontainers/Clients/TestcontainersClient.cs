@@ -436,6 +436,9 @@ namespace DotNet.Testcontainers.Clients
     /// necessarily match the platform of the image build. This does not apply to
     /// an image build that targets multiple platforms, because the Docker daemon
     /// pulls an image for a single platform only.
+    ///
+    /// See <see cref="DockerfileArchive.GetBaseImages" /> for a base image that
+    /// declares a platform with a variable.
     /// </remarks>
     /// <param name="configuration">The Dockerfile configuration.</param>
     /// <param name="buildParameters">The image build parameters.</param>
@@ -468,14 +471,15 @@ namespace DotNet.Testcontainers.Clients
         configuration.BuildArguments,
         _logger);
 
-      var platform = buildParameters.Platform;
+      // The image build targets a single platform or a comma-separated
+      // list of platforms.
+      var platforms = buildParameters.Platform;
 
-      var baseImages = dockerfileArchive.GetBaseImages();
+      // The base images pull for the single platform the image build targets.
+      // A multi-platform build pulls them for the platform of the Docker host.
+      var targetPlatform = string.IsNullOrEmpty(platforms) || platforms.Contains(",") ? null : platforms;
 
-      if (!string.IsNullOrEmpty(platform) && !platform.Contains(","))
-      {
-        baseImages = baseImages.Select(image => string.IsNullOrEmpty(image.Platform) ? new DockerImage(image.Repository, image.Registry, image.Tag, image.Digest, platform) : image);
-      }
+      var baseImages = dockerfileArchive.GetBaseImages(targetPlatform);
 
       await PullImagesAsync(baseImages, ct)
         .ConfigureAwait(false);
