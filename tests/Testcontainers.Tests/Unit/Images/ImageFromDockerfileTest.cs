@@ -32,6 +32,8 @@ namespace DotNet.Testcontainers.Tests.Unit
         new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0", new Platform("linux/arm64")),
         new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0", new Platform("linux/arm/v6")),
         new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0", new Platform("linux/arm/v7")),
+        new DockerImage("mcr.microsoft.com/dotnet/sdk:8.0-alpine"),
+        new DockerImage("mcr.microsoft.com/dotnet/runtime:8.0-alpine"),
         new DockerImage("mcr.microsoft.com/dotnet/sdk:8.0.414"),
       };
 
@@ -45,6 +47,43 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       // When
       var actual = dockerfileArchive.GetBaseImages();
+
+      // Then
+      Assert.Equivalent(expected, actual);
+    }
+
+    [Fact]
+    public void DockerfileArchiveGetBaseImagesForTargetPlatform()
+    {
+      // Given
+      var targetPlatform = new Platform("linux/s390x");
+
+      var expected = new[]
+      {
+        new DockerImage("mcr.microsoft.com/dotnet/sdk:8.0", targetPlatform),
+        new DockerImage("mcr.microsoft.com/dotnet/runtime:8.0", targetPlatform),
+        new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-jammy", targetPlatform),
+        new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-noble", targetPlatform),
+        new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-alpine", targetPlatform),
+        new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0", new Platform("linux/amd64")),
+        new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0", new Platform("linux/arm64")),
+        new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0", new Platform("linux/arm/v6")),
+        new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0", new Platform("linux/arm/v7")),
+        new DockerImage("mcr.microsoft.com/dotnet/sdk:8.0-alpine"),
+        new DockerImage("mcr.microsoft.com/dotnet/runtime:8.0-alpine", targetPlatform),
+        new DockerImage("mcr.microsoft.com/dotnet/sdk:8.0.414", targetPlatform),
+      };
+
+      IImage image = new DockerImage("localhost/testcontainers", Guid.NewGuid().ToString("D"), string.Empty);
+
+      // The Dockerfile does not contain a default value.
+      var buildArguments = new Dictionary<string, string>();
+      buildArguments.Add("SDK_VERSION_8_0", "8.0.414");
+
+      var dockerfileArchive = new DockerfileArchive(null, "Assets/pullBaseImages/", "Dockerfile", image, buildArguments, NullLogger.Instance);
+
+      // When
+      var actual = dockerfileArchive.GetBaseImages(targetPlatform.Value);
 
       // Then
       Assert.Equivalent(expected, actual);
