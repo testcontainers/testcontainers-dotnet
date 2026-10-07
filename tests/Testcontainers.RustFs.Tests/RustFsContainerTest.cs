@@ -62,7 +62,7 @@ public sealed class RustFsContainerTest : IAsyncLifetime
         _ = await client.PutObjectAsync(objectRequest, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var objectResponse = await client.GetObjectAsync(objectRequest.BucketName, objectRequest.Key, TestContext.Current.CancellationToken)
+        using var objectResponse = await client.GetObjectAsync(objectRequest.BucketName, objectRequest.Key, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
