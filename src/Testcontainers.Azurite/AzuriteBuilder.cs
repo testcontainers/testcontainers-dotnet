@@ -132,7 +132,8 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
             azuriteBuilder = azuriteBuilder
                 .WithResourceMapping(sslCertificate.CertificateFilePath, FilePath.Of(CertificateFilePath), fileMode: Unix.FileMode600)
                 .WithResourceMapping(sslCertificate.CertificateKeyFilePath, FilePath.Of(CertificateKeyFilePath), fileMode: Unix.FileMode600)
-                .WithCommand("--cert", CertificateFilePath, "--key", CertificateKeyFilePath);
+                .WithCommand("--cert", CertificateFilePath)
+                .WithCommand("--key", CertificateKeyFilePath);
         }
 
         var waitStrategy = Wait.ForUnixContainer();

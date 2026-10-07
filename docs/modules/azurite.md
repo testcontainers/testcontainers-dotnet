@@ -49,14 +49,14 @@ string tableEndpoint = _azuriteContainer.GetTableEndpoint();
 
 To enable HTTPS, use the following container builder method to configure Azurite with an SSL certificate and private key. The connection string and the Blob, Queue and Table endpoints then use the `https` scheme:
 
-!!! note
-
-    Please ensure that both the certificate and private key are provided in PEM format.
-
 === "Configure the SSL Certificate"
     ```csharp
     --8<-- "tests/Testcontainers.Azurite.Tests/AzuriteContainerTest.cs:ConfigureAzuriteContainerCertificate"
     ```
+
+!!! note
+
+    Please ensure that both the certificate and private key are provided in PEM format.
 
 The client must trust the server certificate. In this example, the Azure client validates the SSL certificate against the CA certificate that signed it. The transport is assigned to the client options, as shown in the usage example:
 
