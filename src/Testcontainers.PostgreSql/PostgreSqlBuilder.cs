@@ -118,13 +118,10 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
     /// <param name="certificateFilePath">The SSL certificate file.</param>
     /// <param name="certificateKeyFilePath">The SSL certificate private key file.</param>
     /// <returns>A configured instance of <see cref="PostgreSqlBuilder" />.</returns>
-    public PostgreSqlBuilder WithSsl(string certificateFilePath, string certificateKeyFilePath)
+    public override PostgreSqlBuilder WithSsl(FilePath certificateFilePath, FilePath certificateKeyFilePath)
     {
-        return WithResourceMapping(new FileInfo(certificateFilePath), new FileInfo(CertificateFilePath), PostgresUid, PostgresGid, Unix.FileMode600)
-            .WithResourceMapping(new FileInfo(certificateKeyFilePath), new FileInfo(CertificateKeyFilePath), PostgresUid, PostgresGid, Unix.FileMode600)
-            .WithCommand("-c", "ssl=on")
-            .WithCommand("-c", "ssl_cert_file=" + CertificateFilePath)
-            .WithCommand("-c", "ssl_key_file=" + CertificateKeyFilePath);
+        var sslCertificate = new SslCertificate(certificateFilePath, certificateKeyFilePath);
+        return Merge(DockerResourceConfiguration, new PostgreSqlConfiguration(sslCertificate: sslCertificate));
     }
 
     /// <summary>
@@ -136,9 +133,20 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
     /// <returns>A configured instance of <see cref="PostgreSqlBuilder" />.</returns>
     public PostgreSqlBuilder WithSsl(string certificateFilePath, string certificateKeyFilePath, string caCertificateFilePath)
     {
-        return WithSsl(certificateFilePath, certificateKeyFilePath)
-            .WithResourceMapping(new FileInfo(caCertificateFilePath), new FileInfo(CaCertificateFilePath), PostgresUid, PostgresGid, Unix.FileMode600)
-            .WithCommand("-c", "ssl_ca_file=" + CaCertificateFilePath);
+        return WithSsl(FilePath.Of(certificateFilePath), FilePath.Of(certificateKeyFilePath), FilePath.Of(caCertificateFilePath));
+    }
+
+    /// <summary>
+    /// Enables SSL for PostgreSql.
+    /// </summary>
+    /// <param name="certificateFilePath">The SSL certificate file.</param>
+    /// <param name="certificateKeyFilePath">The SSL certificate private key file.</param>
+    /// <param name="caCertificateFilePath">The CA certificate file.</param>
+    /// <returns>A configured instance of <see cref="PostgreSqlBuilder" />.</returns>
+    public PostgreSqlBuilder WithSsl(FilePath certificateFilePath, FilePath certificateKeyFilePath, FilePath caCertificateFilePath)
+    {
+        var sslCertificate = new SslCertificate(certificateFilePath, certificateKeyFilePath, caCertificateFilePath);
+        return Merge(DockerResourceConfiguration, new PostgreSqlConfiguration(sslCertificate: sslCertificate));
     }
 
     /// <inheritdoc />
@@ -146,9 +154,30 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
     {
         Validate();
 
+        var postgreSqlBuilder = this;
+
+        var sslCertificate = DockerResourceConfiguration.SslCertificate;
+
+        if (DockerResourceConfiguration.TlsEnabled)
+        {
+            postgreSqlBuilder = postgreSqlBuilder
+                .WithResourceMapping(sslCertificate.CertificateFilePath, FilePath.Of(CertificateFilePath), PostgresUid, PostgresGid, Unix.FileMode600)
+                .WithResourceMapping(sslCertificate.CertificateKeyFilePath, FilePath.Of(CertificateKeyFilePath), PostgresUid, PostgresGid, Unix.FileMode600)
+                .WithCommand("-c", "ssl=on")
+                .WithCommand("-c", "ssl_cert_file=" + CertificateFilePath)
+                .WithCommand("-c", "ssl_key_file=" + CertificateKeyFilePath);
+        }
+
+        if (DockerResourceConfiguration.TlsEnabled && sslCertificate.CaCertificateFilePath.HasValue)
+        {
+            postgreSqlBuilder = postgreSqlBuilder
+                .WithResourceMapping(sslCertificate.CaCertificateFilePath.Value, FilePath.Of(CaCertificateFilePath), PostgresUid, PostgresGid, Unix.FileMode600)
+                .WithCommand("-c", "ssl_ca_file=" + CaCertificateFilePath);
+        }
+
         // By default, the base builder waits until the container is running. However, for PostgreSql, a more advanced waiting strategy is necessary that requires access to the configured database and username.
         // If the user does not provide a custom waiting strategy, append the default PostgreSql waiting strategy.
-        var postgreSqlBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration)));
+        postgreSqlBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? postgreSqlBuilder : postgreSqlBuilder.WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil(DockerResourceConfiguration)));
         return new PostgreSqlContainer(postgreSqlBuilder.DockerResourceConfiguration);
     }
 
