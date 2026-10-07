@@ -39,9 +39,9 @@ Use `WithSsl` to enable TLS and map the server certificates. Configure the clien
 --8<-- "tests/Testcontainers.PostgreSql.Tests/PostgreSqlContainerTest.cs:PostgreSqlSslConnectionString"
 ```
 
-### VerifyFull and DNS SANs
+### VerifyFull and SANs
 
-`SslMode=VerifyFull` validates DNS SANs. Use a DNS host like `localhost` if you need full verification.
+`SslMode=VerifyFull` additionally validates that the host in the connection string matches a subject alternative name (SAN) of the server certificate. Testcontainers usually resolves the container host to the IP address `127.0.0.1`. The certificate must include a matching IP SAN, for example `IP:127.0.0.1`:
 
 ```csharp
 --8<-- "tests/Testcontainers.PostgreSql.Tests/PostgreSqlContainerTest.cs:PostgreSqlSslVerifyFull"

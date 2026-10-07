@@ -144,16 +144,12 @@ public abstract class PostgreSqlContainerTest(PostgreSqlContainerTest.PostgreSql
         {
             get
             {
-                var connectionStringBuilder = new NpgsqlConnectionStringBuilder(base.ConnectionString);
                 // # --8<-- [start:PostgreSqlSslVerifyFull]
-                // Npgsql checks VerifyFull against DNS SANs, it's necessary to use "localhost" instead of
-                // the IP address. Testcontainers defaults to using the IP because of an old Docker bug
-                // with IPv4/IPv6 port mapping, where "localhost" might resolve to a different public port.
-                connectionStringBuilder.Host = "localhost";
+                var connectionStringBuilder = new NpgsqlConnectionStringBuilder(base.ConnectionString);
                 connectionStringBuilder.SslMode = SslMode.VerifyFull;
-                // # --8<-- [end:PostgreSqlSslVerifyFull]
                 connectionStringBuilder.RootCertificate = CaCertificateFilePath;
                 return connectionStringBuilder.ConnectionString;
+                // # --8<-- [end:PostgreSqlSslVerifyFull]
             }
         }
     }

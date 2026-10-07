@@ -17,6 +17,10 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
 
     public const string AccountKey = "Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==";
 
+    private const string CertificateFilePath = "/azurite/certs/server.crt";
+
+    private const string CertificateKeyFilePath = "/azurite/certs/server.key";
+
     private static readonly ISet<AzuriteService> EnabledServices = new HashSet<AzuriteService>();
 
     static AzuriteBuilder()
@@ -98,10 +102,39 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
         }
     }
 
+    /// <summary>
+    /// Enables HTTPS for Azurite.
+    /// </summary>
+    /// <remarks>
+    /// The Blob, Queue and Table endpoints, including the connection string,
+    /// use the <c>https</c> scheme. The client must trust the server certificate.
+    /// </remarks>
+    /// <param name="certificateFilePath">The SSL certificate file in PEM format.</param>
+    /// <param name="certificateKeyFilePath">The SSL certificate private key file in PEM format.</param>
+    /// <returns>A configured instance of <see cref="AzuriteBuilder" />.</returns>
+    public override AzuriteBuilder WithSsl(FilePath certificateFilePath, FilePath certificateKeyFilePath)
+    {
+        var sslCertificate = new SslCertificate(certificateFilePath, certificateKeyFilePath);
+        return Merge(DockerResourceConfiguration, new AzuriteConfiguration(sslCertificate: sslCertificate));
+    }
+
     /// <inheritdoc />
     public override AzuriteContainer Build()
     {
         Validate();
+
+        var azuriteBuilder = this;
+
+        var sslCertificate = DockerResourceConfiguration.SslCertificate;
+
+        if (DockerResourceConfiguration.TlsEnabled)
+        {
+            azuriteBuilder = azuriteBuilder
+                .WithResourceMapping(sslCertificate.CertificateFilePath, FilePath.Of(CertificateFilePath), fileMode: Unix.FileMode600)
+                .WithResourceMapping(sslCertificate.CertificateKeyFilePath, FilePath.Of(CertificateKeyFilePath), fileMode: Unix.FileMode600)
+                .WithCommand("--cert", CertificateFilePath)
+                .WithCommand("--key", CertificateKeyFilePath);
+        }
 
         var waitStrategy = Wait.ForUnixContainer();
 
@@ -120,7 +153,9 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
             waitStrategy = waitStrategy.UntilMessageIsLogged("Table service is successfully listening");
         }
 
-        var azuriteBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? this : WithWaitStrategy(waitStrategy);
+        // By default, the base builder waits until the container is running. However, for Azurite, a more advanced waiting strategy is necessary that requires access to the enabled services.
+        // If the user does not provide a custom waiting strategy, append the default Azurite waiting strategy.
+        azuriteBuilder = DockerResourceConfiguration.WaitStrategies.Count() > 1 ? azuriteBuilder : azuriteBuilder.WithWaitStrategy(waitStrategy);
         return new AzuriteContainer(azuriteBuilder.DockerResourceConfiguration);
     }
 
