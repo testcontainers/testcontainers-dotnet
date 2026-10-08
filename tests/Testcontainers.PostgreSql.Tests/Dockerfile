@@ -1,1 +1,2 @@
 FROM postgres:15.17@sha256:f30e3de0ac9cc938dac627ef2231099867c694b5f949fadb924c8c977428c399
+FROM postgres:15.17-alpine@sha256:09e4f20b14ddb3dfe3a0c825b206032aaf8f28300ba2070c0b60fc1c10c6abc7 AS v15_17-alpine

@@ -89,7 +89,7 @@ _ = Wait.ForUnixContainer()
 
 !!! note
 
-    External TCP port availability doesn't guarantee that the actual service inside the container is ready to handle requests. It only confirms that the port mapping is established and a connection can be made to the host-side proxy.
+    External TCP port availability does not guarantee that the actual service inside the container is ready to handle requests. It only confirms that the port mapping is established and a connection can be made to the host-side proxy.
 
 ## Wait until the container is healthy
 
