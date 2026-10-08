@@ -15,15 +15,23 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
 
     public const string DefaultPassword = "postgres";
 
-    private const ushort PostgresUid = 999;
+    private const string MappedCertificateDirectoryPath = "/etc/ssl/postgresql";
 
-    private const ushort PostgresGid = 999;
+    private const string MappedCertificateFilePath = MappedCertificateDirectoryPath + "/server.crt";
 
-    private const string CertificateFilePath = "/etc/ssl/postgresql/server.crt";
+    private const string MappedCertificateKeyFilePath = MappedCertificateDirectoryPath + "/server.key";
 
-    private const string CertificateKeyFilePath = "/etc/ssl/postgresql/server.key";
+    private const string MappedCaCertificateFilePath = MappedCertificateDirectoryPath + "/root.crt";
 
-    private const string CaCertificateFilePath = "/etc/ssl/postgresql/root.crt";
+    private const string CertificateDirectoryPath = "/var/run/postgresql/ssl";
+
+    private const string CertificateFilePath = CertificateDirectoryPath + "/server.crt";
+
+    private const string CertificateKeyFilePath = CertificateDirectoryPath + "/server.key";
+
+    private const string CaCertificateFilePath = CertificateDirectoryPath + "/root.crt";
+
+    private const string SslEntrypointScript = "install -d " + CertificateDirectoryPath + "; install -m 600 " + MappedCertificateDirectoryPath + "/* " + CertificateDirectoryPath + "; if [ \"$(id -u)\" = 0 ]; then chown -R postgres " + CertificateDirectoryPath + "; fi; exec docker-entrypoint.sh \"$@\"";
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PostgreSqlBuilder" /> class.
@@ -161,8 +169,8 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
         if (DockerResourceConfiguration.TlsEnabled)
         {
             postgreSqlBuilder = postgreSqlBuilder
-                .WithResourceMapping(sslCertificate.CertificateFilePath, FilePath.Of(CertificateFilePath), PostgresUid, PostgresGid, Unix.FileMode600)
-                .WithResourceMapping(sslCertificate.CertificateKeyFilePath, FilePath.Of(CertificateKeyFilePath), PostgresUid, PostgresGid, Unix.FileMode600)
+                .WithResourceMapping(sslCertificate.CertificateFilePath, FilePath.Of(MappedCertificateFilePath))
+                .WithResourceMapping(sslCertificate.CertificateKeyFilePath, FilePath.Of(MappedCertificateKeyFilePath))
                 .WithCommand("-c", "ssl=on")
                 .WithCommand("-c", "ssl_cert_file=" + CertificateFilePath)
                 .WithCommand("-c", "ssl_key_file=" + CertificateKeyFilePath);
@@ -171,8 +179,17 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
         if (DockerResourceConfiguration.TlsEnabled && sslCertificate.CaCertificateFilePath.HasValue)
         {
             postgreSqlBuilder = postgreSqlBuilder
-                .WithResourceMapping(sslCertificate.CaCertificateFilePath.Value, FilePath.Of(CaCertificateFilePath), PostgresUid, PostgresGid, Unix.FileMode600)
+                .WithResourceMapping(sslCertificate.CaCertificateFilePath.Value, FilePath.Of(MappedCaCertificateFilePath))
                 .WithCommand("-c", "ssl_ca_file=" + CaCertificateFilePath);
+        }
+
+        if (DockerResourceConfiguration.TlsEnabled && DockerResourceConfiguration.Entrypoint == null)
+        {
+            // PostgreSql only accepts a private key that is owned by the user that runs the server (permissions 0600 or less) or by root (permissions 0640 or less, read through a group).
+            // The user ID and the group ID differ between images (e.g., Debian and Alpine) and configurations (e.g., a non-root user).
+            // Copy the certificates as the user that starts the container into a subdirectory of the socket directory, which this user can write to, and change the owner if the entrypoint of the image drops the root privileges.
+            postgreSqlBuilder = postgreSqlBuilder
+                .WithEntrypoint("/bin/sh", "-ec", SslEntrypointScript, "--");
         }
 
         // By default, the base builder waits until the container is running. However, for PostgreSql, a more advanced waiting strategy is necessary that requires access to the configured database and username.

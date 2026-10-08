@@ -155,6 +155,22 @@ public abstract class PostgreSqlContainerTest(PostgreSqlContainerTest.PostgreSql
     }
 
     [UsedImplicitly]
+    public class PostgreSqlSslAlpineFixture(IMessageSink messageSink)
+        : PostgreSqlSslVerifyFullFixture(messageSink)
+    {
+        protected override PostgreSqlBuilder Configure()
+            => base.Configure().WithImage(TestSession.GetImageFromDockerfile(stage: "v15_17-alpine"));
+    }
+
+    [UsedImplicitly]
+    public class PostgreSqlSslNonRootFixture(IMessageSink messageSink)
+        : PostgreSqlSslAlpineFixture(messageSink)
+    {
+        protected override PostgreSqlBuilder Configure()
+            => base.Configure().WithCreateParameterModifier(parameterModifier => parameterModifier.User = "postgres");
+    }
+
+    [UsedImplicitly]
     public sealed class PostgreSqlDefaultConfiguration(PostgreSqlDefaultFixture fixture)
         : PostgreSqlContainerTest(fixture), IClassFixture<PostgreSqlDefaultFixture>;
 
@@ -173,4 +189,12 @@ public abstract class PostgreSqlContainerTest(PostgreSqlContainerTest.PostgreSql
     [UsedImplicitly]
     public sealed class PostgreSqlSslVerifyFullConfiguration(PostgreSqlSslVerifyFullFixture fixture)
         : PostgreSqlContainerTest(fixture), IClassFixture<PostgreSqlSslVerifyFullFixture>;
+
+    [UsedImplicitly]
+    public sealed class PostgreSqlSslAlpineConfiguration(PostgreSqlSslAlpineFixture fixture)
+        : PostgreSqlContainerTest(fixture), IClassFixture<PostgreSqlSslAlpineFixture>;
+
+    [UsedImplicitly]
+    public sealed class PostgreSqlSslNonRootConfiguration(PostgreSqlSslNonRootFixture fixture)
+        : PostgreSqlContainerTest(fixture), IClassFixture<PostgreSqlSslNonRootFixture>;
 }
