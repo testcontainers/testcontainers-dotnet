@@ -185,9 +185,15 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
 
         if (DockerResourceConfiguration.TlsEnabled && DockerResourceConfiguration.Entrypoint == null)
         {
-            // PostgreSql only accepts a private key that is owned by the user that runs the server (permissions 0600 or less) or by root (permissions 0640 or less, read through a group).
-            // The user ID and the group ID differ between images (e.g., Debian and Alpine) and configurations (e.g., a non-root user).
-            // Copy the certificates as the user that starts the container into a subdirectory of the socket directory, which this user can write to, and change the owner if the entrypoint of the image drops the root privileges.
+            // PostgreSql only accepts a private key that is owned by the user
+            // that runs the server (permissions 0600 or less) or by root
+            // (permissions 0640 or less, read through a group).
+            // The user ID and the group ID differ between images (e.g., Debian
+            // and Alpine) and configurations (e.g., a non-root user).
+            // Copy the certificates as the user that starts the container into
+            // a subdirectory of the socket directory, which this user can write
+            // to, and change the owner if the entrypoint of the image drops
+            // the root privileges.
             postgreSqlBuilder = postgreSqlBuilder
                 .WithEntrypoint("/bin/sh", "-ec", SslEntrypointScript, "--");
         }
