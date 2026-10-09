@@ -1,6 +1,8 @@
 namespace DotNet.Testcontainers.ResourceReaper.Tests
 {
+  using System;
   using System.Threading.Tasks;
+  using Docker.DotNet.Models;
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Commons;
   using DotNet.Testcontainers.Configurations;
@@ -45,6 +47,47 @@ namespace DotNet.Testcontainers.ResourceReaper.Tests
 
       // Then
       Assert.Equal(resourceReaperEnabled, DockerCli.ResourceExists(DockerCli.DockerResource.Container, "testcontainers-ryuk-" + ResourceReaper.DefaultSessionId.ToString("D")));
+    }
+
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public async Task ClosedConnectionTerminatesResourceReaperConnection()
+    {
+      // Given
+      var connectionTerminated = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+      EventHandler<ResourceReaperStateEventArgs> stateChanged = (_, e) =>
+      {
+        if (ResourceReaperState.ConnectionTerminated.Equals(e.State))
+        {
+          connectionTerminated.TrySetResult(true);
+        }
+      };
+
+      using var dockerClient = TestcontainersSettings.OS.DockerEndpointAuthConfig.GetDockerClientBuilder(Guid.NewGuid()).Build();
+
+      var resourceReaper = await ResourceReaper.GetAndStartDefaultAsync(TestcontainersSettings.OS.DockerEndpointAuthConfig, ConsoleLogger.Instance, ct: TestContext.Current.CancellationToken)
+        .ConfigureAwait(true);
+
+      ResourceReaper.StateChanged += stateChanged;
+
+      try
+      {
+        // When
+        await dockerClient.Containers.RemoveContainerAsync("testcontainers-ryuk-" + ResourceReaper.DefaultSessionId.ToString("D"), new ContainerRemoveParameters { Force = true }, TestContext.Current.CancellationToken)
+          .ConfigureAwait(true);
+
+        // Then
+        Assert.True(await connectionTerminated.Task.WaitAsync(TimeSpan.FromSeconds(30), TestContext.Current.CancellationToken)
+          .ConfigureAwait(true));
+      }
+      finally
+      {
+        ResourceReaper.StateChanged -= stateChanged;
+
+        await resourceReaper.DisposeAsync()
+          .ConfigureAwait(true);
+      }
     }
   }
 }
