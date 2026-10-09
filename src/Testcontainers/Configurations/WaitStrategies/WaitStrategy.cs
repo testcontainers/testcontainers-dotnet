@@ -130,45 +130,9 @@ namespace DotNet.Testcontainers.Configurations
     /// <exception cref="RetryLimitExceededException">Thrown when the number of retries is exceeded.</exception>
     /// <returns>A task that represents the asynchronous block operation.</returns>
     [PublicAPI]
-    public static async Task WaitWhileAsync(Func<Task<bool>> wait, TimeSpan interval, TimeSpan timeout, int retries = 0, CancellationToken ct = default)
+    public static Task WaitWhileAsync(Func<Task<bool>> wait, TimeSpan interval, TimeSpan timeout, int retries = 0, CancellationToken ct = default)
     {
-      ushort actualRetries = 0;
-
-      async Task WhileAsync()
-      {
-        while (!ct.IsCancellationRequested)
-        {
-          var isSuccessful = await wait.Invoke()
-            .ConfigureAwait(false);
-
-          if (!isSuccessful)
-          {
-            break;
-          }
-
-          _ = Guard.Argument(retries, nameof(retries))
-            .ThrowIf(_ => retries > 0 && ++actualRetries > retries, _ => new RetryLimitExceededException(MaximumRetryExceededException));
-
-          await Task.Delay(interval, ct)
-            .ConfigureAwait(false);
-        }
-      }
-
-      var waitTask = WhileAsync();
-
-      var timeoutTask = Task.Delay(timeout, ct);
-
-      var isTimeoutTask = timeoutTask == await Task.WhenAny(waitTask, timeoutTask)
-        .ConfigureAwait(false);
-
-      if (isTimeoutTask)
-      {
-        throw new TimeoutException();
-      }
-
-      // Rethrows exceptions.
-      await waitTask
-        .ConfigureAwait(false);
+      return WaitAsync(wait, false, interval, timeout, retries, ct);
     }
 
     /// <summary>
@@ -186,45 +150,80 @@ namespace DotNet.Testcontainers.Configurations
     /// <exception cref="RetryLimitExceededException">Thrown when the number of retries is exceeded.</exception>
     /// <returns>A task that represents the asynchronous block operation.</returns>
     [PublicAPI]
-    public static async Task WaitUntilAsync(Func<Task<bool>> wait, TimeSpan interval, TimeSpan timeout, int retries = 0, CancellationToken ct = default)
+    public static Task WaitUntilAsync(Func<Task<bool>> wait, TimeSpan interval, TimeSpan timeout, int retries = 0, CancellationToken ct = default)
     {
-      ushort actualRetries = 0;
+      return WaitAsync(wait, true, interval, timeout, retries, ct);
+    }
 
-      async Task UntilAsync()
+    /// <summary>
+    /// Waits asynchronously until the specified condition returns the expected result or until a timeout occurs.
+    /// </summary>
+    /// <param name="wait">A function that represents the asynchronous condition to wait for.</param>
+    /// <param name="expected">The result of the condition that completes the waiting operation.</param>
+    /// <param name="interval">The time interval between consecutive evaluations of the condition.</param>
+    /// <param name="timeout">The maximum duration to wait for the condition to return the expected result.</param>
+    /// <param name="retries">The number of retries to run for the condition to return the expected result.</param>
+    /// <param name="ct">The cancellation token to cancel the waiting operation.</param>
+    /// <exception cref="TimeoutException">Thrown when the timeout expires.</exception>
+    /// <exception cref="RetryLimitExceededException">Thrown when the number of retries is exceeded.</exception>
+    /// <returns>A task that represents the asynchronous block operation.</returns>
+    private static async Task WaitAsync(Func<Task<bool>> wait, bool expected, TimeSpan interval, TimeSpan timeout, int retries, CancellationToken ct)
+    {
+      using (var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(ct))
       {
-        while (!ct.IsCancellationRequested)
+        try
         {
-          var isSuccessful = await wait.Invoke()
+          var waitTask = EvaluateAsync(linkedCts.Token);
+
+          var timeoutTask = Task.Delay(timeout, linkedCts.Token);
+
+          var isTimeoutTask = timeoutTask == await Task.WhenAny(waitTask, timeoutTask)
             .ConfigureAwait(false);
 
-          if (isSuccessful)
+          if (isTimeoutTask)
+          {
+            // The timeout task completes when the waiting operation is canceled too.
+            ct.ThrowIfCancellationRequested();
+            throw new TimeoutException();
+          }
+
+          // Rethrows exceptions.
+          await waitTask
+            .ConfigureAwait(false);
+        }
+        finally
+        {
+          // Stop the task that is still pending. Either the timeout, or the
+          // evaluation of the condition that did not complete in time.
+          linkedCts.Cancel();
+        }
+      }
+
+      async Task EvaluateAsync(CancellationToken linkedCt)
+      {
+        var actualRetries = 0;
+
+        while (true)
+        {
+          linkedCt.ThrowIfCancellationRequested();
+
+          var actual = await wait.Invoke()
+            .ConfigureAwait(false);
+
+          if (expected.Equals(actual))
           {
             break;
           }
 
-          _ = Guard.Argument(retries, nameof(retries))
-            .ThrowIf(_ => retries > 0 && ++actualRetries > retries, _ => new RetryLimitExceededException(MaximumRetryExceededException));
+          if (retries > 0 && ++actualRetries > retries)
+          {
+            throw new RetryLimitExceededException(MaximumRetryExceededException);
+          }
 
-          await Task.Delay(interval, ct)
+          await Task.Delay(interval, linkedCt)
             .ConfigureAwait(false);
         }
       }
-
-      var waitTask = UntilAsync();
-
-      var timeoutTask = Task.Delay(timeout, ct);
-
-      var isTimeoutTask = timeoutTask == await Task.WhenAny(waitTask, timeoutTask)
-        .ConfigureAwait(false);
-
-      if (isTimeoutTask)
-      {
-        throw new TimeoutException();
-      }
-
-      // Rethrows exceptions.
-      await waitTask
-        .ConfigureAwait(false);
     }
 
     /// <summary>
