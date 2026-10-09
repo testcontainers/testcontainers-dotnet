@@ -32,14 +32,14 @@ namespace DotNet.Testcontainers.Images
         // Trim each line.
         .Select(line => line.Trim())
 
-        // Remove empty line.
-        .Where(line => !string.IsNullOrEmpty(line))
-
         // Remove comment.
         .Where(line => !line.StartsWith("#", StringComparison.Ordinal))
 
-        // Exclude files and directories.
-        .Select(line => line.TrimEnd('/'))
+        // Exclude files and directories. The root of the build context is the root directory.
+        .Select(line => line.Trim('/'))
+
+        // Remove empty line.
+        .Where(line => !string.IsNullOrEmpty(line))
 
         // Exclude files and directories.
         .Select(line =>
@@ -58,9 +58,6 @@ namespace DotNet.Testcontainers.Images
           {
             case '!':
               lines.Add(new KeyValuePair<string, bool>(line.Substring(1), true));
-              break;
-            case '/':
-              lines.Add(new KeyValuePair<string, bool>(line.Substring(1), false));
               break;
             default:
               lines.Add(new KeyValuePair<string, bool>(line, false));

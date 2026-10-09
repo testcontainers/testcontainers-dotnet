@@ -10,6 +10,9 @@ namespace DotNet.Testcontainers.Tests.Fixtures
     {
       var logger = NullLogger.Instance;
       var ignoreFilesAndDirectories = new IgnoreFile(new[] { "bin/", "obj/*" }, logger);
+      var ignoreRootFilesAndDirectories = new IgnoreFile(new[] { "/bin", "/obj/*" }, logger);
+      var ignoreAllRootFilesAndDirectories = new IgnoreFile(new[] { "/*", "!README*.md" }, logger);
+      var ignoreRoot = new IgnoreFile(new[] { "/" }, logger);
       var ignoreNodeModules = new IgnoreFile(new[] { "node_modules" }, logger);
       var ignoreBuiltInDirectories = new IgnoreFile(new[] { "**/.idea", "**/.vs" }, logger);
       var ignoreAllFilesAndDirectories = new IgnoreFile(new[] { "*", "!README*.md" }, logger);
@@ -23,6 +26,14 @@ namespace DotNet.Testcontainers.Tests.Fixtures
       Add(ignoreFilesAndDirectories, "obj/Debug", false);
       Add(ignoreFilesAndDirectories, "obj-old/Debug", true);
       Add(ignoreFilesAndDirectories, "README.md", true);
+      Add(ignoreRootFilesAndDirectories, "bin/Debug", false);
+      Add(ignoreRootFilesAndDirectories, "obj/Debug", false);
+      Add(ignoreRootFilesAndDirectories, "README.md", true);
+      Add(ignoreAllRootFilesAndDirectories, "bin/Debug", false);
+      Add(ignoreAllRootFilesAndDirectories, "obj/Debug", false);
+      Add(ignoreAllRootFilesAndDirectories, "README.md", true);
+      Add(ignoreRoot, "bin/Debug", true);
+      Add(ignoreRoot, "README.md", true);
       Add(ignoreNodeModules, "node_modules/file.txt", false);
       Add(ignoreNodeModules, "node_modules-old/file.txt", true);
       Add(ignoreBuiltInDirectories, "src/.idea/file.json", false);
