@@ -444,23 +444,13 @@ namespace DotNet.Testcontainers.Containers
     /// <inheritdoc />
     public string GetConnectionString(ConnectionMode connectionMode = ConnectionMode.Host)
     {
-      if (_connectionStringProvider == null)
-      {
-        throw new ConnectionStringProviderNotConfiguredException();
-      }
-
-      return _connectionStringProvider.GetConnectionString(connectionMode);
+      return GetConnectionString(connectionStringProvider => connectionStringProvider.GetConnectionString(connectionMode));
     }
 
     /// <inheritdoc />
     public string GetConnectionString(string name, ConnectionMode connectionMode = ConnectionMode.Host)
     {
-      if (_connectionStringProvider == null)
-      {
-        throw new ConnectionStringProviderNotConfiguredException();
-      }
-
-      return _connectionStringProvider.GetConnectionString(name, connectionMode);
+      return GetConnectionString(connectionStringProvider => connectionStringProvider.GetConnectionString(name, connectionMode));
     }
 
     /// <inheritdoc cref="IAsyncDisposable.DisposeAsync" />
@@ -797,6 +787,31 @@ namespace DotNet.Testcontainers.Containers
 
       _attachedStream.Dispose();
       _attachedStream = null;
+    }
+
+    /// <summary>
+    /// Configures the connection string provider for this container and gets the connection string.
+    /// </summary>
+    /// <remarks>
+    /// Containers that are built from the same builder share the connection string
+    /// provider. It holds the container it was configured for last, which is not
+    /// necessarily this one.
+    /// </remarks>
+    /// <param name="getConnectionString">The function that gets the connection string from the connection string provider.</param>
+    /// <returns>The connection string.</returns>
+    /// <exception cref="ConnectionStringProviderNotConfiguredException">The connection string provider is not configured.</exception>
+    private string GetConnectionString(Func<IConnectionStringProvider, string> getConnectionString)
+    {
+      if (_connectionStringProvider == null)
+      {
+        throw new ConnectionStringProviderNotConfiguredException();
+      }
+
+      lock (_connectionStringProvider)
+      {
+        _connectionStringProvider.Configure(this, _configuration);
+        return getConnectionString(_connectionStringProvider);
+      }
     }
 
     /// <summary>

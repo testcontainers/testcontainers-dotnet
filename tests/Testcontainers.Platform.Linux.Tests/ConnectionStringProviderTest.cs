@@ -67,6 +67,56 @@ public static class ConnectionStringProviderTests
         }
     }
 
+    public sealed class Shared : IAsyncLifetime
+    {
+        private readonly IContainer _container1;
+
+        private readonly IContainer _container2;
+
+        public Shared()
+        {
+            var containerBuilder = new ContainerBuilder(CommonImages.Alpine)
+                .WithCommand(CommonCommands.SleepInfinity)
+                .WithConnectionStringProvider(new ContainerIdConnectionStringProvider());
+
+            _container1 = containerBuilder.Build();
+            _container2 = containerBuilder.Build();
+        }
+
+        public async ValueTask InitializeAsync()
+        {
+            await _container1.StartAsync()
+                .ConfigureAwait(false);
+
+            await _container2.StartAsync()
+                .ConfigureAwait(false);
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            await _container1.DisposeAsync()
+                .ConfigureAwait(false);
+
+            await _container2.DisposeAsync()
+                .ConfigureAwait(false);
+        }
+
+        [Fact]
+        public void GetConnectionStringReturnsValueOfItsOwnContainer()
+        {
+            Assert.Equal(_container1.Id, _container1.GetConnectionString());
+            Assert.Equal(_container2.Id, _container2.GetConnectionString());
+        }
+    }
+
+    private sealed class ContainerIdConnectionStringProvider : ContainerConnectionStringProvider<IContainer, IContainerConfiguration>
+    {
+        protected override string GetHostConnectionString()
+        {
+            return Container.Id;
+        }
+    }
+
     private sealed class ConnectionStringProvider : IConnectionStringProvider<IContainer, IContainerConfiguration>
     {
         public bool IsConfigured { get; private set; }
