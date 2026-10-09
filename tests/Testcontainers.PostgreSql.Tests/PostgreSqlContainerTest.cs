@@ -144,18 +144,30 @@ public abstract class PostgreSqlContainerTest(PostgreSqlContainerTest.PostgreSql
         {
             get
             {
-                var connectionStringBuilder = new NpgsqlConnectionStringBuilder(base.ConnectionString);
                 // # --8<-- [start:PostgreSqlSslVerifyFull]
-                // Npgsql checks VerifyFull against DNS SANs, it's necessary to use "localhost" instead of
-                // the IP address. Testcontainers defaults to using the IP because of an old Docker bug
-                // with IPv4/IPv6 port mapping, where "localhost" might resolve to a different public port.
-                connectionStringBuilder.Host = "localhost";
+                var connectionStringBuilder = new NpgsqlConnectionStringBuilder(base.ConnectionString);
                 connectionStringBuilder.SslMode = SslMode.VerifyFull;
-                // # --8<-- [end:PostgreSqlSslVerifyFull]
                 connectionStringBuilder.RootCertificate = CaCertificateFilePath;
                 return connectionStringBuilder.ConnectionString;
+                // # --8<-- [end:PostgreSqlSslVerifyFull]
             }
         }
+    }
+
+    [UsedImplicitly]
+    public class PostgreSqlSslAlpineFixture(IMessageSink messageSink)
+        : PostgreSqlSslVerifyFullFixture(messageSink)
+    {
+        protected override PostgreSqlBuilder Configure()
+            => base.Configure().WithImage(TestSession.GetImageFromDockerfile(stage: "v15_17-alpine"));
+    }
+
+    [UsedImplicitly]
+    public class PostgreSqlSslNonRootFixture(IMessageSink messageSink)
+        : PostgreSqlSslAlpineFixture(messageSink)
+    {
+        protected override PostgreSqlBuilder Configure()
+            => base.Configure().WithCreateParameterModifier(parameterModifier => parameterModifier.User = "postgres");
     }
 
     [UsedImplicitly]
@@ -177,4 +189,12 @@ public abstract class PostgreSqlContainerTest(PostgreSqlContainerTest.PostgreSql
     [UsedImplicitly]
     public sealed class PostgreSqlSslVerifyFullConfiguration(PostgreSqlSslVerifyFullFixture fixture)
         : PostgreSqlContainerTest(fixture), IClassFixture<PostgreSqlSslVerifyFullFixture>;
+
+    [UsedImplicitly]
+    public sealed class PostgreSqlSslAlpineConfiguration(PostgreSqlSslAlpineFixture fixture)
+        : PostgreSqlContainerTest(fixture), IClassFixture<PostgreSqlSslAlpineFixture>;
+
+    [UsedImplicitly]
+    public sealed class PostgreSqlSslNonRootConfiguration(PostgreSqlSslNonRootFixture fixture)
+        : PostgreSqlContainerTest(fixture), IClassFixture<PostgreSqlSslNonRootFixture>;
 }

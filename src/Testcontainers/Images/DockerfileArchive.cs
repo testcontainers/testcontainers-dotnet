@@ -190,7 +190,7 @@ namespace DotNet.Testcontainers.Images
         .Where(item => !stages.Contains(item.Image))
         .Select(item =>
         {
-          string? platform;
+          string platform;
 
           var fromArgs = ParseFromArgs(item.FromArgs).ToDictionary(arg => arg.Name, arg => arg.Value);
 

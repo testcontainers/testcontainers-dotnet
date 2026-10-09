@@ -29,7 +29,11 @@ Use `WithSsl` to enable TLS and map the server certificates. Configure the clien
 
 !!! note
 
-    When SSL is enabled, Testcontainers doesn't set the SSL mode for the connection string. You'll need to choose the `SslMode` and configure it yourself.
+    When SSL is enabled, Testcontainers does not set the SSL mode for the connection string. You will need to choose the `SslMode` and configure it yourself.
+
+!!! note
+
+    When SSL is enabled, Testcontainers overrides the entrypoint to copy the certificates for the user that runs PostgreSQL and then runs `docker-entrypoint.sh`, not an entrypoint defined by a custom image. If you set an entrypoint with `WithEntrypoint`, Testcontainers does not override it. You will need to copy the certificates from `/etc/ssl/postgresql` to `/var/run/postgresql/ssl` yourself and make sure only the PostgreSQL user can access them.
 
 ```csharp
 --8<-- "tests/Testcontainers.PostgreSql.Tests/PostgreSqlContainerTest.cs:PostgreSqlSslBuilder"
@@ -39,9 +43,9 @@ Use `WithSsl` to enable TLS and map the server certificates. Configure the clien
 --8<-- "tests/Testcontainers.PostgreSql.Tests/PostgreSqlContainerTest.cs:PostgreSqlSslConnectionString"
 ```
 
-### VerifyFull and DNS SANs
+### VerifyFull and SANs
 
-`SslMode=VerifyFull` validates DNS SANs. Use a DNS host like `localhost` if you need full verification.
+`SslMode=VerifyFull` additionally validates that the host in the connection string matches a subject alternative name (SAN) of the server certificate. Testcontainers usually resolves the container host to the IP address `127.0.0.1`. The certificate must include a matching IP SAN, for example `IP:127.0.0.1`:
 
 ```csharp
 --8<-- "tests/Testcontainers.PostgreSql.Tests/PostgreSqlContainerTest.cs:PostgreSqlSslVerifyFull"

@@ -59,6 +59,7 @@ nav:
     - modules/cassandra.md # Apache
     - modules/pulsar.md # Apache
     - modules/aspire-dashboard.md
+    - modules/azurite.md # Azure
     - modules/eventhubs.md # Azure
     - modules/servicebus.md # Azure
     - modules/clickhouse.md
