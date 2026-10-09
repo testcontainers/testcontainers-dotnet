@@ -277,7 +277,7 @@ namespace DotNet.Testcontainers.Containers
 
       var qualifiedContainerPort = ContainerConfigurationConverter.GetQualifiedPort(containerPort);
 
-      if (_container.NetworkSettings.Ports.TryGetValue(qualifiedContainerPort, out var portBindings) && ushort.TryParse(portBindings[0].HostPort, out var hostPort))
+      if (_container.NetworkSettings.Ports.TryGetValue(qualifiedContainerPort, out var portBindings) && portBindings != null && portBindings.Count > 0 && ushort.TryParse(portBindings[0].HostPort, out var hostPort))
       {
         return hostPort;
       }
@@ -297,6 +297,18 @@ namespace DotNet.Testcontainers.Containers
           kvp =>
           {
             return kvp.Key.Contains('/') && kvp.Value != null && kvp.Value.Count > 0;
+          })
+        .GroupBy(
+          kvp =>
+          {
+            return kvp.Key.Substring(0, kvp.Key.IndexOf('/'));
+          })
+        .Select(
+          portBindings =>
+          {
+            // A port can be mapped for more than one protocol (e.g. 53/tcp and 53/udp).
+            // Like GetMappedPublicPort(int), prefer the TCP port binding.
+            return portBindings.OrderBy(kvp => kvp.Key.EndsWith("/tcp", StringComparison.OrdinalIgnoreCase) ? 0 : 1).First();
           })
         .ToDictionary(
           kvp =>

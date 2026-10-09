@@ -191,6 +191,31 @@ namespace DotNet.Testcontainers.Tests.Unit
       }
 
       [Fact]
+      public async Task RandomTcpAndUdpPortBinding()
+      {
+        // Given
+        const string tcpContainerPort = "53/tcp";
+
+        const string udpContainerPort = "53/udp";
+
+        await using var container = new ContainerBuilder(CommonImages.Alpine)
+          .WithEntrypoint(CommonCommands.SleepInfinity)
+          .WithPortBinding(tcpContainerPort, true)
+          .WithPortBinding(udpContainerPort, true)
+          .Build();
+
+        // When
+        await container.StartAsync(TestContext.Current.CancellationToken)
+          .ConfigureAwait(true);
+
+        // Then
+        var mappedPublicPort = Assert.Single(container.GetMappedPublicPorts());
+        Assert.Equal(53, mappedPublicPort.Key);
+        Assert.Equal(container.GetMappedPublicPort(tcpContainerPort), mappedPublicPort.Value);
+        Assert.Equal(container.GetMappedPublicPort(tcpContainerPort), container.GetMappedPublicPort());
+      }
+
+      [Fact]
       public async Task RandomTcpPortBinding()
       {
         // Given
@@ -225,6 +250,23 @@ namespace DotNet.Testcontainers.Tests.Unit
 
         // Then
         Assert.Throws<InvalidOperationException>(() => container.GetMappedPublicPort(443));
+      }
+
+      [Fact]
+      public async Task ExposedPortWithoutPortBindingThrowsException()
+      {
+        // Given
+        await using var container = new ContainerBuilder(CommonImages.Alpine)
+          .WithEntrypoint(CommonCommands.SleepInfinity)
+          .WithExposedPort(80)
+          .Build();
+
+        // When
+        await container.StartAsync(TestContext.Current.CancellationToken)
+          .ConfigureAwait(true);
+
+        // Then
+        Assert.Throws<InvalidOperationException>(() => container.GetMappedPublicPort(80));
       }
 
       [Fact]
