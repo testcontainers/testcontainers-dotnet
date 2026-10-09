@@ -224,7 +224,9 @@ namespace DotNet.Testcontainers.Images
 
       var dockerfileArchiveFileName = Regex.Replace(_image.FullName, "[^a-zA-Z0-9]", "-", RegexOptions.None, TimeSpan.FromSeconds(1)).ToLowerInvariant();
 
-      var dockerfileArchiveFilePath = Path.Combine(Path.GetTempPath(), $"{dockerfileArchiveFileName}.tar");
+      // Image builds that run at the same time must not share the tar archive, even
+      // if they build the same image.
+      var dockerfileArchiveFilePath = Path.Combine(Path.GetTempPath(), $"{dockerfileArchiveFileName}-{Guid.NewGuid():D}.tar");
 
       var baseDirectoryLength = _contextDirectory.FullName.TrimEnd(Path.DirectorySeparatorChar).Length + 1;
 
