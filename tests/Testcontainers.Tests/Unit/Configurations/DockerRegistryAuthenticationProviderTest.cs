@@ -250,6 +250,46 @@ namespace DotNet.Testcontainers.Tests.Unit
       }
     }
 
+    public sealed class DockerConfigProviderTest : SetEnvVarPath
+    {
+      [Fact]
+      public void ShouldNotSearchRemainingProvidersAfterCredentialIsFound()
+      {
+        // Given
+        var hostname = Guid.NewGuid().ToString("D");
+
+        var dockerConfigDirectoryPath = Path.Combine(Path.GetTempPath(), hostname);
+
+        var credHelpersScriptName = Path.ChangeExtension("password", RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "bat" : "sh");
+
+        var jsonDocument = "{\"credHelpers\":{\"" + hostname + "\":\"" + credHelpersScriptName + "\"},\"auths\":{\"" + hostname + "\":{\"auth\":\"Not_Base64_encoded\"}}}";
+
+        var warnLogger = new WarnLogger();
+
+        _ = Directory.CreateDirectory(dockerConfigDirectoryPath);
+
+        try
+        {
+          File.WriteAllText(Path.Combine(dockerConfigDirectoryPath, "config.json"), jsonDocument);
+
+          ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { "docker.config=" + dockerConfigDirectoryPath });
+
+          // When
+          var authenticationProvider = new DockerRegistryAuthenticationProvider(new DockerConfig(customConfiguration), warnLogger);
+          var authConfig = authenticationProvider.GetAuthConfig(hostname);
+
+          // Then
+          Assert.Equal("username", authConfig.Username);
+          Assert.Equal("password", authConfig.Password);
+          Assert.Empty(warnLogger.LogMessages);
+        }
+        finally
+        {
+          Directory.Delete(dockerConfigDirectoryPath, true);
+        }
+      }
+    }
+
     public abstract class SetEnvVarPath
     {
       static SetEnvVarPath()

@@ -76,7 +76,6 @@ namespace DotNet.Testcontainers.Builders
                 new Base64Provider(dockerConfigJsonDocument, _logger),
                 new Base64Provider(dockerAuthConfigJsonDocument, _logger),
               }
-              .AsParallel()
               .Select(authenticationProvider => authenticationProvider.GetAuthConfig(hostname))
               .FirstOrDefault(authenticationProvider => authenticationProvider != null);
           }
