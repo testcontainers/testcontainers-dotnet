@@ -317,7 +317,6 @@ namespace DotNet.Testcontainers.Images
     private static IEnumerable<string> GetFiles(string path)
     {
       return Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories)
-        .AsParallel()
         .Select(Path.GetFullPath)
         .Select(Unix.Instance.NormalizePath)
         .ToArray();
