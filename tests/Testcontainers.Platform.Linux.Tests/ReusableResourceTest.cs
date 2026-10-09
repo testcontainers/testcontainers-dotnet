@@ -95,6 +95,82 @@ public sealed class ReusableResourceTest : IAsyncLifetime
         Assert.Single(response.Volumes);
     }
 
+    public sealed class MultipleMatchingResourcesTest
+    {
+        private const string ReuseHashLabel = "org.testcontainers.reuse-hash";
+
+        private readonly string _reuseHash = Guid.NewGuid().ToString("D");
+
+        [Fact]
+        [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+        public async Task ShouldReuseOneOfTheExistingContainers()
+        {
+            // Given
+            var containerBuilder = new ContainerBuilder(CommonImages.Alpine)
+                .WithEntrypoint(CommonCommands.SleepInfinity);
+
+            await using var container1 = containerBuilder.WithLabel(ReuseHashLabel, _reuseHash).Build();
+
+            await using var container2 = containerBuilder.WithLabel(ReuseHashLabel, _reuseHash).Build();
+
+            await using var reusableContainer = containerBuilder.WithReuse(_ => _reuseHash).Build();
+
+            await Task.WhenAll(container1.StartAsync(TestContext.Current.CancellationToken), container2.StartAsync(TestContext.Current.CancellationToken))
+                .ConfigureAwait(true);
+
+            // When
+            await reusableContainer.StartAsync(TestContext.Current.CancellationToken)
+                .ConfigureAwait(true);
+
+            // Then
+            Assert.Contains(reusableContainer.Id, new[] { container1.Id, container2.Id });
+        }
+
+        [Fact]
+        [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+        public async Task ShouldReuseOneOfTheExistingNetworks()
+        {
+            // Given
+            await using var network1 = new NetworkBuilder().WithLabel(ReuseHashLabel, _reuseHash).Build();
+
+            await using var network2 = new NetworkBuilder().WithLabel(ReuseHashLabel, _reuseHash).Build();
+
+            await using var reusableNetwork = new NetworkBuilder().WithReuse(_ => _reuseHash).Build();
+
+            await Task.WhenAll(network1.CreateAsync(TestContext.Current.CancellationToken), network2.CreateAsync(TestContext.Current.CancellationToken))
+                .ConfigureAwait(true);
+
+            // When
+            await reusableNetwork.CreateAsync(TestContext.Current.CancellationToken)
+                .ConfigureAwait(true);
+
+            // Then
+            Assert.Contains(reusableNetwork.Name, new[] { network1.Name, network2.Name });
+        }
+
+        [Fact]
+        [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+        public async Task ShouldReuseOneOfTheExistingVolumes()
+        {
+            // Given
+            await using var volume1 = new VolumeBuilder().WithLabel(ReuseHashLabel, _reuseHash).Build();
+
+            await using var volume2 = new VolumeBuilder().WithLabel(ReuseHashLabel, _reuseHash).Build();
+
+            await using var reusableVolume = new VolumeBuilder().WithReuse(_ => _reuseHash).Build();
+
+            await Task.WhenAll(volume1.CreateAsync(TestContext.Current.CancellationToken), volume2.CreateAsync(TestContext.Current.CancellationToken))
+                .ConfigureAwait(true);
+
+            // When
+            await reusableVolume.CreateAsync(TestContext.Current.CancellationToken)
+                .ConfigureAwait(true);
+
+            // Then
+            Assert.Contains(reusableVolume.Name, new[] { volume1.Name, volume2.Name });
+        }
+    }
+
     public static class ReuseHashTest
     {
         public sealed class EqualTest

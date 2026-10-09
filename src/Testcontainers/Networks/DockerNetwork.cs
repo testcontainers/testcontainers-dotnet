@@ -108,7 +108,7 @@ namespace DotNet.Testcontainers.Networks
         var reusableNetworks = await _client.Network.GetAllAsync(filters, ct)
           .ConfigureAwait(false);
 
-        var reusableNetwork = reusableNetworks.SingleOrDefault();
+        var reusableNetwork = reusableNetworks.FirstOrDefault();
 
         if (reusableNetwork != null)
         {

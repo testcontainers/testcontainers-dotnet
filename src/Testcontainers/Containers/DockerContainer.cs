@@ -525,7 +525,7 @@ namespace DotNet.Testcontainers.Containers
         var reusableContainers = await _client.Container.GetAllAsync(filters, ct)
           .ConfigureAwait(false);
 
-        var reusableContainer = reusableContainers.SingleOrDefault();
+        var reusableContainer = reusableContainers.FirstOrDefault();
 
         if (reusableContainer != null)
         {

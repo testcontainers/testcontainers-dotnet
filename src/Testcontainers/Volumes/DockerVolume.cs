@@ -108,7 +108,7 @@ namespace DotNet.Testcontainers.Volumes
         var reusableVolumes = await _client.Volume.GetAllAsync(filters, ct)
           .ConfigureAwait(false);
 
-        var reusableVolume = reusableVolumes.SingleOrDefault();
+        var reusableVolume = reusableVolumes.FirstOrDefault();
 
         if (reusableVolume != null)
         {
