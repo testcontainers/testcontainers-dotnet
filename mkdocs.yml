@@ -61,6 +61,7 @@ nav:
     - modules/aspire-dashboard.md
     - modules/azurite.md # Azure
     - modules/eventhubs.md # Azure
+    - modules/flociaz.md # Azure
     - modules/servicebus.md # Azure
     - modules/clickhouse.md
     - modules/db2.md
