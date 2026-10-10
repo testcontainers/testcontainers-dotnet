@@ -12,6 +12,9 @@ namespace DotNet.Testcontainers.Tests.Fixtures
       var ignoreFilesAndDirectories = new IgnoreFile(new[] { "bin/", "obj/*" }, logger);
       var ignoreRootFilesAndDirectories = new IgnoreFile(new[] { "/bin", "/obj/*" }, logger);
       var ignoreAllRootFilesAndDirectories = new IgnoreFile(new[] { "/*", "!README*.md" }, logger);
+      var ignoreAllExceptRootDirectory = new IgnoreFile(new[] { "/*", "!/src" }, logger);
+      var ignoreNestedFilesAndDirectories = new IgnoreFile(new[] { "/*/*" }, logger);
+      var ignoreWildcardFilesAndDirectories = new IgnoreFile(new[] { ".git*", "*cache/*" }, logger);
       var ignoreRoot = new IgnoreFile(new[] { "/" }, logger);
       var ignoreNodeModules = new IgnoreFile(new[] { "node_modules" }, logger);
       var ignoreBuiltInDirectories = new IgnoreFile(new[] { "**/.idea", "**/.vs" }, logger);
@@ -32,6 +35,18 @@ namespace DotNet.Testcontainers.Tests.Fixtures
       Add(ignoreAllRootFilesAndDirectories, "bin/Debug", false);
       Add(ignoreAllRootFilesAndDirectories, "obj/Debug", false);
       Add(ignoreAllRootFilesAndDirectories, "README.md", true);
+      Add(ignoreAllExceptRootDirectory, "bin/Debug", false);
+      Add(ignoreAllExceptRootDirectory, "src/Program.cs", true);
+      Add(ignoreAllExceptRootDirectory, "README.md", false);
+      Add(ignoreNestedFilesAndDirectories, "bin/Debug", false);
+      Add(ignoreNestedFilesAndDirectories, "bin/Debug/net10.0", false);
+      Add(ignoreNestedFilesAndDirectories, "README.md", true);
+      Add(ignoreWildcardFilesAndDirectories, ".gitignore", false);
+      Add(ignoreWildcardFilesAndDirectories, ".git/config", false);
+      Add(ignoreWildcardFilesAndDirectories, "src/.gitignore", true);
+      Add(ignoreWildcardFilesAndDirectories, "cache/file.txt", false);
+      Add(ignoreWildcardFilesAndDirectories, ".cache/file.txt", false);
+      Add(ignoreWildcardFilesAndDirectories, "cache.txt", true);
       Add(ignoreRoot, "bin/Debug", true);
       Add(ignoreRoot, "README.md", true);
       Add(ignoreNodeModules, "node_modules/file.txt", false);

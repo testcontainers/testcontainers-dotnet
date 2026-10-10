@@ -41,13 +41,6 @@ namespace DotNet.Testcontainers.Images
         // Remove empty line.
         .Where(line => !string.IsNullOrEmpty(line))
 
-        // Exclude files and directories.
-        .Select(line =>
-        {
-          const string filesAndDirectories = "/*";
-          return line.EndsWith(filesAndDirectories, StringComparison.InvariantCulture) ? line.Substring(0, line.Length - filesAndDirectories.Length) : line;
-        })
-
         // Exclude all files and directories (https://github.com/testcontainers/testcontainers-dotnet/issues/618).
         .Select(line => "*".Equals(line, StringComparison.OrdinalIgnoreCase) ? "**" : line)
 
@@ -57,7 +50,7 @@ namespace DotNet.Testcontainers.Images
           switch (line[0])
           {
             case '!':
-              lines.Add(new KeyValuePair<string, bool>(line.Substring(1), true));
+              lines.Add(new KeyValuePair<string, bool>(line.Substring(1).Trim('/'), true));
               break;
             default:
               lines.Add(new KeyValuePair<string, bool>(line, false));
@@ -178,32 +171,11 @@ namespace DotNet.Testcontainers.Images
     /// </summary>
     private readonly struct PrepareNonRecursiveWildcards : ISearchAndReplace<string>
     {
-      private const string MatchAllExceptPathSeparator = "([^\\\\\\/]+)";
+      private const string MatchAllExceptPathSeparator = "([^\\\\\\/]*)";
 
       /// <inheritdoc />
       public string Replace(string input)
       {
-        // Find last non-recursive wildcard in pattern.
-        var index = input.LastIndexOf("*", StringComparison.Ordinal);
-
-        // If last character is a non-recursive wildcard, add the end of string regular expression.
-        if (input.EndsWith("*", StringComparison.Ordinal) && index >= 0)
-        {
-          input = input.Remove(index, 1).Insert(index, $"{MatchAllExceptPathSeparator}?$");
-          index = -1;
-        }
-
-        // Replace the last non-recursive wildcard with a match-zero-or-one quantifier regular expression.
-#if NETSTANDARD2_0
-        if (input.Contains("*") && index >= 0)
-#else
-        if (input.Contains('*') && index >= 0)
-#endif
-        {
-          input = input.Remove(index, 1).Insert(index, $"{MatchAllExceptPathSeparator}?");
-        }
-
-        // Replace remaining non-recursive wildcards.
         return input.Replace("*", MatchAllExceptPathSeparator);
       }
     }
