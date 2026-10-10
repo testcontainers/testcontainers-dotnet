@@ -19,6 +19,7 @@ lipsum
 ltsc
 memopt
 mongosh
+mongot
 mosquitto
 mycounter
 mydatabase

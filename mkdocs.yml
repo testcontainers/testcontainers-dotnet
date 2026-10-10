@@ -68,6 +68,7 @@ nav:
     - modules/garnet.md
     - modules/grafana.md
     - modules/mongodb.md
+    - modules/mongodb-atlas-local.md
     - modules/mssql.md
     - modules/neo4j.md
     - modules/opensearch.md
