@@ -224,8 +224,8 @@ namespace DotNet.Testcontainers.Images
 
       var dockerfileArchiveFileName = Regex.Replace(_image.FullName, "[^a-zA-Z0-9]", "-", RegexOptions.None, TimeSpan.FromSeconds(1)).ToLowerInvariant();
 
-      // Image builds that run at the same time must not share the tar archive, even
-      // if they build the same image.
+      // Image builds that run at the same time must not share the tar archive,
+      // even if they build the same image.
       var dockerfileArchiveFilePath = Path.Combine(Path.GetTempPath(), $"{dockerfileArchiveFileName}-{Guid.NewGuid():D}.tar");
 
       var baseDirectoryLength = _contextDirectory.FullName.TrimEnd(Path.DirectorySeparatorChar).Length + 1;
@@ -275,8 +275,8 @@ namespace DotNet.Testcontainers.Images
       }
       catch
       {
-        // The caller removes the tar archive, but it does not get the path of
-        // an incomplete one.
+        // The caller removes the tar archive,
+        // but it does not get the path of an incomplete one.
         if (File.Exists(dockerfileArchiveFilePath))
         {
           File.Delete(dockerfileArchiveFilePath);
