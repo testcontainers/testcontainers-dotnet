@@ -15,8 +15,18 @@ namespace DotNet.Testcontainers.Tests.Unit
   using Microsoft.Extensions.Logging.Abstractions;
   using Xunit;
 
-  public sealed class ImageFromDockerfileTest
+  public sealed class ImageFromDockerfileTest : IDisposable
   {
+    private readonly IList<string> _dockerfileArchiveFilePaths = new List<string>();
+
+    public void Dispose()
+    {
+      foreach (var dockerfileArchiveFilePath in _dockerfileArchiveFilePaths)
+      {
+        File.Delete(dockerfileArchiveFilePath);
+      }
+    }
+
     [Fact]
     public void DockerfileArchiveGetBaseImages()
     {
@@ -32,6 +42,8 @@ namespace DotNet.Testcontainers.Tests.Unit
         new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0", new Platform("linux/arm64")),
         new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0", new Platform("linux/arm/v6")),
         new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0", new Platform("linux/arm/v7")),
+        new DockerImage("mcr.microsoft.com/dotnet/sdk:8.0-alpine"),
+        new DockerImage("mcr.microsoft.com/dotnet/runtime:8.0-alpine"),
         new DockerImage("mcr.microsoft.com/dotnet/sdk:8.0.414"),
       };
 
@@ -45,6 +57,43 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       // When
       var actual = dockerfileArchive.GetBaseImages();
+
+      // Then
+      Assert.Equivalent(expected, actual);
+    }
+
+    [Fact]
+    public void DockerfileArchiveGetBaseImagesForTargetPlatform()
+    {
+      // Given
+      var targetPlatform = new Platform("linux/s390x");
+
+      var expected = new[]
+      {
+        new DockerImage("mcr.microsoft.com/dotnet/sdk:8.0", targetPlatform),
+        new DockerImage("mcr.microsoft.com/dotnet/runtime:8.0", targetPlatform),
+        new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-jammy", targetPlatform),
+        new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-noble", targetPlatform),
+        new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-alpine", targetPlatform),
+        new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0", new Platform("linux/amd64")),
+        new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0", new Platform("linux/arm64")),
+        new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0", new Platform("linux/arm/v6")),
+        new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0", new Platform("linux/arm/v7")),
+        new DockerImage("mcr.microsoft.com/dotnet/sdk:8.0-alpine"),
+        new DockerImage("mcr.microsoft.com/dotnet/runtime:8.0-alpine", targetPlatform),
+        new DockerImage("mcr.microsoft.com/dotnet/sdk:8.0.414", targetPlatform),
+      };
+
+      IImage image = new DockerImage("localhost/testcontainers", Guid.NewGuid().ToString("D"), string.Empty);
+
+      // The Dockerfile does not contain a default value.
+      var buildArguments = new Dictionary<string, string>();
+      buildArguments.Add("SDK_VERSION_8_0", "8.0.414");
+
+      var dockerfileArchive = new DockerfileArchive(null, "Assets/pullBaseImages/", "Dockerfile", image, buildArguments, NullLogger.Instance);
+
+      // When
+      var actual = dockerfileArchive.GetBaseImages(targetPlatform.Value);
 
       // Then
       Assert.Equivalent(expected, actual);
@@ -67,6 +116,8 @@ namespace DotNet.Testcontainers.Tests.Unit
       var dockerfileArchiveFilePath = await dockerfileArchive.Tar(TestContext.Current.CancellationToken)
         .ConfigureAwait(true);
 
+      _dockerfileArchiveFilePaths.Add(dockerfileArchiveFilePath);
+
       // When
       using (var tarOut = new FileStream(dockerfileArchiveFilePath, FileMode.Open, FileAccess.Read))
       {
@@ -79,6 +130,30 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       // Then
       Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public async Task DockerfileArchiveTarCreatesUniqueFile()
+    {
+      // Given
+      IImage image = new DockerImage("localhost/testcontainers", Guid.NewGuid().ToString("D"), string.Empty);
+
+      var buildArguments = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>());
+
+      var dockerfileArchive = new DockerfileArchive(null, "Assets/", "Dockerfile", image, buildArguments, NullLogger.Instance);
+
+      // When
+      var dockerfileArchiveFilePath1 = await dockerfileArchive.Tar(TestContext.Current.CancellationToken)
+        .ConfigureAwait(true);
+
+      var dockerfileArchiveFilePath2 = await dockerfileArchive.Tar(TestContext.Current.CancellationToken)
+        .ConfigureAwait(true);
+
+      _dockerfileArchiveFilePaths.Add(dockerfileArchiveFilePath1);
+      _dockerfileArchiveFilePaths.Add(dockerfileArchiveFilePath2);
+
+      // Then
+      Assert.NotEqual(dockerfileArchiveFilePath1, dockerfileArchiveFilePath2);
     }
 
     [Fact]
@@ -99,6 +174,8 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       var dockerfileArchiveFilePath = await dockerfileArchive.Tar(TestContext.Current.CancellationToken)
         .ConfigureAwait(true);
+
+      _dockerfileArchiveFilePaths.Add(dockerfileArchiveFilePath);
 
       // When
       using (var tarOut = new FileStream(dockerfileArchiveFilePath, FileMode.Open, FileAccess.Read))

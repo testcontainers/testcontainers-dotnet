@@ -527,12 +527,20 @@ namespace DotNet.Testcontainers.Containers
             {
               // Keep the connection to Ryuk up.
 #if NETSTANDARD2_0
-              _ = await stream.ReadAsync(readBytes, 0, readBytes.Length, _maintainConnectionCts.Token)
+              var numberOfBytes = await stream.ReadAsync(readBytes, 0, readBytes.Length, _maintainConnectionCts.Token)
                 .ConfigureAwait(false);
 #else
-              _ = await stream.ReadAsync(readBytes, _maintainConnectionCts.Token)
+              var numberOfBytes = await stream.ReadAsync(readBytes, _maintainConnectionCts.Token)
                 .ConfigureAwait(false);
 #endif
+
+              if (numberOfBytes == 0)
+              {
+                // Ryuk closed the connection. Reading from it again returns immediately
+                // without any data, which would keep this loop spinning.
+                _resourceReaperContainer.Logger.LostConnectionToResourceReaper(SessionId, host, port, null);
+                break;
+              }
             }
           }
           catch (OperationCanceledException)

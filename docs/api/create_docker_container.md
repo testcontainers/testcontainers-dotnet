@@ -311,6 +311,7 @@ Assert.Equal(MagicNumber, magicNumber);
 |--------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `DependsOn`                    | Sets the dependent resource to resolve and create or start before starting this container configuration.                                                                             |
 | `WithAcceptLicenseAgreement`   | Accepts the license agreement of modules that require one.                                                                                                                           |
+| `WithSsl`                      | Enables SSL/TLS using the certificate and private key for modules that support it.                                                                                                   |
 | `WithDockerEndpoint`           | Sets the Docker daemon socket to connect to.                                                                                                                                         |
 | `WithAutoRemove`               | Will remove the stopped container automatically, similar to `--rm`.                                                                                                                  |
 | `WithCleanUp`                  | Will remove the container automatically after all tests have been run.                                                                                                               |

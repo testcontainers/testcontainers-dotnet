@@ -115,14 +115,24 @@ namespace DotNet.Testcontainers.Images
     /// This method reads the Dockerfile and collects a list of base images. It
     /// excludes stages that do not correspond to base images. For example, it will not include
     /// the second line from the following Dockerfile configuration:
+    ///
     /// <code>
     ///   FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
     ///   FROM build
     /// </code>
+    ///
+    /// A base image that does not declare a platform (<c>FROM --platform</c>)
+    /// resolves to the <paramref name="targetPlatform" />. A base image that
+    /// declares a platform with a variable that does not resolve, such as the
+    /// built-in build argument <c>$BUILDPLATFORM</c>, resolves to no platform,
+    /// which is the platform of the Docker host that runs the image build.
     /// </remarks>
+    /// <param name="targetPlatform">The platform the image build targets, or <c>null</c> if it does not target a single platform.</param>
     /// <returns>An <see cref="IEnumerable{T}" /> of <see cref="IImage" />.</returns>
-    public IEnumerable<IImage> GetBaseImages()
+    public IEnumerable<IImage> GetBaseImages([CanBeNull] string targetPlatform = null)
     {
+      const string targetPlatformArg = "TARGETPLATFORM";
+
       const string nameGroup = "name";
 
       const string valueGroup = "value";
@@ -137,7 +147,10 @@ namespace DotNet.Testcontainers.Images
         .Where(line => !line.StartsWith("#", StringComparison.Ordinal))
         .ToArray();
 
+      // Only ARG instructions declared before the first FROM instruction are in
+      // scope for FROM instructions. Stage-local declarations are not.
       var argMatches = lines
+        .TakeWhile(line => !FromLinePattern.IsMatch(line))
         .Select(line => ArgLinePattern.Match(line))
         .Where(match => match.Success)
         .ToArray();
@@ -147,8 +160,17 @@ namespace DotNet.Testcontainers.Images
         .Where(match => match.Success)
         .ToArray();
 
-      var args = argMatches
-        .Select(match => new KeyValuePair<string, string>(match.Groups[nameGroup].Value, match.Groups[valueGroup].Value))
+      // The image builder sets the built-in build argument.
+      // The Dockerfile and the build arguments override it.
+      var builtInArgs = string.IsNullOrEmpty(targetPlatform)
+        ? Array.Empty<KeyValuePair<string, string>>()
+        : new[] { new KeyValuePair<string, string>(targetPlatformArg, targetPlatform) };
+
+      var parsedArguments = argMatches
+        .Select(match => new KeyValuePair<string, string>(match.Groups[nameGroup].Value, match.Groups[valueGroup].Value));
+
+      var args = builtInArgs
+        .Concat(parsedArguments)
         .Concat(_buildArguments)
         .GroupBy(kvp => kvp.Key)
         .ToDictionary(group => group.Key, group => group.Last().Value);
@@ -168,8 +190,24 @@ namespace DotNet.Testcontainers.Images
         .Where(item => !stages.Contains(item.Image))
         .Select(item =>
         {
+          string platform;
+
           var fromArgs = ParseFromArgs(item.FromArgs).ToDictionary(arg => arg.Name, arg => arg.Value);
-          _ = fromArgs.TryGetValue("platform", out var platform);
+
+          if (!fromArgs.TryGetValue("platform", out var fromPlatform))
+          {
+              platform = targetPlatform;
+          }
+          else if (fromPlatform != null && fromPlatform.Contains("$"))
+          {
+              // The Docker daemon rejects unresolved variables such as $BUILDPLATFORM.
+              platform = null;
+          }
+          else
+          {
+              platform = fromPlatform;
+          }
+
           return new DockerImage(item.Image, new Platform(platform));
         })
         .ToArray();
@@ -186,49 +224,65 @@ namespace DotNet.Testcontainers.Images
 
       var dockerfileArchiveFileName = Regex.Replace(_image.FullName, "[^a-zA-Z0-9]", "-", RegexOptions.None, TimeSpan.FromSeconds(1)).ToLowerInvariant();
 
-      var dockerfileArchiveFilePath = Path.Combine(Path.GetTempPath(), $"{dockerfileArchiveFileName}.tar");
+      // Image builds that run at the same time must not share the tar archive,
+      // even if they build the same image.
+      var dockerfileArchiveFilePath = Path.Combine(Path.GetTempPath(), dockerfileArchiveFileName + "-" + Guid.NewGuid().ToString("D") + ".tar");
 
       var baseDirectoryLength = _contextDirectory.FullName.TrimEnd(Path.DirectorySeparatorChar).Length + 1;
 
-      using (var tarOutputFileStream = new FileStream(dockerfileArchiveFilePath, FileMode.Create, FileAccess.Write))
+      try
       {
-        using (var tarOutputStream = new TarOutputStream(tarOutputFileStream, Encoding.Default))
+        using (var tarOutputFileStream = new FileStream(dockerfileArchiveFilePath, FileMode.Create, FileAccess.Write))
         {
-          tarOutputStream.IsStreamOwner = false;
-
-          foreach (var absoluteFilePath in GetFiles(_contextDirectory.FullName))
+          using (var tarOutputStream = new TarOutputStream(tarOutputFileStream, Encoding.Default))
           {
-            // SharpZipLib drops the root path: https://github.com/icsharpcode/SharpZipLib/pull/582.
-            var relativeFilePath = absoluteFilePath.Substring(baseDirectoryLength);
+            tarOutputStream.IsStreamOwner = false;
 
-            if (dockerIgnoreFile.Denies(relativeFilePath))
+            foreach (var absoluteFilePath in GetFiles(_contextDirectory.FullName))
             {
-              continue;
+              // SharpZipLib drops the root path: https://github.com/icsharpcode/SharpZipLib/pull/582.
+              var relativeFilePath = absoluteFilePath.Substring(baseDirectoryLength);
+
+              if (dockerIgnoreFile.Denies(relativeFilePath))
+              {
+                continue;
+              }
+
+              // If the build context already has a `Dockerfile`, we need to ignore it and
+              // instead use the one from the specified Dockerfile directory, which might be
+              // different.
+              if (_dockerfile.Name.Equals(relativeFilePath, StringComparison.Ordinal))
+              {
+                continue;
+              }
+
+              await AddAsync(absoluteFilePath, relativeFilePath, tarOutputStream)
+                .ConfigureAwait(false);
             }
 
-            // If the build context already has a `Dockerfile`, we need to ignore it and
-            // instead use the one from the specified Dockerfile directory, which might be
-            // different.
-            if (_dockerfile.Name.Equals(relativeFilePath, StringComparison.Ordinal))
-            {
-              continue;
-            }
+            var dockerfileDirectoryLength = _dockerfileDirectory.FullName
+              .TrimEnd(Path.DirectorySeparatorChar).Length + 1;
 
-            await AddAsync(absoluteFilePath, relativeFilePath, tarOutputStream)
+            var dockerfileRelativeFilePath = _dockerfile.FullName
+              .Substring(dockerfileDirectoryLength);
+
+            var dockerfileNormalizedRelativeFilePath = Unix.Instance.NormalizePath(dockerfileRelativeFilePath);
+
+            await AddAsync(_dockerfile.FullName, dockerfileNormalizedRelativeFilePath, tarOutputStream)
               .ConfigureAwait(false);
           }
-
-          var dockerfileDirectoryLength = _dockerfileDirectory.FullName
-            .TrimEnd(Path.DirectorySeparatorChar).Length + 1;
-
-          var dockerfileRelativeFilePath = _dockerfile.FullName
-            .Substring(dockerfileDirectoryLength);
-
-          var dockerfileNormalizedRelativeFilePath = Unix.Instance.NormalizePath(dockerfileRelativeFilePath);
-
-          await AddAsync(_dockerfile.FullName, dockerfileNormalizedRelativeFilePath, tarOutputStream)
-            .ConfigureAwait(false);
         }
+      }
+      catch
+      {
+        // The caller removes the tar archive,
+        // but it does not get the path of an incomplete one.
+        if (File.Exists(dockerfileArchiveFilePath))
+        {
+          File.Delete(dockerfileArchiveFilePath);
+        }
+
+        throw;
       }
 
       return dockerfileArchiveFilePath;
