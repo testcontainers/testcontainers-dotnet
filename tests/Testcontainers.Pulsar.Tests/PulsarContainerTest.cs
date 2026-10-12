@@ -36,7 +36,7 @@ public abstract class PulsarContainerTest : IAsyncLifetime
         // Given
         const string helloPulsar = "Hello, Pulsar!";
 
-        var topic = $"persistent://public/default/{Guid.NewGuid():D}";
+        var topic = "persistent://public/default/" + Guid.NewGuid().ToString("D");
 
         var name = Guid.NewGuid().ToString("D");
 

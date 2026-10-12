@@ -226,7 +226,7 @@ namespace DotNet.Testcontainers.Images
 
       // Image builds that run at the same time must not share the tar archive,
       // even if they build the same image.
-      var dockerfileArchiveFilePath = Path.Combine(Path.GetTempPath(), $"{dockerfileArchiveFileName}-{Guid.NewGuid():D}.tar");
+      var dockerfileArchiveFilePath = Path.Combine(Path.GetTempPath(), dockerfileArchiveFileName + "-" + Guid.NewGuid().ToString("D") + ".tar");
 
       var baseDirectoryLength = _contextDirectory.FullName.TrimEnd(Path.DirectorySeparatorChar).Length + 1;
 
