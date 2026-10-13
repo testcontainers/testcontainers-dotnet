@@ -7,6 +7,7 @@ namespace DotNet.Testcontainers.Tests.Unit
   using System.Runtime.InteropServices;
   using System.Text.Json;
   using DotNet.Testcontainers.Builders;
+  using DotNet.Testcontainers.Commons;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Images;
   using Microsoft.Extensions.Logging;
@@ -250,43 +251,45 @@ namespace DotNet.Testcontainers.Tests.Unit
       }
     }
 
-    public sealed class DockerConfigProviderTest : SetEnvVarPath
+    public sealed class CredentialLookupOrderTest : SetEnvVarPath, IDisposable
     {
+      private readonly string _dockerConfigDirectoryPath = Path.Combine(TestSession.TempDirectoryPath, Guid.NewGuid().ToString("D"));
+
+      private readonly WarnLogger _warnLogger = new WarnLogger();
+
+      public CredentialLookupOrderTest()
+      {
+        _ = Directory.CreateDirectory(_dockerConfigDirectoryPath);
+      }
+
+      public void Dispose()
+      {
+        Directory.Delete(_dockerConfigDirectoryPath, true);
+      }
+
       [Fact]
       public void ShouldNotSearchRemainingProvidersAfterCredentialIsFound()
       {
         // Given
         var hostname = Guid.NewGuid().ToString("D");
-
-        var dockerConfigDirectoryPath = Path.Combine(Path.GetTempPath(), hostname);
-
         var credHelpersScriptName = Path.ChangeExtension("password", RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "bat" : "sh");
 
+        // The invalid `auth` value logs a warning if the auths node is searched.
         var jsonDocument = "{\"credHelpers\":{\"" + hostname + "\":\"" + credHelpersScriptName + "\"},\"auths\":{\"" + hostname + "\":{\"auth\":\"Not_Base64_encoded\"}}}";
+        File.WriteAllText(Path.Combine(_dockerConfigDirectoryPath, "config.json"), jsonDocument);
 
-        var warnLogger = new WarnLogger();
+        ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { "docker.config=" + _dockerConfigDirectoryPath });
 
-        _ = Directory.CreateDirectory(dockerConfigDirectoryPath);
+        // When
+        var authenticationProvider = new DockerRegistryAuthenticationProvider(new DockerConfig(customConfiguration), _warnLogger);
+        var authConfig = authenticationProvider.GetAuthConfig(hostname);
 
-        try
-        {
-          File.WriteAllText(Path.Combine(dockerConfigDirectoryPath, "config.json"), jsonDocument);
-
-          ICustomConfiguration customConfiguration = new PropertiesFileConfiguration(new[] { "docker.config=" + dockerConfigDirectoryPath });
-
-          // When
-          var authenticationProvider = new DockerRegistryAuthenticationProvider(new DockerConfig(customConfiguration), warnLogger);
-          var authConfig = authenticationProvider.GetAuthConfig(hostname);
-
-          // Then
-          Assert.Equal("username", authConfig.Username);
-          Assert.Equal("password", authConfig.Password);
-          Assert.Empty(warnLogger.LogMessages);
-        }
-        finally
-        {
-          Directory.Delete(dockerConfigDirectoryPath, true);
-        }
+        // Then
+        Assert.NotNull(authConfig);
+        Assert.Equal(hostname, authConfig.RegistryEndpoint);
+        Assert.Equal("username", authConfig.Username);
+        Assert.Equal("password", authConfig.Password);
+        Assert.Empty(_warnLogger.LogMessages);
       }
     }
 
