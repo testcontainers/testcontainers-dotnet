@@ -13,6 +13,7 @@
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="../Testcontainers.*.Tests/Testcontainers.*.Tests.csproj"/>
+        <ProjectReference Remove="../Testcontainers.TUnit.Tests/Testcontainers.TUnit.Tests.csproj"/>
         <ProjectReference Remove="../Testcontainers.Xunit.Tests/Testcontainers.Xunit.Tests.csproj"/>
         <ProjectReference Remove="../Testcontainers.XunitV3.Tests/Testcontainers.XunitV3.Tests.csproj"/>
         <ProjectReference Remove="Testcontainers.Databases.Tests.csproj"/>
