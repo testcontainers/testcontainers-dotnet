@@ -15,8 +15,18 @@ namespace DotNet.Testcontainers.Tests.Unit
   using Microsoft.Extensions.Logging.Abstractions;
   using Xunit;
 
-  public sealed class ImageFromDockerfileTest
+  public sealed class ImageFromDockerfileTest : IDisposable
   {
+    private readonly IList<string> _dockerfileArchiveFilePaths = new List<string>();
+
+    public void Dispose()
+    {
+      foreach (var dockerfileArchiveFilePath in _dockerfileArchiveFilePaths)
+      {
+        File.Delete(dockerfileArchiveFilePath);
+      }
+    }
+
     [Fact]
     public void DockerfileArchiveGetBaseImages()
     {
@@ -106,6 +116,8 @@ namespace DotNet.Testcontainers.Tests.Unit
       var dockerfileArchiveFilePath = await dockerfileArchive.Tar(TestContext.Current.CancellationToken)
         .ConfigureAwait(true);
 
+      _dockerfileArchiveFilePaths.Add(dockerfileArchiveFilePath);
+
       // When
       using (var tarOut = new FileStream(dockerfileArchiveFilePath, FileMode.Open, FileAccess.Read))
       {
@@ -118,6 +130,30 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       // Then
       Assert.Equal(expected, actual);
+    }
+
+    [Fact]
+    public async Task DockerfileArchiveTarCreatesUniqueFile()
+    {
+      // Given
+      IImage image = new DockerImage("localhost/testcontainers", Guid.NewGuid().ToString("D"), string.Empty);
+
+      var buildArguments = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>());
+
+      var dockerfileArchive = new DockerfileArchive(null, "Assets/", "Dockerfile", image, buildArguments, NullLogger.Instance);
+
+      // When
+      var dockerfileArchiveFilePath1 = await dockerfileArchive.Tar(TestContext.Current.CancellationToken)
+        .ConfigureAwait(true);
+
+      var dockerfileArchiveFilePath2 = await dockerfileArchive.Tar(TestContext.Current.CancellationToken)
+        .ConfigureAwait(true);
+
+      _dockerfileArchiveFilePaths.Add(dockerfileArchiveFilePath1);
+      _dockerfileArchiveFilePaths.Add(dockerfileArchiveFilePath2);
+
+      // Then
+      Assert.NotEqual(dockerfileArchiveFilePath1, dockerfileArchiveFilePath2);
     }
 
     [Fact]
@@ -138,6 +174,8 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       var dockerfileArchiveFilePath = await dockerfileArchive.Tar(TestContext.Current.CancellationToken)
         .ConfigureAwait(true);
+
+      _dockerfileArchiveFilePaths.Add(dockerfileArchiveFilePath);
 
       // When
       using (var tarOut = new FileStream(dockerfileArchiveFilePath, FileMode.Open, FileAccess.Read))
