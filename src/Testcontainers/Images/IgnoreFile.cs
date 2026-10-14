@@ -13,7 +13,7 @@ namespace DotNet.Testcontainers.Images
   {
     private static readonly ISearchAndReplace<string>[] PrepareRegex = { default(EscapeRegex), default(PrepareRecursiveWildcards), default(PrepareNonRecursiveWildcards), default(PrepareZeroOrOneQuantifier) };
 
-    private readonly IEnumerable<KeyValuePair<Regex, bool>> _ignorePatterns;
+    private readonly KeyValuePair<Regex, bool>[] _ignorePatterns;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="IgnoreFile" /> class.
@@ -24,11 +24,6 @@ namespace DotNet.Testcontainers.Images
     public IgnoreFile(IEnumerable<string> patterns, ILogger logger)
     {
       _ignorePatterns = patterns
-        .AsParallel()
-
-        // Keep the order.
-        .AsOrdered()
-
         // Trim each line.
         .Select(line => line.Trim())
 
@@ -126,8 +121,16 @@ namespace DotNet.Testcontainers.Images
     /// <returns>True if the file path does not match any ignore pattern, otherwise false.</returns>
     public bool Accepts(string file)
     {
-      var matches = _ignorePatterns.AsParallel().Where(ignorePattern => ignorePattern.Key.IsMatch(file)).ToArray();
-      return matches.Length == 0 || matches[matches.Length - 1].Value;
+      // The last pattern that matches the file path decides whether it is accepted or not.
+      for (var i = _ignorePatterns.Length - 1; i >= 0; i--)
+      {
+        if (_ignorePatterns[i].Key.IsMatch(file))
+        {
+          return _ignorePatterns[i].Value;
+        }
+      }
+
+      return true;
     }
 
     /// <summary>
