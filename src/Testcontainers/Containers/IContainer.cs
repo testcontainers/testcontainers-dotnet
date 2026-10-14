@@ -195,6 +195,9 @@ namespace DotNet.Testcontainers.Containers
     /// <summary>
     /// Resolves all public assigned host ports.
     /// </summary>
+    /// <remarks>
+    /// Resolves the public assigned host port for the TCP protocol if a container port is mapped for more than one protocol. To resolve a specific protocol, use <see cref="GetMappedPublicPort(string)" />.
+    /// </remarks>
     /// <returns>Returns all public assigned host ports.</returns>
     /// <exception cref="InvalidOperationException">Container has not been created.</exception>
     IReadOnlyDictionary<ushort, ushort> GetMappedPublicPorts();
