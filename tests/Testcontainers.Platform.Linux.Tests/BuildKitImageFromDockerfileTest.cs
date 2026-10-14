@@ -360,6 +360,8 @@ public sealed class BuildKitImageFromDockerfileTest
         // that built it, which carries the build secrets.
         using var dockerClient = TestcontainersSettings.OS.DockerEndpointAuthConfig.GetDockerClientBuilder(Guid.NewGuid()).Build();
 
+        var labelValue = Guid.NewGuid().ToString("D");
+
         // Derive a Docker CLI image for this test only. The ancestor filter resolves
         // the image id, so an image of its own makes the Docker CLI container of this
         // test the only container that the filter matches, independent of the image
@@ -367,7 +369,7 @@ public sealed class BuildKitImageFromDockerfileTest
         await using var cliImage = new ImageFromDockerfileBuilder()
             .WithDockerfileDirectory(CreateDockerfileDirectory($"""
                 FROM {CommonImages.DockerCli.FullName}
-                LABEL "org.testcontainers.docker-cli"="{Guid.NewGuid():D}"
+                LABEL "org.testcontainers.docker-cli"="{labelValue}"
                 """))
             .Build();
 
