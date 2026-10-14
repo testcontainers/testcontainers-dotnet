@@ -128,6 +128,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="ct">The optional cancellation token to cancel the waiting operation.</param>
     /// <exception cref="TimeoutException">Thrown when the timeout expires.</exception>
     /// <exception cref="RetryLimitExceededException">Thrown when the number of retries is exceeded.</exception>
+    /// <exception cref="OperationCanceledException">Thrown when the waiting operation gets canceled.</exception>
     /// <returns>A task that represents the asynchronous block operation.</returns>
     [PublicAPI]
     public static Task WaitWhileAsync(Func<Task<bool>> wait, TimeSpan interval, TimeSpan timeout, int retries = 0, CancellationToken ct = default)
@@ -148,6 +149,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="ct">The optional cancellation token to cancel the waiting operation.</param>
     /// <exception cref="TimeoutException">Thrown when the timeout expires.</exception>
     /// <exception cref="RetryLimitExceededException">Thrown when the number of retries is exceeded.</exception>
+    /// <exception cref="OperationCanceledException">Thrown when the waiting operation gets canceled.</exception>
     /// <returns>A task that represents the asynchronous block operation.</returns>
     [PublicAPI]
     public static Task WaitUntilAsync(Func<Task<bool>> wait, TimeSpan interval, TimeSpan timeout, int retries = 0, CancellationToken ct = default)
@@ -166,6 +168,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="ct">The cancellation token to cancel the waiting operation.</param>
     /// <exception cref="TimeoutException">Thrown when the timeout expires.</exception>
     /// <exception cref="RetryLimitExceededException">Thrown when the number of retries is exceeded.</exception>
+    /// <exception cref="OperationCanceledException">Thrown when the waiting operation gets canceled.</exception>
     /// <returns>A task that represents the asynchronous block operation.</returns>
     private static async Task WaitAsync(Func<Task<bool>> wait, bool expected, TimeSpan interval, TimeSpan timeout, int retries, CancellationToken ct)
     {
@@ -180,10 +183,11 @@ namespace DotNet.Testcontainers.Configurations
           var isTimeoutTask = timeoutTask == await Task.WhenAny(waitTask, timeoutTask)
             .ConfigureAwait(false);
 
+          // Either task can complete first when the waiting operation is canceled.
+          ct.ThrowIfCancellationRequested();
+
           if (isTimeoutTask)
           {
-            // The timeout task completes when the waiting operation is canceled too.
-            ct.ThrowIfCancellationRequested();
             throw new TimeoutException();
           }
 
@@ -210,7 +214,7 @@ namespace DotNet.Testcontainers.Configurations
           var actual = await wait.Invoke()
             .ConfigureAwait(false);
 
-          if (expected.Equals(actual))
+          if (actual == expected)
           {
             break;
           }
