@@ -170,6 +170,43 @@ namespace DotNet.Testcontainers.Tests.Unit
       }
 
       [Fact]
+      public async Task StaticTcpAndUdpPortBinding()
+      {
+        // Given
+        const ushort containerPort = 53;
+
+        const string tcpContainerPort = "53/tcp";
+
+        const string udpContainerPort = "53/udp";
+
+        // Bind two TCP sockets at the same time to get two distinct host ports.
+        using var tcpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        tcpSocket.Bind(new IPEndPoint(IPAddress.Loopback, 0));
+        var tcpHostPort = ((IPEndPoint)tcpSocket.LocalEndPoint).Port;
+
+        using var udpSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        udpSocket.Bind(new IPEndPoint(IPAddress.Loopback, 0));
+        var udpHostPort = ((IPEndPoint)udpSocket.LocalEndPoint).Port;
+
+        await using var container = new ContainerBuilder(CommonImages.Alpine)
+          .WithEntrypoint(CommonCommands.SleepInfinity)
+          .WithPortBinding(tcpHostPort.ToString(CultureInfo.InvariantCulture), tcpContainerPort)
+          .WithPortBinding(udpHostPort.ToString(CultureInfo.InvariantCulture), udpContainerPort)
+          .Build();
+
+        // When
+        await container.StartAsync(TestContext.Current.CancellationToken)
+          .ConfigureAwait(true);
+
+        // Then
+        var mappedPublicPort = Assert.Single(container.GetMappedPublicPorts());
+        Assert.Equal(containerPort, mappedPublicPort.Key);
+        Assert.Equal(tcpHostPort, mappedPublicPort.Value);
+        Assert.Equal(tcpHostPort, container.GetMappedPublicPort());
+        Assert.Equal(udpHostPort, container.GetMappedPublicPort(udpContainerPort));
+      }
+
+      [Fact]
       public async Task RandomUdpPortBinding()
       {
         // Given
@@ -188,31 +225,6 @@ namespace DotNet.Testcontainers.Tests.Unit
 
         // Then
         Assert.NotEqual(containerPort, container.GetMappedPublicPort(qualifiedContainerPort));
-      }
-
-      [Fact]
-      public async Task RandomTcpAndUdpPortBinding()
-      {
-        // Given
-        const string tcpContainerPort = "53/tcp";
-
-        const string udpContainerPort = "53/udp";
-
-        await using var container = new ContainerBuilder(CommonImages.Alpine)
-          .WithEntrypoint(CommonCommands.SleepInfinity)
-          .WithPortBinding(tcpContainerPort, true)
-          .WithPortBinding(udpContainerPort, true)
-          .Build();
-
-        // When
-        await container.StartAsync(TestContext.Current.CancellationToken)
-          .ConfigureAwait(true);
-
-        // Then
-        var mappedPublicPort = Assert.Single(container.GetMappedPublicPorts());
-        Assert.Equal(53, mappedPublicPort.Key);
-        Assert.Equal(container.GetMappedPublicPort(tcpContainerPort), mappedPublicPort.Value);
-        Assert.Equal(container.GetMappedPublicPort(tcpContainerPort), container.GetMappedPublicPort());
       }
 
       [Fact]

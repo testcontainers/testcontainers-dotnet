@@ -298,19 +298,14 @@ namespace DotNet.Testcontainers.Containers
           {
             return kvp.Key.Contains('/') && kvp.Value != null && kvp.Value.Count > 0;
           })
-        .GroupBy(
+        .OrderBy(
           kvp =>
           {
-            return kvp.Key.Substring(0, kvp.Key.IndexOf('/'));
+            // A port can be mapped for more than one protocol (e.g. 53/tcp and
+            // 53/udp). Like GetMappedPublicPort(int), prefer the TCP port binding.
+            return kvp.Key.EndsWith("/tcp", StringComparison.OrdinalIgnoreCase) ? 0 : 1;
           })
-        .Select(
-          portBindings =>
-          {
-            // A port can be mapped for more than one protocol (e.g. 53/tcp and 53/udp).
-            // Like GetMappedPublicPort(int), prefer the TCP port binding.
-            return portBindings.OrderBy(kvp => kvp.Key.EndsWith("/tcp", StringComparison.OrdinalIgnoreCase) ? 0 : 1).First();
-          })
-        .ToDictionary(
+        .GroupBy(
           kvp =>
           {
             var containerPort = kvp.Key.Substring(0, kvp.Key.IndexOf('/'));
@@ -320,6 +315,15 @@ namespace DotNet.Testcontainers.Containers
           {
             var hostPort = kvp.Value[0].HostPort;
             return ushort.Parse(hostPort);
+          })
+        .ToDictionary(
+          hostPorts =>
+          {
+            return hostPorts.Key;
+          },
+          hostPorts =>
+          {
+            return hostPorts.First();
           });
     }
 
