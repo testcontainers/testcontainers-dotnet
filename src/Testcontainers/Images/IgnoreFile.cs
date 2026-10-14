@@ -24,11 +24,6 @@ namespace DotNet.Testcontainers.Images
     public IgnoreFile(IEnumerable<string> patterns, ILogger logger)
     {
       _ignorePatterns = patterns
-        .AsParallel()
-
-        // Keep the order.
-        .AsOrdered()
-
         // Trim each line.
         .Select(line => line.Trim())
 
