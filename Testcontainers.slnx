@@ -23,6 +23,7 @@
         <Project Path="src/Testcontainers.BigQuery/Testcontainers.BigQuery.csproj"/>
         <Project Path="src/Testcontainers.Bigtable/Testcontainers.Bigtable.csproj"/>
         <Project Path="src/Testcontainers.Cassandra/Testcontainers.Cassandra.csproj"/>
+        <Project Path="src/Testcontainers.Chroma/Testcontainers.Chroma.csproj"/>
         <Project Path="src/Testcontainers.ClickHouse/Testcontainers.ClickHouse.csproj"/>
         <Project Path="src/Testcontainers.CockroachDb/Testcontainers.CockroachDb.csproj"/>
         <Project Path="src/Testcontainers.Consul/Testcontainers.Consul.csproj"/>
@@ -91,6 +92,7 @@
         <Project Path="tests/Testcontainers.BigQuery.Tests/Testcontainers.BigQuery.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Bigtable.Tests/Testcontainers.Bigtable.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Cassandra.Tests/Testcontainers.Cassandra.Tests.csproj"/>
+        <Project Path="tests/Testcontainers.Chroma.Tests/Testcontainers.Chroma.Tests.csproj"/>
         <Project Path="tests/Testcontainers.ClickHouse.Tests/Testcontainers.ClickHouse.Tests.csproj"/>
         <Project Path="tests/Testcontainers.CockroachDb.Tests/Testcontainers.CockroachDb.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Commons/Testcontainers.Commons.csproj"/>

@@ -1,0 +1,2 @@
+FROM chromadb/chroma:1.5.9@sha256:1e0b73a187a28757c572acba508c46f48c9e8b0acaf5c20e6d95cdedce1acdf6
+FROM chromadb/chroma:0.5.15@sha256:7c44cf61eb3f210fa8641c6c943d5621b9626ce863d89247183ffde37717e576 AS v1
