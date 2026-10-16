@@ -779,13 +779,24 @@ namespace DotNet.Testcontainers.Builders
     /// <remarks>
     /// Containers built from the same builder share the connection string
     /// provider. To create a connection string provider for each container,
-    /// use <see cref="WithConnectionStringProvider(Func{IConnectionStringProvider{TContainerEntity, TConfigurationEntity}})" />.
+    /// use <see cref="WithConnectionStringProvider(IConnectionStringProviderFactory{TContainerEntity, TConfigurationEntity})" />.
     /// </remarks>
     /// <param name="connectionStringProvider">The connection string provider.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
-    [Obsolete("Use WithConnectionStringProvider(Func<IConnectionStringProvider<TContainerEntity, TConfigurationEntity>>) instead.")]
+    [Obsolete("Use WithConnectionStringProvider(IConnectionStringProviderFactory<TContainerEntity, TConfigurationEntity>) or WithConnectionStringProvider(Func<IConnectionStringProvider<TContainerEntity, TConfigurationEntity>>) instead.")]
     TBuilderEntity WithConnectionStringProvider(IConnectionStringProvider<TContainerEntity, TConfigurationEntity> connectionStringProvider);
+
+    /// <summary>
+    /// Sets the connection string provider factory.
+    /// </summary>
+    /// <remarks>
+    /// The factory creates a connection string provider each time a container starts.
+    /// </remarks>
+    /// <param name="connectionStringProviderFactory">The connection string provider factory.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithConnectionStringProvider(IConnectionStringProviderFactory<TContainerEntity, TConfigurationEntity> connectionStringProviderFactory);
 
     /// <summary>
     /// Sets the connection string provider factory.

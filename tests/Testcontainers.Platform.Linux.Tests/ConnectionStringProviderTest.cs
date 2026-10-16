@@ -77,7 +77,7 @@ public static class ConnectionStringProviderTests
         {
             var containerBuilder = new ContainerBuilder(CommonImages.Alpine)
                 .WithCommand(CommonCommands.SleepInfinity)
-                .WithConnectionStringProvider(() => new ContainerIdConnectionStringProvider());
+                .WithConnectionStringProvider(new ContainerIdConnectionStringProviderFactory());
 
             _container1 = containerBuilder.Build();
             _container2 = containerBuilder.Build();
@@ -106,6 +106,14 @@ public static class ConnectionStringProviderTests
         {
             Assert.Equal(_container1.Id, _container1.GetConnectionString());
             Assert.Equal(_container2.Id, _container2.GetConnectionString());
+        }
+    }
+
+    private sealed class ContainerIdConnectionStringProviderFactory : IConnectionStringProviderFactory<IContainer, IContainerConfiguration>
+    {
+        public IConnectionStringProvider<IContainer, IContainerConfiguration> Create()
+        {
+            return new ContainerIdConnectionStringProvider();
         }
     }
 
