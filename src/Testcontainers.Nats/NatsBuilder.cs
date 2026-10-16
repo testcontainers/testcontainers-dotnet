@@ -109,7 +109,7 @@ public sealed class NatsBuilder : ContainerBuilder<NatsBuilder, NatsContainer, N
             .WithCommand("--jetstream")
             .WithCommand("--debug")
             .WithCommand("--trace")
-            .WithConnectionStringProvider(new NatsConnectionStringProvider())
+            .WithConnectionStringProvider(() => new NatsConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
                 request.ForPath("/healthz").ForPort(NatsHttpManagementPort)));
     }

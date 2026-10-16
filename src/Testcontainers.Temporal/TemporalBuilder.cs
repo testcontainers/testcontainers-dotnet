@@ -66,7 +66,7 @@ public sealed class TemporalBuilder : ContainerBuilder<TemporalBuilder, Temporal
             .WithPortBinding(TemporalGrpcPort, true)
             .WithPortBinding(TemporalHttpPort, true)
             .WithCommand("server", "start-dev", "--ip", "0.0.0.0")
-            .WithConnectionStringProvider(new TemporalConnectionStringProvider())
+            .WithConnectionStringProvider(() => new TemporalConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer()
                 .UntilExternalTcpPortIsAvailable(TemporalGrpcPort)
                 .UntilExternalTcpPortIsAvailable(TemporalHttpPort)

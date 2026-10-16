@@ -79,7 +79,7 @@ public sealed class CosmosDbBuilder : ContainerBuilder<CosmosDbBuilder, CosmosDb
             .WithPortBinding(CosmosDbPort, true)
             .WithEnvironment("ENABLE_EXPLORER", "false")
             .WithEnvironment("ENABLE_TELEMETRY", "false")
-            .WithConnectionStringProvider(new CosmosDbConnectionStringProvider())
+            .WithConnectionStringProvider(() => new CosmosDbConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Started"));
     }
 

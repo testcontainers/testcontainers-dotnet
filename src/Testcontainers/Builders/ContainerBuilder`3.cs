@@ -493,9 +493,16 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
+    [Obsolete("Use WithConnectionStringProvider(Func<IConnectionStringProvider<TContainerEntity, TConfigurationEntity>>) instead.")]
     public TBuilderEntity WithConnectionStringProvider(IConnectionStringProvider<TContainerEntity, TConfigurationEntity> connectionStringProvider)
     {
-      return Clone(new ContainerConfiguration(connectionStringProvider: new ConnectionStringProvider<TContainerEntity, TConfigurationEntity>(connectionStringProvider)));
+      return WithConnectionStringProvider(() => connectionStringProvider);
+    }
+
+    /// <inheritdoc />
+    public TBuilderEntity WithConnectionStringProvider(Func<IConnectionStringProvider<TContainerEntity, TConfigurationEntity>> connectionStringProviderFactory)
+    {
+      return Clone(new ContainerConfiguration(connectionStringProvider: new ConnectionStringProvider<TContainerEntity, TConfigurationEntity>(connectionStringProviderFactory)));
     }
 
     /// <inheritdoc />

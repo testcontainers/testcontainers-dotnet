@@ -14,7 +14,7 @@ public static class ConnectionStringProviderTests
         {
             _container = new ContainerBuilder(CommonImages.Alpine)
                 .WithCommand(CommonCommands.SleepInfinity)
-                .WithConnectionStringProvider(_connectionStringProvider)
+                .WithConnectionStringProvider(() => _connectionStringProvider)
                 .Build();
         }
 
@@ -77,7 +77,7 @@ public static class ConnectionStringProviderTests
         {
             var containerBuilder = new ContainerBuilder(CommonImages.Alpine)
                 .WithCommand(CommonCommands.SleepInfinity)
-                .WithConnectionStringProvider(new ContainerIdConnectionStringProvider());
+                .WithConnectionStringProvider(() => new ContainerIdConnectionStringProvider());
 
             _container1 = containerBuilder.Build();
             _container2 = containerBuilder.Build();

@@ -80,7 +80,7 @@ public sealed class FlociBuilder : ContainerBuilder<FlociBuilder, FlociContainer
     {
         return base.Init()
             .WithPortBinding(FlociPort, true)
-            .WithConnectionStringProvider(new FlociConnectionStringProvider())
+            .WithConnectionStringProvider(() => new FlociConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
                 request.ForPath("/_floci/health").ForPort(FlociPort)));
     }
