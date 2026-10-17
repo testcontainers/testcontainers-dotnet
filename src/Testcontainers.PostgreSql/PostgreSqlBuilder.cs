@@ -216,7 +216,7 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
             .WithCommand("-c", "fsync=off")
             .WithCommand("-c", "full_page_writes=off")
             .WithCommand("-c", "synchronous_commit=off")
-            .WithConnectionStringProvider(new PostgreSqlConnectionStringProvider());
+            .WithConnectionStringProvider(() => new PostgreSqlConnectionStringProvider());
     }
 
     /// <inheritdoc />

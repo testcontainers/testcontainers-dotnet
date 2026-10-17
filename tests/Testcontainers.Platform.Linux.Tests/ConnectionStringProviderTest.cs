@@ -14,7 +14,7 @@ public static class ConnectionStringProviderTests
         {
             _container = new ContainerBuilder(CommonImages.Alpine)
                 .WithCommand(CommonCommands.SleepInfinity)
-                .WithConnectionStringProvider(_connectionStringProvider)
+                .WithConnectionStringProvider(() => _connectionStringProvider)
                 .Build();
         }
 
@@ -64,6 +64,64 @@ public static class ConnectionStringProviderTests
             IConnectionStringProvider connectionStringProvider = _container;
             Assert.Throws<ConnectionStringProviderNotConfiguredException>(() => connectionStringProvider.GetConnectionString());
             Assert.Throws<ConnectionStringProviderNotConfiguredException>(() => connectionStringProvider.GetConnectionString("name"));
+        }
+    }
+
+    public sealed class SharedBuilder : IAsyncLifetime
+    {
+        private readonly IContainer _container1;
+
+        private readonly IContainer _container2;
+
+        public SharedBuilder()
+        {
+            var containerBuilder = new ContainerBuilder(CommonImages.Alpine)
+                .WithCommand(CommonCommands.SleepInfinity)
+                .WithConnectionStringProvider(new ContainerIdConnectionStringProviderFactory());
+
+            _container1 = containerBuilder.Build();
+            _container2 = containerBuilder.Build();
+        }
+
+        public async ValueTask InitializeAsync()
+        {
+            await _container1.StartAsync()
+                .ConfigureAwait(false);
+
+            await _container2.StartAsync()
+                .ConfigureAwait(false);
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            await _container1.DisposeAsync()
+                .ConfigureAwait(false);
+
+            await _container2.DisposeAsync()
+                .ConfigureAwait(false);
+        }
+
+        [Fact]
+        public void GetConnectionStringReturnsValueOfItsOwnContainer()
+        {
+            Assert.Equal(_container1.Id, _container1.GetConnectionString());
+            Assert.Equal(_container2.Id, _container2.GetConnectionString());
+        }
+    }
+
+    private sealed class ContainerIdConnectionStringProviderFactory : IConnectionStringProviderFactory<IContainer, IContainerConfiguration>
+    {
+        public IConnectionStringProvider<IContainer, IContainerConfiguration> Create()
+        {
+            return new ContainerIdConnectionStringProvider();
+        }
+    }
+
+    private sealed class ContainerIdConnectionStringProvider : ContainerConnectionStringProvider<IContainer, IContainerConfiguration>
+    {
+        protected override string GetHostConnectionString()
+        {
+            return Container.Id;
         }
     }
 

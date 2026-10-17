@@ -168,7 +168,7 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
             .WithPortBinding(TablePort, true)
             .WithEntrypoint("azurite")
             .WithCommand("--blobHost", "0.0.0.0", "--queueHost", "0.0.0.0", "--tableHost", "0.0.0.0")
-            .WithConnectionStringProvider(new AzuriteConnectionStringProvider());
+            .WithConnectionStringProvider(() => new AzuriteConnectionStringProvider());
     }
 
     /// <inheritdoc />

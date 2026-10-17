@@ -95,7 +95,7 @@ public sealed class LowkeyVaultBuilder : ContainerBuilder<LowkeyVaultBuilder, Lo
             .WithPortBinding(LowkeyVaultPort, true)
             .WithPortBinding(LowkeyVaultTokenPort, true)
             .WithArguments(new[] { "--LOWKEY_VAULT_RELAXED_PORTS=true" })
-            .WithConnectionStringProvider(new LowkeyVaultConnectionStringProvider())
+            .WithConnectionStringProvider(() => new LowkeyVaultConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("(?s).*Started LowkeyVaultApp.*$"));
     }
 

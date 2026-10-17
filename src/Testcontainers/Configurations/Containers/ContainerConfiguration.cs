@@ -39,7 +39,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="outputConsumer">The output consumer.</param>
     /// <param name="waitStrategies">The wait strategies.</param>
     /// <param name="startupCallback">The startup callback.</param>
-    /// <param name="connectionStringProvider">The connection string provider.</param>
+    /// <param name="connectionStringProviderFactory">The connection string provider factory.</param>
     /// <param name="autoRemove">A value indicating whether Docker removes the container after it exits or not.</param>
     /// <param name="privileged">A value indicating whether the privileged flag is set or not.</param>
     public ContainerConfiguration(
@@ -63,7 +63,7 @@ namespace DotNet.Testcontainers.Configurations
       IOutputConsumer outputConsumer = null,
       IEnumerable<WaitStrategy> waitStrategies = null,
       Func<IContainer, IContainerConfiguration, CancellationToken, Task> startupCallback = null,
-      IConnectionStringProvider<IContainer, IContainerConfiguration> connectionStringProvider = null,
+      Func<IContainer, IContainerConfiguration, IConnectionStringProvider> connectionStringProviderFactory = null,
       bool? autoRemove = null,
       bool? privileged = null)
     {
@@ -89,7 +89,7 @@ namespace DotNet.Testcontainers.Configurations
       OutputConsumer = outputConsumer;
       WaitStrategies = waitStrategies;
       StartupCallback = startupCallback;
-      ConnectionStringProvider = connectionStringProvider;
+      ConnectionStringProviderFactory = connectionStringProviderFactory;
     }
 
     /// <summary>
@@ -138,7 +138,7 @@ namespace DotNet.Testcontainers.Configurations
       OutputConsumer = BuildConfiguration.Combine(oldValue.OutputConsumer, newValue.OutputConsumer);
       WaitStrategies = BuildConfiguration.Combine<IEnumerable<WaitStrategy>>(oldValue.WaitStrategies, newValue.WaitStrategies);
       StartupCallback = BuildConfiguration.Combine(oldValue.StartupCallback, newValue.StartupCallback);
-      ConnectionStringProvider = BuildConfiguration.Combine(oldValue.ConnectionStringProvider, newValue.ConnectionStringProvider);
+      ConnectionStringProviderFactory = BuildConfiguration.Combine(oldValue.ConnectionStringProviderFactory, newValue.ConnectionStringProviderFactory);
       AutoRemove = (oldValue.AutoRemove.HasValue && oldValue.AutoRemove.Value) || (newValue.AutoRemove.HasValue && newValue.AutoRemove.Value);
       Privileged = (oldValue.Privileged.HasValue && oldValue.Privileged.Value) || (newValue.Privileged.HasValue && newValue.Privileged.Value);
     }
@@ -225,6 +225,6 @@ namespace DotNet.Testcontainers.Configurations
 
     /// <inheritdoc />
     [JsonIgnore]
-    public IConnectionStringProvider<IContainer, IContainerConfiguration> ConnectionStringProvider { get; }
+    public Func<IContainer, IContainerConfiguration, IConnectionStringProvider> ConnectionStringProviderFactory { get; }
   }
 }
