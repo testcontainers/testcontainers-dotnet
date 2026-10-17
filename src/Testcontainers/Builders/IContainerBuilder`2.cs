@@ -779,7 +779,8 @@ namespace DotNet.Testcontainers.Builders
     /// <remarks>
     /// Containers built from the same builder share the connection string
     /// provider. To create a connection string provider for each container,
-    /// use <see cref="WithConnectionStringProvider(IConnectionStringProviderFactory{TContainerEntity, TConfigurationEntity})" />.
+    /// use <see cref="WithConnectionStringProvider(IConnectionStringProviderFactory{TContainerEntity, TConfigurationEntity})" />
+    /// or <see cref="WithConnectionStringProvider(Func{IConnectionStringProvider{TContainerEntity, TConfigurationEntity}})" />.
     /// </remarks>
     /// <param name="connectionStringProvider">The connection string provider.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
