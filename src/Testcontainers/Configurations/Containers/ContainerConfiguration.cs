@@ -63,7 +63,7 @@ namespace DotNet.Testcontainers.Configurations
       IOutputConsumer outputConsumer = null,
       IEnumerable<WaitStrategy> waitStrategies = null,
       Func<IContainer, IContainerConfiguration, CancellationToken, Task> startupCallback = null,
-      IConnectionStringProviderFactory<IContainer, IContainerConfiguration> connectionStringProviderFactory = null,
+      Func<IContainer, IContainerConfiguration, IConnectionStringProvider> connectionStringProviderFactory = null,
       bool? autoRemove = null,
       bool? privileged = null)
     {
@@ -225,6 +225,6 @@ namespace DotNet.Testcontainers.Configurations
 
     /// <inheritdoc />
     [JsonIgnore]
-    public IConnectionStringProviderFactory<IContainer, IContainerConfiguration> ConnectionStringProviderFactory { get; }
+    public Func<IContainer, IContainerConfiguration, IConnectionStringProvider> ConnectionStringProviderFactory { get; }
   }
 }

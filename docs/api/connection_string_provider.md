@@ -29,7 +29,7 @@ var containerConnectionString = container.GetConnectionString(ConnectionMode.Con
 
 To create a custom provider, implement the generic interface: `IConnectionStringProvider<TContainer, TConfiguration>`. The `Configure(TContainer, TConfiguration)` method is invoked after the container has successfully started, ensuring that all runtime-assigned values are available.
 
-The builder takes a factory that creates a provider each time a container starts. Pass a delegate, as shown in the example above, or implement the generic interface: `IConnectionStringProviderFactory<TContainer, TConfiguration>`.
+The builder takes a factory that creates a provider each time a container starts. Pass a delegate, as shown in the example above, or implement the generic interface: `IConnectionStringProviderFactory<TContainer, TConfiguration>`. Return a new provider on each call. Otherwise, containers built from the same builder share the provider.
 
 === "Generic Builder"
     ```csharp

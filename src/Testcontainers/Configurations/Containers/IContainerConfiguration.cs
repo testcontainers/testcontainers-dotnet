@@ -129,6 +129,6 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Gets the connection string provider factory.
     /// </summary>
-    IConnectionStringProviderFactory<IContainer, IContainerConfiguration> ConnectionStringProviderFactory { get; }
+    Func<IContainer, IContainerConfiguration, IConnectionStringProvider> ConnectionStringProviderFactory { get; }
   }
 }

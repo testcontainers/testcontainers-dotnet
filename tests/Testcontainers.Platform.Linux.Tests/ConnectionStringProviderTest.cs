@@ -67,13 +67,13 @@ public static class ConnectionStringProviderTests
         }
     }
 
-    public sealed class Shared : IAsyncLifetime
+    public sealed class SharedBuilder : IAsyncLifetime
     {
         private readonly IContainer _container1;
 
         private readonly IContainer _container2;
 
-        public Shared()
+        public SharedBuilder()
         {
             var containerBuilder = new ContainerBuilder(CommonImages.Alpine)
                 .WithCommand(CommonCommands.SleepInfinity)

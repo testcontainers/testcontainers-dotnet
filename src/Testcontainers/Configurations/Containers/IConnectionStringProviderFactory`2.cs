@@ -15,7 +15,9 @@ namespace DotNet.Testcontainers.Configurations
     /// Creates a connection string provider.
     /// </summary>
     /// <remarks>
-    /// The method is invoked each time a container starts.
+    /// The method is invoked each time a container starts. Return a new
+    /// instance on each call; otherwise, containers built from the same
+    /// builder share the connection string provider.
     /// </remarks>
     /// <returns>The connection string provider.</returns>
     IConnectionStringProvider<TContainerEntity, TConfigurationEntity> Create();
