@@ -111,7 +111,7 @@ public sealed class QuestDbBuilder : ContainerBuilder<QuestDbBuilder, QuestDbCon
             .WithPortBinding(QuestDbInfluxLinePort, true)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
-            .WithConnectionStringProvider(new QuestDbConnectionStringProvider())
+            .WithConnectionStringProvider(() => new QuestDbConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
                 request.ForPath("/").ForPort(QuestDbHttpPort)));
     }

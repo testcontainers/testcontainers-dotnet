@@ -30,7 +30,7 @@ namespace DotNet.Testcontainers.Containers
 
     private ContainerInspectResponse _container = new ContainerInspectResponse();
 
-    private IConnectionStringProvider<IContainer, IContainerConfiguration> _connectionStringProvider;
+    private IConnectionStringProvider _connectionStringProvider;
 
     private IDisposable _attachedStream;
 
@@ -663,10 +663,9 @@ namespace DotNet.Testcontainers.Containers
 
       StartedTime = DateTime.TryParse(_container.State.StartedAt, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out var startedTime) ? startedTime : DateTime.UtcNow;
 
-      if (_configuration.ConnectionStringProvider != null)
+      if (_configuration.ConnectionStringProviderFactory != null)
       {
-        _connectionStringProvider = _configuration.ConnectionStringProvider;
-        _connectionStringProvider.Configure(this, _configuration);
+        _connectionStringProvider = _configuration.ConnectionStringProviderFactory(this, _configuration);
       }
 
       Started?.Invoke(this, EventArgs.Empty);
