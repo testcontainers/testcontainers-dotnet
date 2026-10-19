@@ -1,6 +1,6 @@
-# Resource Reuse
+# Reusing resources
 
-Reuse is an experimental feature designed to simplify and enhance the development experience. Instead of disposing resources after the tests are finished, enabling reuse will retain the resources and reuse them in the next test run. Testcontainers assigns a hash value according to the builder configuration. If it identifies a matching resource, it will reuse this resource instead of creating a new one. Enabling reuse will disable the resource reaper, meaning the resource will not be cleaned up.
+Reuse is an experimental feature designed to simplify and enhance the development experience. Instead of disposing resources after the tests are finished, enabling reuse will retain the resources and reuse them in the next test run. Testcontainers assigns a hash value according to the builder configuration. If it identifies a matching resource, it will reuse this resource instead of creating a new one. Enabling reuse will disable the Resource Reaper, meaning the resource will not be cleaned up.
 
 ```csharp title="Enable container reuse"
 _ = new ContainerBuilder("alpine:3.20.0")

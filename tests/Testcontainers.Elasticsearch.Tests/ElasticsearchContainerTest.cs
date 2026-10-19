@@ -26,22 +26,48 @@ public abstract class ElasticsearchContainerTest : IAsyncLifetime
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public void PingReturnsValidResponse()
+    public async Task PingReturnsValidResponse()
     {
         // Given
-        var clientSettings = new ElasticsearchClientSettings(new Uri(_elasticsearchContainer.GetConnectionString()));
-        clientSettings.ServerCertificateValidationCallback(CertificateValidations.AllowAll);
+        using var caCertificate = await _elasticsearchContainer.GetCertificateAsync(TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        var connectionString = new Uri(_elasticsearchContainer.GetConnectionString());
+
+        var clientSettings = new ElasticsearchClientSettings(connectionString);
+        clientSettings.ServerCertificateValidationCallback(CertificateValidations.AuthorityIsRoot(caCertificate));
 
         var client = new ElasticsearchClient(clientSettings);
 
         // When
-        var response = client.Ping();
+        var response = await client.PingAsync(TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
 
         // Then
         Assert.True(response.IsValidResponse);
         Assert.Equal(_elasticsearchContainer.GetConnectionString(), _elasticsearchContainer.GetConnectionString(ConnectionMode.Host));
     }
     // # --8<-- [end:UseElasticsearchContainer]
+
+    // # --8<-- [start:UseElasticsearchCertificate]
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public async Task ClusterHealthReturnsValidResponse()
+    {
+        // Given
+        using var httpClientFactory = await ElasticsearchHttpClientFactory.CreateAsync(_elasticsearchContainer, TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        using var httpClient = httpClientFactory.CreateHttpClient();
+
+        // When
+        using var httpResponseMessage = await httpClient.GetAsync("/_cluster/health", TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        // Then
+        Assert.Equal(HttpStatusCode.OK, httpResponseMessage.StatusCode);
+    }
+    // # --8<-- [end:UseElasticsearchCertificate]
 
     protected virtual ValueTask DisposeAsyncCore()
     {

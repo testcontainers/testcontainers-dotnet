@@ -10,7 +10,7 @@ namespace DotNet.Testcontainers.Configurations
 
   /// <inheritdoc cref="IImageFromDockerfileConfiguration" />
   [PublicAPI]
-  internal sealed class ImageFromDockerfileConfiguration : ResourceConfiguration<ImageBuildParameters>, IImageFromDockerfileConfiguration
+  internal class ImageFromDockerfileConfiguration : ResourceConfiguration<ImageBuildParameters>, IImageFromDockerfileConfiguration
   {
     /// <summary>
     /// Initializes a new instance of the <see cref="ImageFromDockerfileConfiguration" /> class.
@@ -19,6 +19,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <param name="dockerfile">The Dockerfile.</param>
     /// <param name="dockerfileDirectory">The Dockerfile directory.</param>
     /// <param name="target">The target.</param>
+    /// <param name="platform">The platform.</param>
     /// <param name="image">The image.</param>
     /// <param name="imageBuildPolicy">The image build policy.</param>
     /// <param name="buildArguments">A list of build arguments.</param>
@@ -28,6 +29,7 @@ namespace DotNet.Testcontainers.Configurations
       string dockerfile = null,
       string dockerfileDirectory = null,
       string target = null,
+      string platform = null,
       IImage image = null,
       Func<ImageInspectResponse, bool> imageBuildPolicy = null,
       IReadOnlyDictionary<string, string> buildArguments = null,
@@ -37,6 +39,7 @@ namespace DotNet.Testcontainers.Configurations
       Dockerfile = dockerfile;
       DockerfileDirectory = dockerfileDirectory;
       Target = target;
+      Platform = platform;
       Image = image;
       ImageBuildPolicy = imageBuildPolicy;
       BuildArguments = buildArguments;
@@ -73,6 +76,7 @@ namespace DotNet.Testcontainers.Configurations
       Dockerfile = BuildConfiguration.Combine(oldValue.Dockerfile, newValue.Dockerfile);
       DockerfileDirectory = BuildConfiguration.Combine(oldValue.DockerfileDirectory, newValue.DockerfileDirectory);
       Target = BuildConfiguration.Combine(oldValue.Target, newValue.Target);
+      Platform = BuildConfiguration.Combine(oldValue.Platform, newValue.Platform);
       Image = BuildConfiguration.Combine(oldValue.Image, newValue.Image);
       ImageBuildPolicy = BuildConfiguration.Combine(oldValue.ImageBuildPolicy, newValue.ImageBuildPolicy);
       BuildArguments = BuildConfiguration.Combine(oldValue.BuildArguments, newValue.BuildArguments);
@@ -98,6 +102,10 @@ namespace DotNet.Testcontainers.Configurations
     /// <inheritdoc />
     [JsonIgnore]
     public string Target { get; }
+
+    /// <inheritdoc />
+    [JsonIgnore]
+    public string Platform { get; }
 
     /// <inheritdoc />
     [JsonIgnore]

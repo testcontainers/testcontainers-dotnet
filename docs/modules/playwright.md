@@ -10,7 +10,7 @@ dotnet add package Testcontainers.Playwright
 
 You can start a Playwright container instance from any .NET application. To create and start a container instance with the default configuration, use the module-specific builder as shown below:
 
-=== "Start a Playwright container"
+=== "Start a Playwright Container"
     ```csharp
     var playwrightContainer = new PlaywrightBuilder("mcr.microsoft.com/playwright:v1.55.1").Build();
     await playwrightContainer.StartAsync();

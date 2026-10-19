@@ -1,4 +1,4 @@
-# Best Practices
+# Best practices
 
 At times, configuring and launching disposable Docker resources for testing purposes can be initially complex. However, modules have already minimized the amount of configuration required to a bare minimum, requiring only a single line of code to create reliable test environments. Nonetheless, developers should be aware of and adhere to these best practices to write efficient and effective tests:
 

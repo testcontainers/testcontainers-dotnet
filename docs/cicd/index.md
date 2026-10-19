@@ -1,4 +1,4 @@
-# Continuous Integration
+# Continuous integration
 
 To use Testcontainers in your CI/CD environment, you only require Docker installed. A local installation of Docker is not mandatory; you can also use a remote Docker installation.
 

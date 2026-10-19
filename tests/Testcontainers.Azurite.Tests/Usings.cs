@@ -1,8 +1,11 @@
 global using System;
 global using System.Globalization;
 global using System.Linq;
+global using System.Net.Http;
+global using System.Security.Cryptography.X509Certificates;
 global using System.Threading.Tasks;
 global using Azure;
+global using Azure.Core.Pipeline;
 global using Azure.Data.Tables;
 global using Azure.Storage.Blobs;
 global using Azure.Storage.Queues;

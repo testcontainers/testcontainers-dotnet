@@ -10,6 +10,8 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
 
     public const string ElasticsearchDefaultMemoryVmOptionFilePath = ElasticsearchVmOptionsDirectoryPath + ElasticsearchDefaultMemoryVmOptionFileName;
 
+    public const string ElasticsearchHttpCaCertificateFilePath = "/usr/share/elasticsearch/config/certs/http_ca.crt";
+
     [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
     public const string ElasticsearchImage = "elasticsearch:8.6.1";
 
@@ -155,7 +157,11 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
     /// <inheritdoc cref="IWaitUntil" />
     private sealed class WaitUntil : IWaitUntil
     {
+        private static readonly string[] OtlpIndexTemplates = { "metrics-otel@template", "logs-otel@template", "traces-otel@template" };
+
         private readonly bool _tlsEnabled;
+
+        private readonly bool _otlpEnabled;
 
         private readonly string _authToken;
 
@@ -168,6 +174,7 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
             var username = configuration.Username;
             var password = configuration.Password;
             _tlsEnabled = configuration.TlsEnabled;
+            _otlpEnabled = configuration.OtlpEnabled;
             _authToken = Convert.ToBase64String(Encoding.UTF8.GetBytes(string.Join(":", username, password)));
         }
 
@@ -200,16 +207,51 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
             using var httpMessageHandler = new HttpClientHandler();
             httpMessageHandler.ServerCertificateCustomValidationCallback = (_, _, _, _) => true;
 
-            var httpWaitStrategy = new HttpWaitStrategy()
+            var nodeWaitStrategy = CreateHttpWaitStrategy(httpMessageHandler)
+                .ForPath("/_cluster/health")
+                .ForResponseMessageMatching(IsNodeReadyAsync);
+
+            var isNodeReady = await nodeWaitStrategy
+                .UntilAsync(container)
+                .ConfigureAwait(false);
+
+            if (!isNodeReady)
+            {
+                return false;
+            }
+
+            if (!_otlpEnabled)
+            {
+                return true;
+            }
+
+            // Elasticsearch reports a healthy cluster before it installs the built-in OTLP
+            // index templates. Documents sent to the OTLP endpoint before are not indexed.
+            var templateWaitStrategy = CreateHttpWaitStrategy(httpMessageHandler);
+
+            foreach (var otlpIndexTemplate in OtlpIndexTemplates)
+            {
+                var isOtlpIndexTemplateInstalled = await templateWaitStrategy
+                    .ForPath("/_index_template/" + otlpIndexTemplate)
+                    .UntilAsync(container)
+                    .ConfigureAwait(false);
+
+                if (!isOtlpIndexTemplateInstalled)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private HttpWaitStrategy CreateHttpWaitStrategy(HttpMessageHandler httpMessageHandler)
+        {
+            return new HttpWaitStrategy()
                 .UsingHttpMessageHandler(httpMessageHandler)
                 .UsingTls(_tlsEnabled)
                 .ForPort(ElasticsearchHttpsPort)
-                .ForPath("/_cluster/health")
-                .WithHeader("Authorization", "Basic " + _authToken)
-                .ForResponseMessageMatching(IsNodeReadyAsync);
-
-            return await httpWaitStrategy.UntilAsync(container)
-                .ConfigureAwait(false);
+                .WithHeader("Authorization", "Basic " + _authToken);
         }
     }
 }

@@ -59,6 +59,19 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
+    public virtual TBuilderEntity WithSsl(string certificateFilePath, string certificateKeyFilePath)
+    {
+      return WithSsl(FilePath.Of(certificateFilePath), FilePath.Of(certificateKeyFilePath));
+    }
+
+    /// <inheritdoc />
+    public virtual TBuilderEntity WithSsl(FilePath certificateFilePath, FilePath certificateKeyFilePath)
+    {
+      const string sslNotSupported = "The module does not support SSL.";
+      throw new InvalidOperationException(sslNotSupported);
+    }
+
+    /// <inheritdoc />
     public TBuilderEntity DependsOn(IContainer container)
     {
       var containers = new[] { container };

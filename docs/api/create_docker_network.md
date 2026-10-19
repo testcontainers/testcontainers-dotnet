@@ -16,7 +16,7 @@ This is considered a best practice and prevents port collisions.
 
 ## Custom network
 
-A more advanced case, places one or more containers on custom networks. The communication between those containers won't require exposing ports through the host anymore. To configure and create Docker networks use `NetworkBuilder`. The following example creates a network and assigns it to two containers. The second container establishes a network connection to Deep Thought by using its network alias and receives the magic number `42`.
+A more advanced case, places one or more containers on custom networks. The communication between those containers will not require exposing ports through the host anymore. To configure and create Docker networks use `NetworkBuilder`. The following example creates a network and assigns it to two containers. The second container establishes a network connection to Deep Thought by using its network alias and receives the magic number `42`.
 
 ```csharp
 const string MagicNumber = "42";
@@ -115,8 +115,10 @@ _ = await curlContainer.ExecAsync(new[] { "curl", "http://host.testcontainers.in
 |-------------------------------|----------------------------------------------------------------------------------|
 | `WithDockerEndpoint`          | Sets the Docker daemon socket to connect to.                                     |
 | `WithCleanUp`                 | Will remove the network automatically after all tests have been run.             |
+| `WithReuse`                   | Reuses an existing network instead of creating a new one (experimental).         |
 | `WithLabel`                   | Applies metadata to the network e.g. `-l`, `--label "testcontainers=awesome"`.   |
 | `WithName`                    | Sets the network name e.g. `docker network create "testcontainers"`.             |
 | `WithDriver`                  | Sets the network driver e.g. `-d`, `--driver "bridge"`                           |
 | `WithOption`                  | Adds a driver specific option `-o`, `--opt "com.docker.network.driver.mtu=1350"` |
 | `WithCreateParameterModifier` | Allows low level modifications of the Docker network create parameter.           |
+| `WithLogger`                  | Sets the logger that replaces the default console logger.                        |

@@ -1,6 +1,7 @@
 awslocal
 azurecr
 azurite
+buildx
 capi
 creds
 dind
@@ -32,6 +33,7 @@ rebalance
 redpanda
 ryuk
 servercore
+shm
 sqlplus
 testcontainer
 testcontainers

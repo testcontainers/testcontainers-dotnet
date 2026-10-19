@@ -1,6 +1,6 @@
-# Connection String Provider
+# Connection string provider
 
-The Connection String Provider API provides a standardized way to access and manage connection information for Testcontainers (modules). It allows developers to customize module-provided connection strings or add their own, and to access module-specific connection strings or endpoints (e.g., database connection strings, HTTP API base addresses) in a uniform way.
+The connection string provider API provides a standardized way to access and manage connection information for Testcontainers (modules). It allows developers to customize module-provided connection strings or add their own, and to access module-specific connection strings or endpoints (e.g., database connection strings, HTTP API base addresses) in a uniform way.
 
 !!! note
 
@@ -29,7 +29,7 @@ var containerConnectionString = container.GetConnectionString(ConnectionMode.Con
 
 To create a custom provider, implement the generic interface: `IConnectionStringProvider<TContainer, TConfiguration>`. The `Configure(TContainer, TConfiguration)` method is invoked after the container has successfully started, ensuring that all runtime-assigned values are available.
 
-=== "Generic builder"
+=== "Generic Builder"
     ```csharp
     public sealed class MyProvider1 : IConnectionStringProvider<IContainer, IContainerConfiguration>
     {
@@ -54,7 +54,7 @@ To create a custom provider, implement the generic interface: `IConnectionString
     }
     ```
 
-=== "Module builder"
+=== "Module Builder"
     ```csharp
     public sealed class MyProvider2 : IConnectionStringProvider<PostgreSqlContainer, PostgreSqlConfiguration>
     {

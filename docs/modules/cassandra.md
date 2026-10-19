@@ -10,7 +10,7 @@ dotnet add package Testcontainers.Cassandra
 
 You can start an Apache Cassandra container instance from any .NET application. To create and start a container instance with the default configuration, use the module-specific builder as shown below:
 
-=== "Start a Cassandra container"
+=== "Start a Cassandra Container"
     ```csharp
     var cassandraContainer = new CassandraBuilder("cassandra:5.0").Build();
     await cassandraContainer.StartAsync();

@@ -10,7 +10,7 @@ dotnet add package Testcontainers.ClickHouse
 
 You can start a ClickHouse container instance from any .NET application. This example uses xUnit.net's `IAsyncLifetime` interface to manage the lifecycle of the container. The container is started in the `InitializeAsync` method before the test method runs, ensuring that the environment is ready for testing. After the test completes, the container is removed in the `DisposeAsync` method.
 
-=== "Test class"
+=== "Test Class"
     ```csharp
     --8<-- "tests/Testcontainers.ClickHouse.Tests/ClickHouseContainerTest.docs.cs:UseClickHouseContainer"
     }
@@ -18,14 +18,14 @@ You can start a ClickHouse container instance from any .NET application. This ex
 
 Connect to the container:
 
-=== "Establish connection"
+=== "Establish Connection"
     ```csharp
     --8<-- "tests/Testcontainers.ClickHouse.Tests/ClickHouseContainerTest.docs.cs:EstablishConnection"
     ```
 
 Execute a SQL script:
 
-=== "Run SQL script"
+=== "Run SQL Script"
     ```csharp
     --8<-- "tests/Testcontainers.ClickHouse.Tests/ClickHouseContainerTest.docs.cs:RunSQLScript"
     ```

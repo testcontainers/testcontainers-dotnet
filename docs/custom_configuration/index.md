@@ -1,4 +1,4 @@
-# Custom Configuration
+# Custom configuration
 
 Testcontainers supports various configurations to set up your test environment. It automatically discovers the Docker environment and applies the configuration. You can set or override the default values either with the Testcontainers [properties file][properties-file-format] (`~/.testcontainers.properties`) or with environment variables. The following configurations are available:
 
@@ -13,10 +13,10 @@ Testcontainers supports various configurations to set up your test environment. 
 | `docker.tls`                    | `DOCKER_TLS`                                   | Enables TLS.                                                                                                              | `false`                      |
 | `docker.tls.verify`             | `DOCKER_TLS_VERIFY`                            | Enables TLS verify.                                                                                                       | `false`                      |
 | `host.override`                 | `TESTCONTAINERS_HOST_OVERRIDE`                 | The host that exposes Docker's ports.                                                                                     | -                            |
-| `docker.socket.override`        | `TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE`        | The file path to the Docker daemon socket that is used by Ryuk (resource reaper).                                         | `/var/run/docker.sock`       |
-| `ryuk.disabled`                 | `TESTCONTAINERS_RYUK_DISABLED`                 | Disables Ryuk (resource reaper).                                                                                          | `false`                      |
-| `ryuk.container.privileged`     | `TESTCONTAINERS_RYUK_CONTAINER_PRIVILEGED`     | Runs Ryuk (resource reaper) in privileged mode.                                                                           | `true`                       |
-| `ryuk.container.image`          | `TESTCONTAINERS_RYUK_CONTAINER_IMAGE`          | The Ryuk (resource reaper) Docker image.                                                                                  | `testcontainers/ryuk:0.14.0@sha256:7c1a8a9a47c780ed0f983770a662f80deb115d95cce3e2daa3d12115b8cd28f0` |
+| `docker.socket.override`        | `TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE`        | The file path to the Docker daemon socket that is used by Ryuk (Resource Reaper).                                         | `/var/run/docker.sock`       |
+| `ryuk.disabled`                 | `TESTCONTAINERS_RYUK_DISABLED`                 | Disables Ryuk (Resource Reaper).                                                                                          | `false`                      |
+| `ryuk.container.privileged`     | `TESTCONTAINERS_RYUK_CONTAINER_PRIVILEGED`     | Runs Ryuk (Resource Reaper) in privileged mode.                                                                           | `true`                       |
+| `ryuk.container.image`          | `TESTCONTAINERS_RYUK_CONTAINER_IMAGE`          | The Ryuk (Resource Reaper) Docker image.                                                                                  | `testcontainers/ryuk:0.14.0@sha256:7c1a8a9a47c780ed0f983770a662f80deb115d95cce3e2daa3d12115b8cd28f0` |
 | `hub.image.name.prefix`         | `TESTCONTAINERS_HUB_IMAGE_NAME_PREFIX`         | The name to use for substituting the Docker Hub registry part of the image name.                                          | -                            |
 | `wait.strategy.retries`         | `TESTCONTAINERS_WAIT_STRATEGY_RETRIES`         | The wait strategy retry count.                                                                                            | `infinite`                   |
 | `wait.strategy.interval`        | `TESTCONTAINERS_WAIT_STRATEGY_INTERVAL`        | The wait strategy interval<sup>1</sup>.                                                                                   | `00:00:01`                   |

@@ -69,7 +69,7 @@ private sealed class RedisConfigurationProvider : ConfigurationProvider
 }
 ```
 
-## WeatherForecast Example
+## WeatherForecast example
 
 The following example adds tests to an ASP.NET Core Blazor application. The tests cover the web front-end including the REST API of a weather forecast application. Testcontainers builds and ships our app in a Docker image, runs it in a Docker container, orchestrates the necessary resources, and executes the tests against it. This setup includes a Microsoft SQL Server to persist data and covers a common use case among many productive .NET applications. You find the entire example in the [testcontainers-dotnet](https://github.com/testcontainers/testcontainers-dotnet/tree/develop/examples/WeatherForecast) repository.
 

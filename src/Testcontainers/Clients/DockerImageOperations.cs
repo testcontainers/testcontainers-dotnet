@@ -89,7 +89,30 @@ namespace DotNet.Testcontainers.Clients
       return DockerClient.Images.DeleteImageAsync(image.FullName, new ImageDeleteParameters { Force = true }, ct);
     }
 
-    public async Task<string> BuildAsync(IImageFromDockerfileConfiguration configuration, ITarArchive dockerfileArchive, CancellationToken ct = default)
+    public ImageBuildParameters GetBuildParameters(IImageFromDockerfileConfiguration configuration)
+    {
+      var buildParameters = new ImageBuildParameters
+      {
+        Dockerfile = configuration.Dockerfile,
+        Target = configuration.Target,
+        Platform = configuration.Platform,
+        Tags = new List<string> { configuration.Image.FullName },
+        BuildArgs = configuration.BuildArguments.ToDictionary(item => item.Key, item => item.Value),
+        Labels = configuration.Labels.ToDictionary(item => item.Key, item => item.Value),
+      };
+
+      if (configuration.ParameterModifiers != null)
+      {
+        foreach (var parameterModifier in configuration.ParameterModifiers)
+        {
+          parameterModifier(buildParameters);
+        }
+      }
+
+      return buildParameters;
+    }
+
+    public async Task<string> BuildAsync(IImageFromDockerfileConfiguration configuration, ImageBuildParameters buildParameters, ITarArchive dockerfileArchive, CancellationToken ct = default)
     {
       var traceProgress = new TraceProgress(Logger);
 
@@ -102,23 +125,6 @@ namespace DotNet.Testcontainers.Clients
       {
         await DeleteAsync(image, ct)
           .ConfigureAwait(false);
-      }
-
-      var buildParameters = new ImageBuildParameters
-      {
-        Dockerfile = configuration.Dockerfile,
-        Target = configuration.Target,
-        Tags = new List<string> { image.FullName },
-        BuildArgs = configuration.BuildArguments.ToDictionary(item => item.Key, item => item.Value),
-        Labels = configuration.Labels.ToDictionary(item => item.Key, item => item.Value),
-      };
-
-      if (configuration.ParameterModifiers != null)
-      {
-        foreach (var parameterModifier in configuration.ParameterModifiers)
-        {
-          parameterModifier(buildParameters);
-        }
       }
 
       var dockerfileArchiveFilePath = await dockerfileArchive.Tar(ct)

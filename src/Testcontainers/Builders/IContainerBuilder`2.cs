@@ -37,6 +37,33 @@ namespace DotNet.Testcontainers.Builders
     TBuilderEntity WithAcceptLicenseAgreement(bool acceptLicenseAgreement);
 
     /// <summary>
+    /// Enables SSL/TLS using the certificate and private key.
+    /// </summary>
+    /// <remarks>
+    /// Calling this method multiple times overrides the
+    /// previously configured certificate.
+    /// </remarks>
+    /// <param name="certificateFilePath">The SSL certificate file.</param>
+    /// <param name="certificateKeyFilePath">The SSL certificate private key file.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the module does not support SSL.</exception>
+    TBuilderEntity WithSsl(string certificateFilePath, string certificateKeyFilePath);
+
+    /// <summary>
+    /// Enables SSL/TLS using the certificate and private key.
+    /// </summary>
+    /// <remarks>
+    /// Modules that support SSL must override and implement this method to
+    /// configure the service to use the certificate. Calling this method
+    /// multiple times overrides the previously configured certificate.
+    /// </remarks>
+    /// <param name="certificateFilePath">The SSL certificate file.</param>
+    /// <param name="certificateKeyFilePath">The SSL certificate private key file.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the module does not support SSL.</exception>
+    TBuilderEntity WithSsl(FilePath certificateFilePath, FilePath certificateKeyFilePath);
+
+    /// <summary>
     /// Sets the dependent container to resolve and start before starting this container configuration.
     /// </summary>
     /// <param name="container">The dependent container.</param>

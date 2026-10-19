@@ -8,6 +8,7 @@ namespace DotNet.Testcontainers.Tests.Unit
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Commons;
+  using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Images;
   using ICSharpCode.SharpZipLib.Tar;
   using Microsoft.Extensions.Logging;
@@ -31,6 +32,8 @@ namespace DotNet.Testcontainers.Tests.Unit
         new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0", new Platform("linux/arm64")),
         new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0", new Platform("linux/arm/v6")),
         new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0", new Platform("linux/arm/v7")),
+        new DockerImage("mcr.microsoft.com/dotnet/sdk:8.0-alpine"),
+        new DockerImage("mcr.microsoft.com/dotnet/runtime:8.0-alpine"),
         new DockerImage("mcr.microsoft.com/dotnet/sdk:8.0.414"),
       };
 
@@ -44,6 +47,43 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       // When
       var actual = dockerfileArchive.GetBaseImages();
+
+      // Then
+      Assert.Equivalent(expected, actual);
+    }
+
+    [Fact]
+    public void DockerfileArchiveGetBaseImagesForTargetPlatform()
+    {
+      // Given
+      var targetPlatform = new Platform("linux/s390x");
+
+      var expected = new[]
+      {
+        new DockerImage("mcr.microsoft.com/dotnet/sdk:8.0", targetPlatform),
+        new DockerImage("mcr.microsoft.com/dotnet/runtime:8.0", targetPlatform),
+        new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-jammy", targetPlatform),
+        new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-noble", targetPlatform),
+        new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-alpine", targetPlatform),
+        new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0", new Platform("linux/amd64")),
+        new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0", new Platform("linux/arm64")),
+        new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0", new Platform("linux/arm/v6")),
+        new DockerImage("mcr.microsoft.com/dotnet/aspnet:8.0-azurelinux3.0", new Platform("linux/arm/v7")),
+        new DockerImage("mcr.microsoft.com/dotnet/sdk:8.0-alpine"),
+        new DockerImage("mcr.microsoft.com/dotnet/runtime:8.0-alpine", targetPlatform),
+        new DockerImage("mcr.microsoft.com/dotnet/sdk:8.0.414", targetPlatform),
+      };
+
+      IImage image = new DockerImage("localhost/testcontainers", Guid.NewGuid().ToString("D"), string.Empty);
+
+      // The Dockerfile does not contain a default value.
+      var buildArguments = new Dictionary<string, string>();
+      buildArguments.Add("SDK_VERSION_8_0", "8.0.414");
+
+      var dockerfileArchive = new DockerfileArchive(null, "Assets/pullBaseImages/", "Dockerfile", image, buildArguments, NullLogger.Instance);
+
+      // When
+      var actual = dockerfileArchive.GetBaseImages(targetPlatform.Value);
 
       // Then
       Assert.Equivalent(expected, actual);
@@ -226,6 +266,36 @@ namespace DotNet.Testcontainers.Tests.Unit
       Assert.Contains(logger.Logs, line => line.Contains("FROM scratch AS base"));
       Assert.Contains(logger.Logs, line => line.Contains("FROM base AS build"));
       Assert.DoesNotContain(logger.Logs, line => line.Contains("FROM build AS final"));
+    }
+
+    [Fact]
+    public async Task BuildsImageForPlatform()
+    {
+      // Given
+      using var dockerClient = TestcontainersSettings.OS.DockerEndpointAuthConfig.GetDockerClientBuilder(Guid.NewGuid()).Build();
+
+      var versionResponse = await dockerClient.System.GetVersionAsync(TestContext.Current.CancellationToken)
+        .ConfigureAwait(true);
+
+      // Build the image for a platform other than the platform of the Docker host.
+      // The Dockerfile does not run an instruction, which keeps the build
+      // independent of an emulator such as QEMU.
+      var platform = "arm64".Equals(versionResponse.Arch, StringComparison.OrdinalIgnoreCase) ? "linux/amd64" : "linux/arm64";
+
+      var imageFromDockerfileBuilder = new ImageFromDockerfileBuilder()
+        .WithDockerfileDirectory("Assets/platform/")
+        .WithPlatform(platform)
+        .Build();
+
+      await imageFromDockerfileBuilder.CreateAsync(TestContext.Current.CancellationToken)
+        .ConfigureAwait(true);
+
+      // When
+      var imageInspectResponse = await dockerClient.Images.InspectImageAsync(imageFromDockerfileBuilder.FullName, TestContext.Current.CancellationToken)
+        .ConfigureAwait(true);
+
+      // Then
+      Assert.Equal(platform, string.Join("/", imageInspectResponse.Os, imageInspectResponse.Architecture));
     }
 
     [Fact]

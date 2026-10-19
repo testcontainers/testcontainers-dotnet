@@ -109,10 +109,9 @@ See [contributors][testcontainers-dotnet-contributors] for all contributors.
 
 ----
 
-Join our [Slack Workspace][slack-workspace] | [Testcontainers OSS][testcontainers-oss] | [Testcontainers Cloud][testcontainers-cloud]
+Join our [Slack Workspace][slack-workspace] | [Testcontainers OSS][testcontainers-oss]
 
 [windows-container-version-compatibility]: https://docs.microsoft.com/en-us/virtualization/windowscontainers/deploy-containers/version-compatibility
 [testcontainers-dotnet-contributors]: https://github.com/testcontainers/testcontainers-dotnet/graphs/contributors/
 [slack-workspace]: https://slack.testcontainers.org/
 [testcontainers-oss]: https://www.testcontainers.org/
-[testcontainers-cloud]: https://www.testcontainers.cloud/
