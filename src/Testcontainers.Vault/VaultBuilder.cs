@@ -105,14 +105,11 @@ public sealed class VaultBuilder : ContainerBuilder<VaultBuilder, VaultContainer
     /// <inheritdoc />
     protected override void Validate()
     {
-        const string message = "The root token must not contain a period. Vault refuses such a token in dev mode and the container exits.";
-
         base.Validate();
 
         _ = Guard.Argument(DockerResourceConfiguration.RootToken, nameof(DockerResourceConfiguration.RootToken))
             .NotNull()
-            .NotEmpty()
-            .ThrowIf(argument => argument.Value.IndexOf('.') >= 0, argument => new ArgumentException(message, argument.Name));
+            .NotEmpty();
     }
 
     /// <inheritdoc />
@@ -134,13 +131,16 @@ public sealed class VaultBuilder : ContainerBuilder<VaultBuilder, VaultContainer
     }
 
     /// <summary>
-    /// Runs the Vault CLI init commands inside the running container.
+    /// Runs the configured Vault CLI init commands.
     /// </summary>
-    /// <param name="container">The Vault container.</param>
+    /// <remarks>
+    /// Vault runs in dev mode and keeps its data in memory. A restarted container
+    /// starts without any data, so the init commands run on every start.
+    /// </remarks>
+    /// <param name="container">The container instance.</param>
     /// <param name="configuration">The container configuration.</param>
     /// <param name="ct">Cancellation token.</param>
-    /// <returns>A task that completes when all init commands have succeeded.</returns>
-    /// <exception cref="ExecFailedException">Thrown when an init command fails.</exception>
+    /// <returns>Task that completes when the init commands have been executed.</returns>
     private static async Task RunInitCommandsAsync(VaultContainer container, VaultConfiguration configuration, CancellationToken ct)
     {
         if (configuration.InitCommands.Count == 0)
@@ -148,10 +148,37 @@ public sealed class VaultBuilder : ContainerBuilder<VaultBuilder, VaultContainer
             return;
         }
 
+        var readiness = new WaitStrategy(new WaitUntil());
+
+        // The startup callback runs before any wait strategy. Waiting here prevents running
+        // the init commands while Vault is not accepting requests yet, which would otherwise
+        // cause the container start to fail.
+        await WaitStrategy.WaitUntilAsync(() => readiness.UntilAsync(container, ct), readiness.Interval, readiness.Timeout, readiness.Retries, ct)
+            .ConfigureAwait(false);
+
         var initCommands = string.Join(" && ", configuration.InitCommands.Select(initCommand => "vault " + initCommand));
 
         _ = await container.ExecAsync(new[] { "/bin/sh", "-c", initCommands }, ct)
             .ThrowOnFailure()
             .ConfigureAwait(false);
+    }
+
+    /// <inheritdoc cref="IWaitUntil" />
+    /// <remarks>
+    /// Uses the Vault CLI <c>status</c> command to detect readiness of the Vault container:
+    /// https://developer.hashicorp.com/vault/docs/commands/status.
+    /// </remarks>
+    private sealed class WaitUntil : IWaitUntil
+    {
+        private static readonly string[] Command = { "vault", "status" };
+
+        /// <inheritdoc />
+        public async Task<bool> UntilAsync(IContainer container)
+        {
+            var execResult = await container.ExecAsync(Command)
+                .ConfigureAwait(false);
+
+            return 0L.Equals(execResult.ExitCode);
+        }
     }
 }
