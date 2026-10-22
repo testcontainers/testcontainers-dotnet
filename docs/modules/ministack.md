@@ -1,0 +1,69 @@
+# MiniStack
+
+[MiniStack](https://github.com/ministackorg/ministack) is a free, open-source AWS emulator that serves its AWS services on a single port.
+
+Add the following dependency to your project file:
+
+```shell title="NuGet"
+dotnet add package Testcontainers.MiniStack
+```
+
+You can start a MiniStack container instance from any .NET application. Here, we create different container instances and pass them to the base test class. This allows us to test different configurations.
+
+=== "Create Container Instance"
+    ```csharp
+    --8<-- "tests/Testcontainers.MiniStack.Tests/MiniStackContainerTest.cs:CreateMiniStackContainer"
+    ```
+
+This example uses xUnit.net's `IAsyncLifetime` interface to manage the lifecycle of the container. The container is started in the `InitializeAsync` method before the test method runs, ensuring that the environment is ready for testing. After the test completes, the container is removed in the `DisposeAsync` method.
+
+=== "Usage Example"
+    ```csharp
+    --8<-- "tests/Testcontainers.MiniStack.Tests/MiniStackContainerTest.cs:UseMiniStackContainer"
+    ```
+
+The test example creates an S3 bucket, writes an object and reads it back. Use `GetConnectionString()` as the AWS SDK `ServiceURL`, and `GetRegion()`, `GetAccessKey()` and `GetSecretKey()` for the region and credentials. By default, MiniStack uses the region `us-east-1` and the credentials `test`/`test`.
+
+The test example uses the following NuGet dependencies:
+
+=== "Package References"
+    ```xml
+    --8<-- "tests/Testcontainers.MiniStack.Tests/Testcontainers.MiniStack.Tests.csproj:PackageReferences"
+    ```
+
+To execute the tests, use the command `dotnet test` from a terminal.
+
+--8<-- "docs/modules/_call_out_test_projects.txt"
+
+## Configuration
+
+The builder sets MiniStack's environment variables for the most common options:
+
+=== "Custom Configuration"
+    ```csharp
+    --8<-- "tests/Testcontainers.MiniStack.Tests/MiniStackContainerTest.cs:CustomMiniStackContainer"
+    ```
+
+- `WithRegion(string)` sets `MINISTACK_REGION`, the region MiniStack uses in the ARNs it generates.
+- `WithCredentials(string, string)` sets `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`. MiniStack treats a 12-digit access key as the account ID.
+- `WithPersistence()` sets `PERSIST_STATE=1` and `S3_PERSIST=1`, so service state and S3 objects are written to disk and survive a restart of the same container.
+- `WithImdsV2Required()` sets `MINISTACK_IMDS_V2_REQUIRED=1`, so instance metadata requests without a session token are rejected.
+
+`GetMiniStackVersion()` returns the image tag. `GetMiniStackVersionAsync()` returns the version the running server reports, which also resolves tags such as `latest`.
+
+If Testcontainers is configured with a hub image name prefix, the module passes it to MiniStack as `MINISTACK_IMAGE_PREFIX`, so the images MiniStack pulls for real infrastructure come from the same registry.
+
+## Real infrastructure
+
+`WithRealInfrastructure()` bind-mounts the Docker socket into the container. MiniStack then runs real containers for services such as RDS, ElastiCache, ECS and Lambda:
+
+=== "Real Infrastructure Configuration"
+    ```csharp
+    --8<-- "tests/Testcontainers.MiniStack.Tests/MiniStackRealInfrastructureTest.cs:RealInfrastructureMiniStackContainer"
+    ```
+
+!!! warning
+
+    Anything running inside MiniStack, including the code of a Lambda function, gets full control over the host's container engine. Use real infrastructure only on trusted machines and CI runners.
+
+The Resource Reaper does not know about the containers MiniStack starts. When the MiniStack container is stopped or disposed, the module removes the containers and volumes that carry its `ministack.instance` label. Containers that another MiniStack instance on the same Docker daemon started are left alone.

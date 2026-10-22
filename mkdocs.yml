@@ -67,6 +67,7 @@ nav:
     - modules/elasticsearch.md
     - modules/garnet.md
     - modules/grafana.md
+    - modules/ministack.md
     - modules/mongodb.md
     - modules/mongodb-atlas-local.md
     - modules/mssql.md

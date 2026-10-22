@@ -1,0 +1,273 @@
+namespace Testcontainers.MiniStack;
+
+/// <inheritdoc cref="DockerContainer" />
+[PublicAPI]
+public sealed class MiniStackContainer : DockerContainer
+{
+    private const string InstanceLabel = "ministack.instance";
+
+    private readonly MiniStackConfiguration _configuration;
+
+    private string _instanceId;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MiniStackContainer" /> class.
+    /// </summary>
+    /// <param name="configuration">The container configuration.</param>
+    public MiniStackContainer(MiniStackConfiguration configuration)
+        : base(configuration)
+    {
+        _configuration = configuration;
+    }
+
+    /// <summary>
+    /// Gets the MiniStack connection string.
+    /// </summary>
+    /// <remarks>
+    /// Use it as the AWS SDK <c>ServiceURL</c>.
+    /// </remarks>
+    /// <returns>The MiniStack connection string.</returns>
+    public string GetConnectionString()
+    {
+        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(MiniStackBuilder.MiniStackPort)).ToString();
+    }
+
+    /// <summary>
+    /// Gets the AWS region: the value passed to <see cref="MiniStackBuilder.WithRegion" />,
+    /// or <c>us-east-1</c>.
+    /// </summary>
+    /// <returns>The AWS region.</returns>
+    public string GetRegion()
+    {
+        return GetEnvironmentOrDefault(MiniStackBuilder.RegionEnvVar, MiniStackBuilder.Region);
+    }
+
+    /// <summary>
+    /// Gets the AWS access key ID: the value passed to <see cref="MiniStackBuilder.WithCredentials" />,
+    /// or <c>test</c>.
+    /// </summary>
+    /// <returns>The AWS access key ID.</returns>
+    public string GetAccessKey()
+    {
+        return GetEnvironmentOrDefault(MiniStackBuilder.AccessKeyEnvVar, MiniStackBuilder.AccessKey);
+    }
+
+    /// <summary>
+    /// Gets the AWS secret access key: the value passed to <see cref="MiniStackBuilder.WithCredentials" />,
+    /// or <c>test</c>.
+    /// </summary>
+    /// <returns>The AWS secret access key.</returns>
+    public string GetSecretKey()
+    {
+        return GetEnvironmentOrDefault(MiniStackBuilder.SecretKeyEnvVar, MiniStackBuilder.SecretKey);
+    }
+
+    /// <summary>
+    /// Gets the MiniStack version, which is the Docker image tag the container was built with.
+    /// </summary>
+    /// <remarks>
+    /// Returns the tag verbatim. Semver tags such as <c>1.3.42</c> can be parsed with
+    /// <c>Version.TryParse</c> for capability gating;
+    /// <c>latest</c> and <c>nightly</c> cannot, so pin a version tag when that matters.
+    /// </remarks>
+    /// <returns>The image tag, e.g. <c>1.3.42</c> or <c>latest</c>.</returns>
+    public string GetMiniStackVersion()
+    {
+        return Image.Tag ?? Image.Digest;
+    }
+
+    /// <summary>
+    /// Gets the version the running MiniStack server reports on its health endpoint.
+    /// </summary>
+    /// <remarks>
+    /// Unlike <see cref="GetMiniStackVersion" />, this resolves floating tags such as
+    /// <c>latest</c> to the actual release. The container must be running.
+    /// </remarks>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>The server version, e.g. <c>1.5.31</c>, or <c>null</c> if the health response has none.</returns>
+    public async Task<string> GetMiniStackVersionAsync(CancellationToken ct = default)
+    {
+        using var httpClient = new HttpClient();
+        using var response = await httpClient.GetAsync(new Uri(new Uri(GetConnectionString()), MiniStackBuilder.HealthPath), ct)
+            .ConfigureAwait(false);
+
+        _ = response.EnsureSuccessStatusCode();
+
+        var json = await response.Content.ReadAsStringAsync()
+            .ConfigureAwait(false);
+
+        using var health = JsonDocument.Parse(json);
+        return health.RootElement.TryGetProperty("version", out var version) && version.ValueKind == JsonValueKind.String ? version.GetString() : null;
+    }
+
+    /// <inheritdoc />
+    protected override async Task UnsafeStartAsync(CancellationToken ct = default)
+    {
+        await base.UnsafeStartAsync(ct)
+            .ConfigureAwait(false);
+
+        _instanceId = await ResolveInstanceIdAsync(ct)
+            .ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
+    protected override async Task UnsafeStopAsync(CancellationToken ct = default)
+    {
+        try
+        {
+            await base.UnsafeStopAsync(ct)
+                .ConfigureAwait(false);
+        }
+        finally
+        {
+            await ReapMiniStackResourcesAsync()
+                .ConfigureAwait(false);
+        }
+    }
+
+    /// <inheritdoc />
+    protected override async Task UnsafeDeleteAsync(CancellationToken ct = default)
+    {
+        try
+        {
+            await base.UnsafeDeleteAsync(ct)
+                .ConfigureAwait(false);
+        }
+        finally
+        {
+            await ReapMiniStackResourcesAsync()
+                .ConfigureAwait(false);
+        }
+    }
+
+    /// <summary>
+    /// Gets the configuration the container was built with.
+    /// </summary>
+    internal MiniStackConfiguration Configuration => _configuration;
+
+    /// <summary>
+    /// Gets the <c>ministack.instance</c> label value of this MiniStack, known once it has started.
+    /// </summary>
+    internal string InstanceId => _instanceId;
+
+    private string GetEnvironmentOrDefault(string name, string defaultValue)
+    {
+        return _configuration.Environments.TryGetValue(name, out var value) && !string.IsNullOrEmpty(value) ? value : defaultValue;
+    }
+
+    private Docker.DotNet.IDockerClient CreateDockerClient()
+    {
+        return _configuration.DockerEndpointAuthConfig.GetDockerClientBuilder(_configuration.SessionId).Build();
+    }
+
+    /// <summary>
+    /// Works out the <c>ministack.instance</c> label value MiniStack stamps on every
+    /// container it spawns: <c>{MINISTACK_HOSTNAME or container hostname}:{GATEWAY_PORT or EDGE_PORT or 4566}</c>.
+    /// </summary>
+    private async Task<string> ResolveInstanceIdAsync(CancellationToken ct)
+    {
+        try
+        {
+            string host;
+            if (!_configuration.Environments.TryGetValue("MINISTACK_HOSTNAME", out host) || string.IsNullOrEmpty(host))
+            {
+                using var client = CreateDockerClient();
+                var inspect = await client.Containers.InspectContainerAsync(Id, ct)
+                    .ConfigureAwait(false);
+                host = inspect.Config.Hostname;
+            }
+
+            var port = GetEnvironmentOrDefault("GATEWAY_PORT", GetEnvironmentOrDefault("EDGE_PORT", MiniStackBuilder.MiniStackPort.ToString(CultureInfo.InvariantCulture)));
+            return host + ":" + port;
+        }
+        catch (Exception e)
+        {
+            Logger.LogDebug(e, "Could not resolve the MiniStack instance id; nested containers will not be reaped");
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Removes the nested containers and volumes this MiniStack spawned for
+    /// real-infrastructure services (RDS, ElastiCache, ECS, EKS, Lambda).
+    /// </summary>
+    /// <remarks>
+    /// They run on the host engine, not inside the MiniStack container, so the
+    /// Resource Reaper does not see them. Only resources labelled with this
+    /// container's <c>ministack.instance</c> are removed, so MiniStack instances
+    /// sharing the Docker daemon are left alone. Cleanup is best-effort: failures
+    /// are logged and never thrown, so a stuck remove never masks a test failure.
+    /// </remarks>
+    private async Task ReapMiniStackResourcesAsync()
+    {
+        if (string.IsNullOrEmpty(_instanceId))
+        {
+            return;
+        }
+
+        var labelFilter = new Dictionary<string, IDictionary<string, bool>>
+        {
+            ["label"] = new Dictionary<string, bool> { [InstanceLabel + "=" + _instanceId] = true },
+        };
+
+        Docker.DotNet.IDockerClient client;
+        try
+        {
+            client = CreateDockerClient();
+        }
+        catch (Exception e)
+        {
+            Logger.LogDebug(e, "MiniStack cleanup skipped, Docker client unavailable");
+            return;
+        }
+
+        using (client)
+        {
+            try
+            {
+                var orphans = await client.Containers.ListContainersAsync(new ContainersListParameters { All = true, Filters = labelFilter })
+                    .ConfigureAwait(false);
+
+                foreach (var orphan in orphans)
+                {
+                    try
+                    {
+                        await client.Containers.RemoveContainerAsync(orphan.ID, new ContainerRemoveParameters { Force = true, RemoveVolumes = true })
+                            .ConfigureAwait(false);
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.LogWarning(e, "Failed to remove MiniStack container {Id}", orphan.ID);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.LogWarning(e, "Failed to list MiniStack containers for cleanup");
+            }
+
+            try
+            {
+                var volumes = await client.Volumes.ListAsync(new VolumesListParameters { Filters = labelFilter })
+                    .ConfigureAwait(false);
+
+                foreach (var volume in volumes.Volumes ?? new List<VolumeResponse>())
+                {
+                    try
+                    {
+                        await client.Volumes.RemoveAsync(volume.Name)
+                            .ConfigureAwait(false);
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.LogDebug(e, "Failed to remove MiniStack volume {Name}", volume.Name);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.LogDebug(e, "MiniStack volume cleanup skipped");
+            }
+        }
+    }
+}

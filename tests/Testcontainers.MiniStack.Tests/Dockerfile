@@ -1,0 +1,1 @@
+FROM ministackorg/ministack:1.5.31@sha256:e47e700674792f8a4272cb6e65ac84d1a04b4e7e69810339e7b8c7e81f600c29

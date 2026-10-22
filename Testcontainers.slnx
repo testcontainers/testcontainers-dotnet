@@ -51,6 +51,7 @@
         <Project Path="src/Testcontainers.Mailpit/Testcontainers.Mailpit.csproj"/>
         <Project Path="src/Testcontainers.MariaDb/Testcontainers.MariaDb.csproj"/>
         <Project Path="src/Testcontainers.Milvus/Testcontainers.Milvus.csproj"/>
+        <Project Path="src/Testcontainers.MiniStack/Testcontainers.MiniStack.csproj"/>
         <Project Path="src/Testcontainers.MongoDb/Testcontainers.MongoDb.csproj"/>
         <Project Path="src/Testcontainers.MongoDbAtlasLocal/Testcontainers.MongoDbAtlasLocal.csproj"/>
         <Project Path="src/Testcontainers.Mosquitto/Testcontainers.Mosquitto.csproj"/>
@@ -122,6 +123,7 @@
         <Project Path="tests/Testcontainers.Mailpit.Tests/Testcontainers.Mailpit.Tests.csproj"/>
         <Project Path="tests/Testcontainers.MariaDb.Tests/Testcontainers.MariaDb.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Milvus.Tests/Testcontainers.Milvus.Tests.csproj"/>
+        <Project Path="tests/Testcontainers.MiniStack.Tests/Testcontainers.MiniStack.Tests.csproj"/>
         <Project Path="tests/Testcontainers.MongoDb.Tests/Testcontainers.MongoDb.Tests.csproj"/>
         <Project Path="tests/Testcontainers.MongoDbAtlasLocal.Tests/Testcontainers.MongoDbAtlasLocal.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Mosquitto.Tests/Testcontainers.Mosquitto.Tests.csproj"/>
