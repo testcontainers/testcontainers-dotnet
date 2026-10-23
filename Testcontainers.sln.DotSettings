@@ -39,6 +39,7 @@
   <s:Boolean x:Key="/Default/UserDictionary/Words/=ramsize/@EntryIndexedValue">True</s:Boolean>
   <s:Boolean x:Key="/Default/UserDictionary/Words/=rebalance/@EntryIndexedValue">True</s:Boolean>
   <s:Boolean x:Key="/Default/UserDictionary/Words/=redpanda/@EntryIndexedValue">True</s:Boolean>
+  <s:Boolean x:Key="/Default/UserDictionary/Words/=rustfs/@EntryIndexedValue">True</s:Boolean>
   <s:Boolean x:Key="/Default/UserDictionary/Words/=ryuk/@EntryIndexedValue">True</s:Boolean>
   <s:Boolean x:Key="/Default/UserDictionary/Words/=servercore/@EntryIndexedValue">True</s:Boolean>
   <s:Boolean x:Key="/Default/UserDictionary/Words/=shm/@EntryIndexedValue">True</s:Boolean>
