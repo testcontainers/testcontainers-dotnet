@@ -62,6 +62,7 @@ nav:
     - modules/azurite.md # Azure
     - modules/eventhubs.md # Azure
     - modules/servicebus.md # Azure
+    - modules/chroma.md
     - modules/clickhouse.md
     - modules/db2.md
     - modules/elasticsearch.md

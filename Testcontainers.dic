@@ -3,6 +3,7 @@ azurecr
 azurite
 buildx
 capi
+chromadb
 creds
 dind
 dockerignore
