@@ -7,13 +7,9 @@ public sealed class VaultConfiguration : ContainerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="VaultConfiguration" /> class.
     /// </summary>
-    /// <param name="rootToken">The Vault root token.</param>
     /// <param name="initCommands">The Vault CLI commands that run after the container has started.</param>
-    public VaultConfiguration(
-        string rootToken = null,
-        IReadOnlyList<string> initCommands = null)
+    public VaultConfiguration(IEnumerable<string> initCommands = null)
     {
-        RootToken = rootToken;
         InitCommands = initCommands;
     }
 
@@ -55,17 +51,11 @@ public sealed class VaultConfiguration : ContainerConfiguration
     public VaultConfiguration(VaultConfiguration oldValue, VaultConfiguration newValue)
         : base(oldValue, newValue)
     {
-        RootToken = BuildConfiguration.Combine(oldValue.RootToken, newValue.RootToken);
         InitCommands = BuildConfiguration.Combine(oldValue.InitCommands, newValue.InitCommands);
     }
 
     /// <summary>
-    /// Gets the Vault root token.
-    /// </summary>
-    public string RootToken { get; }
-
-    /// <summary>
     /// Gets the Vault CLI commands that run after the container has started.
     /// </summary>
-    public IReadOnlyList<string> InitCommands { get; }
+    public IEnumerable<string> InitCommands { get; }
 }

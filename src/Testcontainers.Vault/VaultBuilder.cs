@@ -62,8 +62,7 @@ public sealed class VaultBuilder : ContainerBuilder<VaultBuilder, VaultContainer
     /// <returns>A configured instance of <see cref="VaultBuilder" />.</returns>
     public VaultBuilder WithRootToken(string rootToken)
     {
-        return Merge(DockerResourceConfiguration, new VaultConfiguration(rootToken: rootToken))
-            .WithEnvironment("VAULT_DEV_ROOT_TOKEN_ID", rootToken)
+        return WithEnvironment("VAULT_DEV_ROOT_TOKEN_ID", rootToken)
             .WithEnvironment("VAULT_TOKEN", rootToken);
     }
 
@@ -107,7 +106,11 @@ public sealed class VaultBuilder : ContainerBuilder<VaultBuilder, VaultContainer
     {
         base.Validate();
 
-        _ = Guard.Argument(DockerResourceConfiguration.RootToken, nameof(DockerResourceConfiguration.RootToken))
+        _ = Guard.Argument(DockerResourceConfiguration.Environments["VAULT_DEV_ROOT_TOKEN_ID"], "RootToken")
+            .NotNull()
+            .NotEmpty();
+
+        _ = Guard.Argument(DockerResourceConfiguration.Environments["VAULT_TOKEN"], "RootToken")
             .NotNull()
             .NotEmpty();
     }
@@ -143,20 +146,20 @@ public sealed class VaultBuilder : ContainerBuilder<VaultBuilder, VaultContainer
     /// <returns>Task that completes when the init commands have been executed.</returns>
     private static async Task RunInitCommandsAsync(VaultContainer container, VaultConfiguration configuration, CancellationToken ct)
     {
-        if (configuration.InitCommands.Count == 0)
+        if (!configuration.InitCommands.Any())
         {
             return;
         }
 
         var readiness = new WaitStrategy(new WaitUntil());
 
+        var initCommands = string.Join(" && ", configuration.InitCommands.Select(initCommand => "vault " + initCommand));
+
         // The startup callback runs before any wait strategy. Waiting here prevents running
         // the init commands while Vault is not accepting requests yet, which would otherwise
         // cause the container start to fail.
         await WaitStrategy.WaitUntilAsync(() => readiness.UntilAsync(container, ct), readiness.Interval, readiness.Timeout, readiness.Retries, ct)
             .ConfigureAwait(false);
-
-        var initCommands = string.Join(" && ", configuration.InitCommands.Select(initCommand => "vault " + initCommand));
 
         _ = await container.ExecAsync(new[] { "/bin/sh", "-c", initCommands }, ct)
             .ThrowOnFailure()
