@@ -28,10 +28,25 @@ public sealed class Db2Container : DockerContainer, IDatabaseContainer
     /// <summary>
     /// Executes the SQL script in the Db2 container.
     /// </summary>
+    /// <remarks>
+    /// The script content is encoded using <see cref="Encoding.Default" />.
+    /// </remarks>
     /// <param name="scriptContent">The content of the SQL script to execute.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the SQL script has been executed.</returns>
-    public async Task<ExecResult> ExecScriptAsync(string scriptContent, CancellationToken ct = default)
+    public Task<ExecResult> ExecScriptAsync(string scriptContent, CancellationToken ct = default)
+    {
+        return ExecScriptAsync(scriptContent, Encoding.Default, ct);
+    }
+
+    /// <summary>
+    /// Executes the SQL script in the Db2 container.
+    /// </summary>
+    /// <param name="scriptContent">The content of the SQL script to execute.</param>
+    /// <param name="encoding">The encoding used to write the script content to the container.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the SQL script has been executed.</returns>
+    public async Task<ExecResult> ExecScriptAsync(string scriptContent, Encoding encoding, CancellationToken ct = default)
     {
         const string db2ShellCommandFormat = "su - {1} -c \"db2 connect to {0} && db2 -tvf '{2}'\"";
 
@@ -39,7 +54,7 @@ public sealed class Db2Container : DockerContainer, IDatabaseContainer
 
         var db2ShellCommand = string.Format(db2ShellCommandFormat, _configuration.Database, _configuration.Username, scriptFilePath);
 
-        await CopyAsync(Encoding.Default.GetBytes(scriptContent), scriptFilePath, fileMode: Unix.FileMode644, ct: ct)
+        await CopyAsync(encoding.GetBytes(scriptContent), scriptFilePath, fileMode: Unix.FileMode644, ct: ct)
             .ConfigureAwait(false);
 
         return await ExecAsync(new[] { "/bin/sh", "-c", db2ShellCommand}, ct)

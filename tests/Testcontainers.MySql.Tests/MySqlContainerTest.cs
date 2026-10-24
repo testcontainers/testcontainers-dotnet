@@ -33,6 +33,38 @@ public abstract class MySqlContainerTest(MySqlContainerTest.MySqlDefaultFixture 
         Assert.Empty(execResult.Stderr);
     }
 
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public async Task ExecScriptWithEncodingReturnsSuccessful()
+    {
+        // Given
+        const string expectedValue = "Grüße";
+
+        // The script declares Latin-1 as the client character set. Unless the script
+        // content is written with the same encoding, MySql stores corrupted characters.
+        const string scriptContent = "SET NAMES latin1; CREATE TABLE encoding_test (value VARCHAR(16)) CHARACTER SET utf8mb4; INSERT INTO encoding_test VALUES ('" + expectedValue + "');";
+
+        // When
+        var execResult = await fixture.Container.ExecScriptAsync(scriptContent, Encoding.Latin1, TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        // Then
+        Assert.True(0L.Equals(execResult.ExitCode), execResult.Stderr);
+        Assert.Empty(execResult.Stderr);
+
+        using DbConnection connection = fixture.CreateConnection();
+        await connection.OpenAsync(TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        using var command = connection.CreateCommand();
+        command.CommandText = "SELECT value FROM encoding_test;";
+
+        var actualValue = await command.ExecuteScalarAsync(TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        Assert.Equal(expectedValue, actualValue);
+    }
+
     public class MySqlDefaultFixture(IMessageSink messageSink)
         : DbContainerFixture<MySqlBuilder, MySqlContainer>(messageSink)
     {
