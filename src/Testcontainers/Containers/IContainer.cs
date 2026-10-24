@@ -195,6 +195,9 @@ namespace DotNet.Testcontainers.Containers
     /// <summary>
     /// Resolves all public assigned host ports.
     /// </summary>
+    /// <remarks>
+    /// Resolves the public assigned host port for the TCP protocol if a container port is mapped for more than one protocol. To resolve a specific protocol, use <see cref="GetMappedPublicPort(string)" />.
+    /// </remarks>
     /// <returns>Returns all public assigned host ports.</returns>
     /// <exception cref="InvalidOperationException">Container has not been created.</exception>
     IReadOnlyDictionary<ushort, ushort> GetMappedPublicPorts();
@@ -223,7 +226,7 @@ namespace DotNet.Testcontainers.Containers
     /// <returns>Task that completes when the container has been started.</returns>
     /// <exception cref="OperationCanceledException">Thrown when a Docker API call gets canceled.</exception>
     /// <exception cref="TaskCanceledException">Thrown when a Testcontainers task gets canceled.</exception>
-    /// <exception cref="TimeoutException">Thrown when the wait strategy task gets canceled or the timeout expires.</exception>
+    /// <exception cref="TimeoutException">Thrown when the wait strategy timeout expires.</exception>
     Task StartAsync(CancellationToken ct = default);
 
     /// <summary>

@@ -83,7 +83,7 @@ public sealed class AspireDashboardBuilder : ContainerBuilder<AspireDashboardBui
             .WithPortBinding(AspireDashboardOtlpGrpcPort, true)
             .WithPortBinding(AspireDashboardOtlpHttpPort, true)
             .WithEnvironment("DOTNET_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS", "true")
-            .WithConnectionStringProvider(new AspireDashboardConnectionStringProvider())
+            .WithConnectionStringProvider(() => new AspireDashboardConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
                 request.ForPort(AspireDashboardHttpPort)));
     }

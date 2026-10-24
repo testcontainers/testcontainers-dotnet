@@ -30,7 +30,7 @@ namespace DotNet.Testcontainers.Containers
 
     private ContainerInspectResponse _container = new ContainerInspectResponse();
 
-    private IConnectionStringProvider<IContainer, IContainerConfiguration> _connectionStringProvider;
+    private IConnectionStringProvider _connectionStringProvider;
 
     private IDisposable _attachedStream;
 
@@ -277,7 +277,7 @@ namespace DotNet.Testcontainers.Containers
 
       var qualifiedContainerPort = ContainerConfigurationConverter.GetQualifiedPort(containerPort);
 
-      if (_container.NetworkSettings.Ports.TryGetValue(qualifiedContainerPort, out var portBindings) && ushort.TryParse(portBindings[0].HostPort, out var hostPort))
+      if (_container.NetworkSettings.Ports.TryGetValue(qualifiedContainerPort, out var portBindings) && portBindings != null && portBindings.Count > 0 && ushort.TryParse(portBindings[0].HostPort, out var hostPort))
       {
         return hostPort;
       }
@@ -298,7 +298,14 @@ namespace DotNet.Testcontainers.Containers
           {
             return kvp.Key.Contains('/') && kvp.Value != null && kvp.Value.Count > 0;
           })
-        .ToDictionary(
+        .OrderBy(
+          kvp =>
+          {
+            // A port can be mapped for more than one protocol (e.g. 53/tcp and
+            // 53/udp). Like GetMappedPublicPort(int), prefer the TCP port binding.
+            return kvp.Key.EndsWith("/tcp", StringComparison.OrdinalIgnoreCase) ? 0 : 1;
+          })
+        .GroupBy(
           kvp =>
           {
             var containerPort = kvp.Key.Substring(0, kvp.Key.IndexOf('/'));
@@ -308,6 +315,15 @@ namespace DotNet.Testcontainers.Containers
           {
             var hostPort = kvp.Value[0].HostPort;
             return ushort.Parse(hostPort);
+          })
+        .ToDictionary(
+          hostPorts =>
+          {
+            return hostPorts.Key;
+          },
+          hostPorts =>
+          {
+            return hostPorts.First();
           });
     }
 
@@ -647,10 +663,9 @@ namespace DotNet.Testcontainers.Containers
 
       StartedTime = DateTime.TryParse(_container.State.StartedAt, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out var startedTime) ? startedTime : DateTime.UtcNow;
 
-      if (_configuration.ConnectionStringProvider != null)
+      if (_configuration.ConnectionStringProviderFactory != null)
       {
-        _connectionStringProvider = _configuration.ConnectionStringProvider;
-        _connectionStringProvider.Configure(this, _configuration);
+        _connectionStringProvider = _configuration.ConnectionStringProviderFactory(this, _configuration);
       }
 
       Started?.Invoke(this, EventArgs.Empty);

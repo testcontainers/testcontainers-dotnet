@@ -82,7 +82,7 @@ public sealed class PlaywrightBuilder : ContainerBuilder<PlaywrightBuilder, Play
             .WithEntrypoint("/bin/sh", "-c")
             // Extract the Playwright version from the container at startup.
             .WithCommand("npx -y playwright@$(sed --quiet 's/.*\\\"driverVersion\\\": *\"\\([^\"]*\\)\".*/\\1/p' ms-playwright/.docker-info) run-server --host 0.0.0.0 --port " + PlaywrightPort)
-                .WithConnectionStringProvider(new PlaywrightConnectionStringProvider())
+                .WithConnectionStringProvider(() => new PlaywrightConnectionStringProvider())
                 .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Listening on ws://.*:" + PlaywrightPort + "/"));
     }
 

@@ -80,5 +80,6 @@ nav:
     - modules/redis.md
     - modules/toxiproxy.md
     - modules/valkey.md
+    - modules/vault.md
   - contributing.md
   - contributing_docs.md

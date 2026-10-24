@@ -13,7 +13,7 @@ namespace DotNet.Testcontainers.Images
   {
     private static readonly ISearchAndReplace<string>[] PrepareRegex = { default(EscapeRegex), default(PrepareRecursiveWildcards), default(PrepareNonRecursiveWildcards), default(PrepareZeroOrOneQuantifier) };
 
-    private readonly IEnumerable<KeyValuePair<Regex, bool>> _ignorePatterns;
+    private readonly KeyValuePair<Regex, bool>[] _ignorePatterns;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="IgnoreFile" /> class.
@@ -24,29 +24,17 @@ namespace DotNet.Testcontainers.Images
     public IgnoreFile(IEnumerable<string> patterns, ILogger logger)
     {
       _ignorePatterns = patterns
-        .AsParallel()
-
-        // Keep the order.
-        .AsOrdered()
-
         // Trim each line.
         .Select(line => line.Trim())
-
-        // Remove empty line.
-        .Where(line => !string.IsNullOrEmpty(line))
 
         // Remove comment.
         .Where(line => !line.StartsWith("#", StringComparison.Ordinal))
 
-        // Exclude files and directories.
-        .Select(line => line.TrimEnd('/'))
+        // Exclude files and directories. The root of the build context is the root directory.
+        .Select(line => line.Trim('/'))
 
-        // Exclude files and directories.
-        .Select(line =>
-        {
-          const string filesAndDirectories = "/*";
-          return line.EndsWith(filesAndDirectories, StringComparison.InvariantCulture) ? line.Substring(0, line.Length - filesAndDirectories.Length) : line;
-        })
+        // Remove empty line.
+        .Where(line => !string.IsNullOrEmpty(line))
 
         // Exclude all files and directories (https://github.com/testcontainers/testcontainers-dotnet/issues/618).
         .Select(line => "*".Equals(line, StringComparison.OrdinalIgnoreCase) ? "**" : line)
@@ -57,10 +45,7 @@ namespace DotNet.Testcontainers.Images
           switch (line[0])
           {
             case '!':
-              lines.Add(new KeyValuePair<string, bool>(line.Substring(1), true));
-              break;
-            case '/':
-              lines.Add(new KeyValuePair<string, bool>(line.Substring(1), false));
+              lines.Add(new KeyValuePair<string, bool>(line.Substring(1).Trim('/'), true));
               break;
             default:
               lines.Add(new KeyValuePair<string, bool>(line, false));
@@ -136,8 +121,16 @@ namespace DotNet.Testcontainers.Images
     /// <returns>True if the file path does not match any ignore pattern, otherwise false.</returns>
     public bool Accepts(string file)
     {
-      var matches = _ignorePatterns.AsParallel().Where(ignorePattern => ignorePattern.Key.IsMatch(file)).ToArray();
-      return matches.Length == 0 || matches[matches.Length - 1].Value;
+      // The last pattern that matches the file path decides whether it is accepted or not.
+      for (var i = _ignorePatterns.Length - 1; i >= 0; i--)
+      {
+        if (_ignorePatterns[i].Key.IsMatch(file))
+        {
+          return _ignorePatterns[i].Value;
+        }
+      }
+
+      return true;
     }
 
     /// <summary>
@@ -181,32 +174,11 @@ namespace DotNet.Testcontainers.Images
     /// </summary>
     private readonly struct PrepareNonRecursiveWildcards : ISearchAndReplace<string>
     {
-      private const string MatchAllExceptPathSeparator = "([^\\\\\\/]+)";
+      private const string MatchAllExceptPathSeparator = "([^\\\\\\/]*)";
 
       /// <inheritdoc />
       public string Replace(string input)
       {
-        // Find last non-recursive wildcard in pattern.
-        var index = input.LastIndexOf("*", StringComparison.Ordinal);
-
-        // If last character is a non-recursive wildcard, add the end of string regular expression.
-        if (input.EndsWith("*", StringComparison.Ordinal) && index >= 0)
-        {
-          input = input.Remove(index, 1).Insert(index, $"{MatchAllExceptPathSeparator}?$");
-          index = -1;
-        }
-
-        // Replace the last non-recursive wildcard with a match-zero-or-one quantifier regular expression.
-#if NETSTANDARD2_0
-        if (input.Contains("*") && index >= 0)
-#else
-        if (input.Contains('*') && index >= 0)
-#endif
-        {
-          input = input.Remove(index, 1).Insert(index, $"{MatchAllExceptPathSeparator}?");
-        }
-
-        // Replace remaining non-recursive wildcards.
         return input.Replace("*", MatchAllExceptPathSeparator);
       }
     }

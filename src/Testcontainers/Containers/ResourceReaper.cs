@@ -132,14 +132,13 @@ namespace DotNet.Testcontainers.Containers
       await DefaultLock.WaitAsync(ct)
         .ConfigureAwait(false);
 
-      if (_defaultInstance != null && !_defaultInstance._disposed)
-      {
-        DefaultLock.Release();
-        return _defaultInstance;
-      }
-
       try
       {
+        if (_defaultInstance != null && !_defaultInstance._disposed)
+        {
+          return _defaultInstance;
+        }
+
         var resourceReaperImage = TestcontainersSettings.ResourceReaperImage ?? RyukImage;
 
         var requiresPrivilegedMode = TestcontainersSettings.ResourceReaperPrivilegedModeEnabled;
@@ -228,11 +227,8 @@ namespace DotNet.Testcontainers.Containers
         _maintainConnectionCts.Dispose();
       }
 
-      if (_resourceReaperContainer != null)
-      {
-        await _resourceReaperContainer.DisposeAsync()
-          .ConfigureAwait(false);
-      }
+      await _resourceReaperContainer.DisposeAsync()
+        .ConfigureAwait(false);
     }
 
     /// <summary>
@@ -246,7 +242,6 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="initTimeout">The timeout to initialize the Ryuk connection (Default: <inheritdoc cref="ConnectionTimeoutInSeconds" />).</param>
     /// <param name="ct">The cancellation token to cancel the <see cref="ResourceReaper" /> initialization.</param>
     /// <returns>Task that completes when the <see cref="ResourceReaper" /> has been started.</returns>
-    [PublicAPI]
     private static Task<ResourceReaper> GetAndStartNewAsync(IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, IImage resourceReaperImage, IMount dockerSocket, ILogger logger, bool requiresPrivilegedMode = false, TimeSpan initTimeout = default, CancellationToken ct = default)
     {
       return GetAndStartNewAsync(Guid.NewGuid(), dockerEndpointAuthConfig, resourceReaperImage, dockerSocket, logger, requiresPrivilegedMode, initTimeout, ct);
@@ -264,7 +259,6 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="initTimeout">The timeout to initialize the Ryuk connection (Default: <inheritdoc cref="ConnectionTimeoutInSeconds" />).</param>
     /// <param name="ct">The cancellation token to cancel the <see cref="ResourceReaper" /> initialization.</param>
     /// <returns>Task that completes when the <see cref="ResourceReaper" /> has been started.</returns>
-    [PublicAPI]
     private static async Task<ResourceReaper> GetAndStartNewAsync(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, IImage resourceReaperImage, IMount dockerSocket, ILogger logger, bool requiresPrivilegedMode = false, TimeSpan initTimeout = default, CancellationToken ct = default)
     {
       var ryukInitializedTaskSource = new TaskCompletionSource<bool>();
@@ -527,12 +521,20 @@ namespace DotNet.Testcontainers.Containers
             {
               // Keep the connection to Ryuk up.
 #if NETSTANDARD2_0
-              _ = await stream.ReadAsync(readBytes, 0, readBytes.Length, _maintainConnectionCts.Token)
+              var numberOfBytes = await stream.ReadAsync(readBytes, 0, readBytes.Length, _maintainConnectionCts.Token)
                 .ConfigureAwait(false);
 #else
-              _ = await stream.ReadAsync(readBytes, _maintainConnectionCts.Token)
+              var numberOfBytes = await stream.ReadAsync(readBytes, _maintainConnectionCts.Token)
                 .ConfigureAwait(false);
 #endif
+
+              if (numberOfBytes == 0)
+              {
+                // Ryuk closed the connection. Reading from it again returns immediately
+                // without any data, which would keep this loop spinning.
+                _resourceReaperContainer.Logger.LostConnectionToResourceReaper(SessionId, host, port, null);
+                break;
+              }
             }
           }
           catch (OperationCanceledException)
