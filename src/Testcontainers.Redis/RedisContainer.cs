@@ -25,14 +25,29 @@ public sealed class RedisContainer : DockerContainer
     /// <summary>
     /// Executes the Lua script in the Redis container.
     /// </summary>
+    /// <remarks>
+    /// The script content is encoded using <see cref="Encoding.Default" />.
+    /// </remarks>
     /// <param name="scriptContent">The content of the Lua script to execute.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the Lua script has been executed.</returns>
-    public async Task<ExecResult> ExecScriptAsync(string scriptContent, CancellationToken ct = default)
+    public Task<ExecResult> ExecScriptAsync(string scriptContent, CancellationToken ct = default)
+    {
+        return ExecScriptAsync(scriptContent, Encoding.Default, ct);
+    }
+
+    /// <summary>
+    /// Executes the Lua script in the Redis container.
+    /// </summary>
+    /// <param name="scriptContent">The content of the Lua script to execute.</param>
+    /// <param name="encoding">The encoding used to write the script content to the container.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the Lua script has been executed.</returns>
+    public async Task<ExecResult> ExecScriptAsync(string scriptContent, Encoding encoding, CancellationToken ct = default)
     {
         var scriptFilePath = string.Join("/", string.Empty, "tmp", Guid.NewGuid().ToString("D"), Path.GetRandomFileName());
 
-        await CopyAsync(Encoding.Default.GetBytes(scriptContent), scriptFilePath, fileMode: Unix.FileMode644, ct: ct)
+        await CopyAsync(encoding.GetBytes(scriptContent), scriptFilePath, fileMode: Unix.FileMode644, ct: ct)
             .ConfigureAwait(false);
 
         return await ExecAsync(new[] { "redis-cli", "--eval", scriptFilePath, "0" }, ct)
