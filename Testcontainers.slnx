@@ -30,6 +30,7 @@
         <Project Path="src/Testcontainers.Couchbase/Testcontainers.Couchbase.csproj"/>
         <Project Path="src/Testcontainers.CouchDb/Testcontainers.CouchDb.csproj"/>
         <Project Path="src/Testcontainers.Db2/Testcontainers.Db2.csproj"/>
+        <Project Path="src/Testcontainers.DuckDb/Testcontainers.DuckDb.csproj"/>
         <Project Path="src/Testcontainers.DynamoDb/Testcontainers.DynamoDb.csproj"/>
         <Project Path="src/Testcontainers.Elasticsearch/Testcontainers.Elasticsearch.csproj"/>
         <Project Path="src/Testcontainers.EventHubs/Testcontainers.EventHubs.csproj"/>
@@ -101,6 +102,7 @@
         <Project Path="tests/Testcontainers.CouchDb.Tests/Testcontainers.CouchDb.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Databases.Tests/Testcontainers.Databases.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Db2.Tests/Testcontainers.Db2.Tests.csproj"/>
+        <Project Path="tests/Testcontainers.DuckDb.Tests/Testcontainers.DuckDb.Tests.csproj"/>
         <Project Path="tests/Testcontainers.DynamoDb.Tests/Testcontainers.DynamoDb.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Elasticsearch.Tests/Testcontainers.Elasticsearch.Tests.csproj"/>
         <Project Path="tests/Testcontainers.EventHubs.Tests/Testcontainers.EventHubs.Tests.csproj"/>
