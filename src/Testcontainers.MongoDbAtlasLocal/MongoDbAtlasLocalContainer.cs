@@ -21,18 +21,13 @@ public sealed class MongoDbAtlasLocalContainer : DockerContainer
     /// <summary>
     /// Gets the MongoDb Atlas Local connection string.
     /// </summary>
-    /// <remarks>
-    /// The deployment runs as a single-node replica set that advertises the container's
-    /// hostname, which the test host cannot resolve. The connection string therefore
-    /// sets <c>directConnection=true</c>.
-    /// </remarks>
     /// <returns>The MongoDb Atlas Local connection string.</returns>
     public string GetConnectionString()
     {
         // The MongoDb documentation recommends to use percent-encoding for username and password: https://www.mongodb.com/docs/manual/reference/connection-string/.
         var endpoint = new UriBuilder("mongodb", Hostname, GetMappedPublicPort(MongoDbAtlasLocalBuilder.MongoDbAtlasLocalPort));
-        endpoint.UserName = Uri.EscapeDataString(_configuration.Username ?? string.Empty);
-        endpoint.Password = Uri.EscapeDataString(_configuration.Password ?? string.Empty);
+        endpoint.UserName = Uri.EscapeDataString(_configuration.Username);
+        endpoint.Password = Uri.EscapeDataString(_configuration.Password);
         endpoint.Query = "directConnection=true";
         return endpoint.ToString();
     }
@@ -47,23 +42,18 @@ public sealed class MongoDbAtlasLocalContainer : DockerContainer
     {
         var scriptFilePath = string.Join("/", string.Empty, "tmp", Guid.NewGuid().ToString("D"), Path.GetRandomFileName());
 
-        await CopyAsync(Encoding.UTF8.GetBytes(scriptContent), scriptFilePath, fileMode: Unix.FileMode644, ct: ct)
+        await CopyAsync(Encoding.Default.GetBytes(scriptContent), scriptFilePath, fileMode: Unix.FileMode644, ct: ct)
             .ConfigureAwait(false);
 
-        var command = new List<string>();
-        command.Add(MongoDbShellFilePath);
-
-        if (!string.IsNullOrEmpty(_configuration.Username) && !string.IsNullOrEmpty(_configuration.Password))
+        var command = new[]
         {
-            command.Add("--username");
-            command.Add(_configuration.Username);
-            command.Add("--password");
-            command.Add(_configuration.Password);
-        }
-
-        command.Add("--quiet");
-        command.Add("--eval");
-        command.Add($"load('{scriptFilePath}')");
+            MongoDbShellFilePath,
+            "--username", _configuration.Username,
+            "--password", _configuration.Password,
+            "--quiet",
+            "--eval",
+            $"load('{scriptFilePath}')",
+        };
 
         return await ExecAsync(command, ct)
             .ConfigureAwait(false);

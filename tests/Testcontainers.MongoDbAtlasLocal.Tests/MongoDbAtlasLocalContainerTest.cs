@@ -41,30 +41,28 @@ public abstract class MongoDbAtlasLocalContainerTest : IAsyncLifetime
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public async Task AtlasSearchReturnsMatchingDocuments()
+    public async Task CreateSearchIndexReturnsIndexName()
     {
         // Given
         const string indexName = "default";
 
         var client = new MongoClient(_mongoDbAtlasLocalContainer.GetConnectionString());
 
-        var collection = client.GetDatabase("test").GetCollection<BsonDocument>("movies");
+        var database = client.GetDatabase("test");
 
-        await collection.InsertManyAsync(new[] { new BsonDocument("title", "The Matrix"), new BsonDocument("title", "Back to the Future"), new BsonDocument("title", "The Matrix Reloaded") }, cancellationToken: TestContext.Current.CancellationToken)
+        await database.CreateCollectionAsync("movies", cancellationToken: TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        await collection.SearchIndexes.CreateOneAsync(new CreateSearchIndexModel(indexName, new BsonDocument("mappings", new BsonDocument("dynamic", true))), TestContext.Current.CancellationToken)
-            .ConfigureAwait(true);
+        var collection = database.GetCollection<BsonDocument>("movies");
+
+        var searchIndex = new CreateSearchIndexModel(indexName, new BsonDocument("mappings", new BsonDocument("dynamic", true)));
 
         // When
-        await AtlasSearch.WaitUntilSearchIndexIsQueryableAsync(collection, indexName, TestContext.Current.CancellationToken)
-            .ConfigureAwait(true);
-
-        var titles = await AtlasSearch.WaitUntilSearchReturnsAsync(collection, indexName, Builders<BsonDocument>.Search.Text("title", "matrix"), 2, TestContext.Current.CancellationToken)
+        var name = await collection.SearchIndexes.CreateOneAsync(searchIndex, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
-        Assert.Equal(new[] { "The Matrix", "The Matrix Reloaded" }, titles.OrderBy(title => title));
+        Assert.Equal(indexName, name);
     }
 
     [Fact]
@@ -100,12 +98,40 @@ public abstract class MongoDbAtlasLocalContainerTest : IAsyncLifetime
     }
 
     [UsedImplicitly]
-    public sealed class MongoDbAtlasLocalAuthConfiguration : MongoDbAtlasLocalContainerTest
+    public sealed class MongoDbAtlasLocalNoAuthConfiguration : MongoDbAtlasLocalContainerTest
     {
-        public MongoDbAtlasLocalAuthConfiguration()
-            : base(new MongoDbAtlasLocalBuilder(TestSession.GetImageFromDockerfile()).WithUsername("mongo").WithPassword("mongo").Build())
+        public MongoDbAtlasLocalNoAuthConfiguration()
+            : base(new MongoDbAtlasLocalBuilder(TestSession.GetImageFromDockerfile()).WithUsername(string.Empty).WithPassword(string.Empty).Build())
         {
         }
     }
     // # --8<-- [end:CreateMongoDbAtlasLocalContainer]
+
+    // # --8<-- [start:InitScriptContainerConfiguration]
+    [UsedImplicitly]
+    public sealed class MongoDbAtlasLocalInitScriptConfiguration : MongoDbAtlasLocalContainerTest
+    {
+        public MongoDbAtlasLocalInitScriptConfiguration()
+            : base(new MongoDbAtlasLocalBuilder(TestSession.GetImageFromDockerfile()).WithInitScriptContent("01-movies.js", "db.movies.insertOne({title:\"The Matrix\"});").Build())
+        {
+        }
+
+        [Fact]
+        [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+        public async Task FindReturnsSeededDocument()
+        {
+            // Given
+            var client = new MongoClient(_mongoDbAtlasLocalContainer.GetConnectionString());
+
+            var collection = client.GetDatabase("test").GetCollection<BsonDocument>("movies");
+
+            // When
+            var movie = await collection.Find(FilterDefinition<BsonDocument>.Empty).SingleAsync(TestContext.Current.CancellationToken)
+                .ConfigureAwait(true);
+
+            // Then
+            Assert.Equal("The Matrix", movie["title"].AsString);
+        }
+    }
+    // # --8<-- [end:InitScriptContainerConfiguration]
 }

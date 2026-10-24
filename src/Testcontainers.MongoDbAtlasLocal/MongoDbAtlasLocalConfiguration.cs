@@ -9,12 +9,18 @@ public sealed class MongoDbAtlasLocalConfiguration : ContainerConfiguration
     /// </summary>
     /// <param name="username">The MongoDb Atlas Local username.</param>
     /// <param name="password">The MongoDb Atlas Local password.</param>
+    /// <param name="initScriptFilePaths">The host file paths of the init scripts.</param>
+    /// <param name="initScriptContents">The file names and contents of the init scripts.</param>
     public MongoDbAtlasLocalConfiguration(
         string username = null,
-        string password = null)
+        string password = null,
+        IEnumerable<string> initScriptFilePaths = null,
+        IEnumerable<KeyValuePair<string, string>> initScriptContents = null)
     {
         Username = username;
         Password = password;
+        InitScriptFilePaths = initScriptFilePaths;
+        InitScriptContents = initScriptContents;
     }
 
     /// <summary>
@@ -57,21 +63,27 @@ public sealed class MongoDbAtlasLocalConfiguration : ContainerConfiguration
     {
         Username = BuildConfiguration.Combine(oldValue.Username, newValue.Username);
         Password = BuildConfiguration.Combine(oldValue.Password, newValue.Password);
+        InitScriptFilePaths = BuildConfiguration.Combine(oldValue.InitScriptFilePaths, newValue.InitScriptFilePaths);
+        InitScriptContents = BuildConfiguration.Combine(oldValue.InitScriptContents, newValue.InitScriptContents);
     }
 
     /// <summary>
     /// Gets the MongoDb Atlas Local username.
     /// </summary>
-    /// <remarks>
-    /// If <c>null</c> or empty, the deployment does not enable authentication.
-    /// </remarks>
     public string Username { get; }
 
     /// <summary>
     /// Gets the MongoDb Atlas Local password.
     /// </summary>
-    /// <remarks>
-    /// If <c>null</c> or empty, the deployment does not enable authentication.
-    /// </remarks>
     public string Password { get; }
+
+    /// <summary>
+    /// Gets the host file paths of the init scripts.
+    /// </summary>
+    public IEnumerable<string> InitScriptFilePaths { get; }
+
+    /// <summary>
+    /// Gets the file names and contents of the init scripts.
+    /// </summary>
+    public IEnumerable<KeyValuePair<string, string>> InitScriptContents { get; }
 }
