@@ -1,0 +1,163 @@
+namespace Testcontainers.MongoDbAtlasLocal;
+
+public abstract class MongoDbAtlasLocalContainerTest : IAsyncLifetime
+{
+    private readonly MongoDbAtlasLocalContainer _mongoDbAtlasLocalContainer;
+
+    private MongoDbAtlasLocalContainerTest(MongoDbAtlasLocalContainer mongoDbAtlasLocalContainer)
+    {
+        _mongoDbAtlasLocalContainer = mongoDbAtlasLocalContainer;
+    }
+
+    // # --8<-- [start:UseMongoDbAtlasLocalContainer]
+    public async ValueTask InitializeAsync()
+    {
+        await _mongoDbAtlasLocalContainer.StartAsync()
+            .ConfigureAwait(false);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await DisposeAsyncCore()
+            .ConfigureAwait(false);
+
+        GC.SuppressFinalize(this);
+    }
+
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public void ConnectionStateReturnsOpen()
+    {
+        // Given
+        using var client = new MongoClient(_mongoDbAtlasLocalContainer.GetConnectionString());
+
+        // When
+        using var databases = client.ListDatabases(TestContext.Current.CancellationToken);
+
+        // Then
+        Assert.Contains(databases.ToEnumerable(TestContext.Current.CancellationToken), database => database.TryGetValue("name", out var name) && "admin".Equals(name.AsString));
+        Assert.Equal(_mongoDbAtlasLocalContainer.GetConnectionString(), _mongoDbAtlasLocalContainer.GetConnectionString(ConnectionMode.Host));
+    }
+
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public async Task CreateSearchIndexReturnsIndexName()
+    {
+        // Given
+        const string indexName = "default";
+
+        using var client = new MongoClient(_mongoDbAtlasLocalContainer.GetConnectionString());
+
+        var database = client.GetDatabase("test");
+
+        await database.CreateCollectionAsync("movies", cancellationToken: TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        var collection = database.GetCollection<BsonDocument>("movies");
+
+        var searchIndex = new CreateSearchIndexModel(indexName, new BsonDocument("mappings", new BsonDocument("dynamic", true)));
+
+        // When
+        var name = await collection.SearchIndexes.CreateOneAsync(searchIndex, TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        // Then
+        Assert.Equal(indexName, name);
+    }
+
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public async Task ExecScriptReturnsSuccessful()
+    {
+        // Given
+        const string scriptContent = "printjson(db.adminCommand({listDatabases:1,nameOnly:true,filter:{\"name\":/^admin/}}));";
+
+        // When
+        var execResult = await _mongoDbAtlasLocalContainer.ExecScriptAsync(scriptContent, TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        // Then
+        Assert.True(0L.Equals(execResult.ExitCode), execResult.Stderr);
+        Assert.Empty(execResult.Stderr);
+    }
+    // # --8<-- [end:UseMongoDbAtlasLocalContainer]
+
+    protected virtual ValueTask DisposeAsyncCore()
+    {
+        return _mongoDbAtlasLocalContainer.DisposeAsync();
+    }
+
+    // # --8<-- [start:CreateMongoDbAtlasLocalContainer]
+    [UsedImplicitly]
+    public sealed class MongoDbAtlasLocalDefaultConfiguration : MongoDbAtlasLocalContainerTest
+    {
+        public MongoDbAtlasLocalDefaultConfiguration()
+            : base(new MongoDbAtlasLocalBuilder(TestSession.GetImageFromDockerfile()).Build())
+        {
+        }
+    }
+
+    [UsedImplicitly]
+    public sealed class MongoDbAtlasLocalNoAuthConfiguration : MongoDbAtlasLocalContainerTest
+    {
+        public MongoDbAtlasLocalNoAuthConfiguration()
+            : base(new MongoDbAtlasLocalBuilder(TestSession.GetImageFromDockerfile()).WithUsername(string.Empty).WithPassword(string.Empty).Build())
+        {
+        }
+    }
+    // # --8<-- [end:CreateMongoDbAtlasLocalContainer]
+
+    // # --8<-- [start:InitScriptContainerConfiguration]
+    [UsedImplicitly]
+    public sealed class MongoDbAtlasLocalInitScriptConfiguration : MongoDbAtlasLocalContainerTest
+    {
+        public MongoDbAtlasLocalInitScriptConfiguration()
+            : base(new MongoDbAtlasLocalBuilder(TestSession.GetImageFromDockerfile()).WithInitDatabase("sample_mflix").WithInitScriptContent("01-movies.js", "db.movies.insertOne({title:\"The Matrix\"});").Build())
+        {
+        }
+
+        [Fact]
+        [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+        public async Task FindReturnsSeededDocument()
+        {
+            // Given
+            using var client = new MongoClient(_mongoDbAtlasLocalContainer.GetConnectionString());
+
+            var collection = client.GetDatabase("sample_mflix").GetCollection<BsonDocument>("movies");
+
+            // When
+            var movie = await collection.Find(FilterDefinition<BsonDocument>.Empty).SingleAsync(TestContext.Current.CancellationToken)
+                .ConfigureAwait(true);
+
+            // Then
+            Assert.Equal("The Matrix", movie["title"].AsString);
+        }
+    }
+    // # --8<-- [end:InitScriptContainerConfiguration]
+
+    [UsedImplicitly]
+    public sealed class MongoDbAtlasLocalInitScriptFileConfiguration : MongoDbAtlasLocalContainerTest
+    {
+        public MongoDbAtlasLocalInitScriptFileConfiguration()
+            : base(new MongoDbAtlasLocalBuilder(TestSession.GetImageFromDockerfile()).WithInitDatabase("sample_mflix").WithInitScript("01-movies.js").Build())
+        {
+        }
+
+        [Fact]
+        [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+        public async Task FindReturnsSeededDocument()
+        {
+            // Given
+            using var client = new MongoClient(_mongoDbAtlasLocalContainer.GetConnectionString());
+
+            var collection = client.GetDatabase("sample_mflix").GetCollection<BsonDocument>("movies");
+
+            // When
+            var movie = await collection.Find(FilterDefinition<BsonDocument>.Empty).SingleAsync(TestContext.Current.CancellationToken)
+                .ConfigureAwait(true);
+
+            // Then
+            Assert.Equal("The Matrix", movie["title"].AsString);
+        }
+    }
+}

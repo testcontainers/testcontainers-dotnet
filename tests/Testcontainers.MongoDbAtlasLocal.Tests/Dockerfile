@@ -1,0 +1,1 @@
+FROM mongodb/mongodb-atlas-local:8.0.32@sha256:1985314b0ded756ba965e0f400d17406b7a89bec659d4763a490f42f006e4fbd
