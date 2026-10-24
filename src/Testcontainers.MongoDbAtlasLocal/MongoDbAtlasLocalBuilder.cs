@@ -138,8 +138,10 @@ public sealed class MongoDbAtlasLocalBuilder : ContainerBuilder<MongoDbAtlasLoca
         // The init scripts are mapped after the validation. Creating the resource
         // mappings in the builder methods would throw for invalid arguments before
         // Validate() can report them.
-        var mongoDbAtlasLocalBuilder = DockerResourceConfiguration.InitScriptFilePaths
-            .Aggregate(this, (builder, scriptFilePath) =>
+        var mongoDbAtlasLocalBuilder = this;
+
+        mongoDbAtlasLocalBuilder = DockerResourceConfiguration.InitScriptFilePaths
+            .Aggregate(mongoDbAtlasLocalBuilder, (builder, scriptFilePath) =>
                 builder.WithResourceMapping(FilePath.Of(scriptFilePath), DirectoryPath.Of(InitScriptsDirectoryPath)));
 
         mongoDbAtlasLocalBuilder = DockerResourceConfiguration.InitScriptContents
@@ -152,7 +154,7 @@ public sealed class MongoDbAtlasLocalBuilder : ContainerBuilder<MongoDbAtlasLoca
     /// <inheritdoc />
     protected override MongoDbAtlasLocalBuilder Init()
     {
-        // The runner's healthcheck checks mongod, the replica set, mongot (the Atlas Search
+        // The runner's health check checks mongod, the replica set, mongot (the Atlas Search
         // process) and that the init scripts have finished. We run it directly instead of
         // waiting for the image's HEALTHCHECK, whose first probe runs 30 seconds after start.
         return base.Init()

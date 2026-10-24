@@ -32,7 +32,7 @@ public abstract class MongoDbContainerTest : IAsyncLifetime
     public void ConnectionStateReturnsOpen()
     {
         // Given
-        var client = new MongoClient(_mongoDbContainer.GetConnectionString());
+        using var client = new MongoClient(_mongoDbContainer.GetConnectionString());
 
         // When
         using var databases = client.ListDatabases(TestContext.Current.CancellationToken);

@@ -29,7 +29,7 @@ public abstract class MongoDbAtlasLocalContainerTest : IAsyncLifetime
     public void ConnectionStateReturnsOpen()
     {
         // Given
-        var client = new MongoClient(_mongoDbAtlasLocalContainer.GetConnectionString());
+        using var client = new MongoClient(_mongoDbAtlasLocalContainer.GetConnectionString());
 
         // When
         using var databases = client.ListDatabases(TestContext.Current.CancellationToken);
@@ -46,7 +46,7 @@ public abstract class MongoDbAtlasLocalContainerTest : IAsyncLifetime
         // Given
         const string indexName = "default";
 
-        var client = new MongoClient(_mongoDbAtlasLocalContainer.GetConnectionString());
+        using var client = new MongoClient(_mongoDbAtlasLocalContainer.GetConnectionString());
 
         var database = client.GetDatabase("test");
 
@@ -112,7 +112,7 @@ public abstract class MongoDbAtlasLocalContainerTest : IAsyncLifetime
     public sealed class MongoDbAtlasLocalInitScriptConfiguration : MongoDbAtlasLocalContainerTest
     {
         public MongoDbAtlasLocalInitScriptConfiguration()
-            : base(new MongoDbAtlasLocalBuilder(TestSession.GetImageFromDockerfile()).WithInitScriptContent("01-movies.js", "db.movies.insertOne({title:\"The Matrix\"});").Build())
+            : base(new MongoDbAtlasLocalBuilder(TestSession.GetImageFromDockerfile()).WithInitDatabase("sample_mflix").WithInitScriptContent("01-movies.js", "db.movies.insertOne({title:\"The Matrix\"});").Build())
         {
         }
 
@@ -121,9 +121,9 @@ public abstract class MongoDbAtlasLocalContainerTest : IAsyncLifetime
         public async Task FindReturnsSeededDocument()
         {
             // Given
-            var client = new MongoClient(_mongoDbAtlasLocalContainer.GetConnectionString());
+            using var client = new MongoClient(_mongoDbAtlasLocalContainer.GetConnectionString());
 
-            var collection = client.GetDatabase("test").GetCollection<BsonDocument>("movies");
+            var collection = client.GetDatabase("sample_mflix").GetCollection<BsonDocument>("movies");
 
             // When
             var movie = await collection.Find(FilterDefinition<BsonDocument>.Empty).SingleAsync(TestContext.Current.CancellationToken)
@@ -134,4 +134,30 @@ public abstract class MongoDbAtlasLocalContainerTest : IAsyncLifetime
         }
     }
     // # --8<-- [end:InitScriptContainerConfiguration]
+
+    [UsedImplicitly]
+    public sealed class MongoDbAtlasLocalInitScriptFileConfiguration : MongoDbAtlasLocalContainerTest
+    {
+        public MongoDbAtlasLocalInitScriptFileConfiguration()
+            : base(new MongoDbAtlasLocalBuilder(TestSession.GetImageFromDockerfile()).WithInitDatabase("sample_mflix").WithInitScript("01-movies.js").Build())
+        {
+        }
+
+        [Fact]
+        [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+        public async Task FindReturnsSeededDocument()
+        {
+            // Given
+            using var client = new MongoClient(_mongoDbAtlasLocalContainer.GetConnectionString());
+
+            var collection = client.GetDatabase("sample_mflix").GetCollection<BsonDocument>("movies");
+
+            // When
+            var movie = await collection.Find(FilterDefinition<BsonDocument>.Empty).SingleAsync(TestContext.Current.CancellationToken)
+                .ConfigureAwait(true);
+
+            // Then
+            Assert.Equal("The Matrix", movie["title"].AsString);
+        }
+    }
 }
