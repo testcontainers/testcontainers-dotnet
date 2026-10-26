@@ -78,9 +78,9 @@ public sealed class MySqlContainer : DockerContainer, IDatabaseContainer
     }
 
     /// <summary>
-    /// Write an unobfuscated MySql configuration file that configures the client
-    /// login path. This prevents warnings in the <see cref="ExecScriptAsync(string, CancellationToken)" />
-    /// result about using a password on the command line.
+    /// Writes an unobfuscated MySql configuration file that configures the client
+    /// login path. This prevents warnings about using a password on the command
+    /// line in the <see cref="ExecScriptAsync(string, CancellationToken)" /> result.
     /// </summary>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the configuration file has been executed.</returns>

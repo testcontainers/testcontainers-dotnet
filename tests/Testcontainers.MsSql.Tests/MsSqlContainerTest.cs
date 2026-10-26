@@ -63,8 +63,8 @@ public abstract class MsSqlContainerTest(MsSqlContainerTest.MsSqlDefaultFixture 
         // Given
         const string expectedValue = "Grüße";
 
-        // sqlcmd reads the script as UTF-8 unless it is told the code page of the
-        // script content. Latin-1 encoded characters are otherwise corrupted.
+        // Unless sqlcmd gets the code page of the script content, it reads the
+        // script as UTF-8 and corrupts the Latin-1 encoded characters.
         const string scriptContent = "CREATE TABLE dbo.EncodingTest (Value NVARCHAR(16)); INSERT INTO dbo.EncodingTest VALUES (N'" + expectedValue + "');";
 
         using var command = fixture.CreateCommand("SELECT Value FROM dbo.EncodingTest;");
