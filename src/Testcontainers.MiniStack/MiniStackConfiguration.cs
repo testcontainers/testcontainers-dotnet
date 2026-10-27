@@ -11,12 +11,15 @@ public sealed class MiniStackConfiguration : ContainerConfiguration
     /// <param name="initScriptContents">The file names and contents of the boot scripts.</param>
     /// <param name="readyScriptFilePaths">The host file paths of the ready scripts.</param>
     /// <param name="readyScriptContents">The file names and contents of the ready scripts.</param>
+    /// <param name="realInfrastructure">A value indicating whether the Docker socket is mounted for real infrastructure.</param>
     public MiniStackConfiguration(
         IEnumerable<string> initScriptFilePaths = null,
         IEnumerable<KeyValuePair<string, string>> initScriptContents = null,
         IEnumerable<string> readyScriptFilePaths = null,
-        IEnumerable<KeyValuePair<string, string>> readyScriptContents = null)
+        IEnumerable<KeyValuePair<string, string>> readyScriptContents = null,
+        bool? realInfrastructure = null)
     {
+        RealInfrastructure = realInfrastructure;
         InitScriptFilePaths = initScriptFilePaths;
         InitScriptContents = initScriptContents;
         ReadyScriptFilePaths = readyScriptFilePaths;
@@ -65,7 +68,13 @@ public sealed class MiniStackConfiguration : ContainerConfiguration
         InitScriptContents = BuildConfiguration.Combine(oldValue.InitScriptContents, newValue.InitScriptContents);
         ReadyScriptFilePaths = BuildConfiguration.Combine(oldValue.ReadyScriptFilePaths, newValue.ReadyScriptFilePaths);
         ReadyScriptContents = BuildConfiguration.Combine(oldValue.ReadyScriptContents, newValue.ReadyScriptContents);
+        RealInfrastructure = BuildConfiguration.Combine(oldValue.RealInfrastructure, newValue.RealInfrastructure);
     }
+
+    /// <summary>
+    /// Gets a value indicating whether the Docker socket is mounted for real infrastructure.
+    /// </summary>
+    public bool? RealInfrastructure { get; }
 
     /// <summary>
     /// Gets the host file paths of the boot scripts.

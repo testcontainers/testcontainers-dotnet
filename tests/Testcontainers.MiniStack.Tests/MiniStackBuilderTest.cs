@@ -60,6 +60,16 @@ public sealed class MiniStackBuilderTest
             Add(miniStackBuilder.WithReadyScriptContent("scripts\\01-seed.sh", string.Empty));
             Add(miniStackBuilder.WithReadyScriptContent(string.Empty, string.Empty));
             Add(miniStackBuilder.WithReadyScriptContent("01-seed.py", null));
+            Add(miniStackBuilder.WithReadyScript("02-create-queue.py").WithReadyScriptContent("02-create-queue.py", string.Empty));
+            Add(miniStackBuilder.WithInitScriptContent("01-boot.sh", string.Empty).WithInitScriptContent("01-boot.sh", string.Empty));
         }
+    }
+
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public void SameFileNameIsAllowedForAnInitAndAReadyScript()
+    {
+        var miniStackBuilder = new MiniStackBuilder(TestSession.GetImageFromDockerfile()).WithInitScriptContent("01.sh", string.Empty).WithReadyScriptContent("01.sh", string.Empty);
+        _ = miniStackBuilder.Build();
     }
 }

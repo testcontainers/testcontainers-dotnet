@@ -6,6 +6,10 @@ public sealed class MiniStackContainer : DockerContainer
 {
     private const string InstanceLabel = "ministack.instance";
 
+    private static readonly TimeSpan CleanupTimeout = TimeSpan.FromMinutes(1);
+
+    private static readonly HttpClient HttpClient = new HttpClient();
+
     private readonly MiniStackConfiguration _configuration;
 
     private string _instanceId;
@@ -69,11 +73,12 @@ public sealed class MiniStackContainer : DockerContainer
     /// Returns the tag verbatim. Semver tags such as <c>1.3.42</c> can be parsed with
     /// <c>Version.TryParse</c> for capability gating;
     /// <c>latest</c> and <c>nightly</c> cannot, so pin a version tag when that matters.
+    /// An image referenced only by digest has no tag; use <see cref="GetMiniStackVersionAsync" /> instead.
     /// </remarks>
-    /// <returns>The image tag, e.g. <c>1.3.42</c> or <c>latest</c>.</returns>
+    /// <returns>The image tag, e.g. <c>1.3.42</c> or <c>latest</c>, or <c>null</c> if the image has no tag.</returns>
     public string GetMiniStackVersion()
     {
-        return Image.Tag ?? Image.Digest;
+        return Image.Tag;
     }
 
     /// <summary>
@@ -87,8 +92,7 @@ public sealed class MiniStackContainer : DockerContainer
     /// <returns>The server version, e.g. <c>1.5.31</c>, or <c>null</c> if the health response has none.</returns>
     public async Task<string> GetMiniStackVersionAsync(CancellationToken ct = default)
     {
-        using var httpClient = new HttpClient();
-        using var response = await httpClient.GetAsync(new Uri(new Uri(GetConnectionString()), MiniStackBuilder.HealthPath), ct)
+        using var response = await HttpClient.GetAsync(new Uri(new Uri(GetConnectionString()), MiniStackBuilder.HealthPath), ct)
             .ConfigureAwait(false);
 
         _ = response.EnsureSuccessStatusCode();
@@ -101,12 +105,21 @@ public sealed class MiniStackContainer : DockerContainer
     }
 
     /// <inheritdoc />
+    protected override async Task UnsafeStartContainerAsync(CancellationToken ct = default)
+    {
+        await base.UnsafeStartContainerAsync(ct)
+            .ConfigureAwait(false);
+
+        // Resolve the label before the readiness checks: ready scripts can create nested
+        // containers, and a start that fails or times out must still clean them up.
+        _instanceId = await ResolveInstanceIdAsync(ct)
+            .ConfigureAwait(false);
+    }
+
+    /// <inheritdoc />
     protected override async Task UnsafeStartAsync(CancellationToken ct = default)
     {
         await base.UnsafeStartAsync(ct)
-            .ConfigureAwait(false);
-
-        _instanceId = await ResolveInstanceIdAsync(ct)
             .ConfigureAwait(false);
 
         await ThrowIfReadyScriptsFailedAsync(ct)
@@ -114,21 +127,11 @@ public sealed class MiniStackContainer : DockerContainer
     }
 
     /// <inheritdoc />
-    protected override async Task UnsafeStopAsync(CancellationToken ct = default)
-    {
-        try
-        {
-            await base.UnsafeStopAsync(ct)
-                .ConfigureAwait(false);
-        }
-        finally
-        {
-            await ReapMiniStackResourcesAsync()
-                .ConfigureAwait(false);
-        }
-    }
-
-    /// <inheritdoc />
+    /// <remarks>
+    /// Also removes the nested containers and volumes this MiniStack started. Removing the
+    /// container kills MiniStack, so its own shutdown cleanup does not run. A plain stop
+    /// lets MiniStack shut down and remove them itself.
+    /// </remarks>
     protected override async Task UnsafeDeleteAsync(CancellationToken ct = default)
     {
         try
@@ -138,20 +141,10 @@ public sealed class MiniStackContainer : DockerContainer
         }
         finally
         {
-            await ReapMiniStackResourcesAsync()
+            await ReapMiniStackResourcesAsync(ct)
                 .ConfigureAwait(false);
         }
     }
-
-    /// <summary>
-    /// Gets the configuration the container was built with.
-    /// </summary>
-    internal MiniStackConfiguration Configuration => _configuration;
-
-    /// <summary>
-    /// Gets the <c>ministack.instance</c> label value of this MiniStack, known once it has started.
-    /// </summary>
-    internal string InstanceId => _instanceId;
 
     /// <summary>
     /// Throws if MiniStack reports a failed ready script.
@@ -162,17 +155,33 @@ public sealed class MiniStackContainer : DockerContainer
     /// </remarks>
     private async Task ThrowIfReadyScriptsFailedAsync(CancellationToken ct)
     {
-        using var httpClient = new HttpClient();
-        using var response = await httpClient.GetAsync(new Uri(new Uri(GetConnectionString()), MiniStackBuilder.ReadyPath), ct)
-            .ConfigureAwait(false);
+        string json;
 
-        if (!response.IsSuccessStatusCode)
+        try
         {
+            using var response = await HttpClient.GetAsync(new Uri(new Uri(GetConnectionString()), MiniStackBuilder.ReadyPath), ct)
+                .ConfigureAwait(false);
+
+            if (HttpStatusCode.NotFound.Equals(response.StatusCode))
+            {
+                return;
+            }
+
+            if (!HttpStatusCode.OK.Equals(response.StatusCode))
+            {
+                // Only possible with a custom wait strategy that does not wait for the ready scripts.
+                Logger.LogWarning("MiniStack ready scripts are still running (HTTP {StatusCode}); their failures are not checked", (int)response.StatusCode);
+                return;
+            }
+
+            json = await response.Content.ReadAsStringAsync()
+                .ConfigureAwait(false);
+        }
+        catch (HttpRequestException e)
+        {
+            Logger.LogWarning(e, "Could not read the MiniStack ready state; ready script failures are not checked");
             return;
         }
-
-        var json = await response.Content.ReadAsStringAsync()
-            .ConfigureAwait(false);
 
         using var ready = JsonDocument.Parse(json);
 
@@ -212,9 +221,9 @@ public sealed class MiniStackContainer : DockerContainer
             var port = GetEnvironmentOrDefault("GATEWAY_PORT", GetEnvironmentOrDefault("EDGE_PORT", MiniStackBuilder.MiniStackPort.ToString(CultureInfo.InvariantCulture)));
             return host + ":" + port;
         }
-        catch (Exception e)
+        catch (Exception e) when (!(e is OperationCanceledException))
         {
-            Logger.LogDebug(e, "Could not resolve the MiniStack instance id; nested containers will not be reaped");
+            Logger.LogWarning(e, "Could not resolve the MiniStack instance id; nested containers will not be removed");
             return null;
         }
     }
@@ -226,16 +235,21 @@ public sealed class MiniStackContainer : DockerContainer
     /// <remarks>
     /// They run on the host engine, not inside the MiniStack container, so the
     /// Resource Reaper does not see them. Only resources labelled with this
-    /// container's <c>ministack.instance</c> are removed, so MiniStack instances
-    /// sharing the Docker daemon are left alone. Cleanup is best-effort: failures
-    /// are logged and never thrown, so a stuck remove never masks a test failure.
+    /// container's <c>ministack.instance</c> are removed. MiniStack derives that value
+    /// from <c>MINISTACK_HOSTNAME</c> (or the container hostname) and the gateway port,
+    /// so instances that share both values also share their nested containers. Cleanup
+    /// is best-effort and bounded by a timeout: failures are logged and never thrown, so
+    /// a stuck remove never masks a test failure.
     /// </remarks>
-    private async Task ReapMiniStackResourcesAsync()
+    private async Task ReapMiniStackResourcesAsync(CancellationToken ct)
     {
         if (string.IsNullOrEmpty(_instanceId))
         {
             return;
         }
+
+        using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+        cts.CancelAfter(CleanupTimeout);
 
         var labelFilter = new Dictionary<string, IDictionary<string, bool>>
         {
@@ -249,7 +263,7 @@ public sealed class MiniStackContainer : DockerContainer
         }
         catch (Exception e)
         {
-            Logger.LogDebug(e, "MiniStack cleanup skipped, Docker client unavailable");
+            Logger.LogWarning(e, "MiniStack cleanup skipped, Docker client unavailable");
             return;
         }
 
@@ -257,14 +271,14 @@ public sealed class MiniStackContainer : DockerContainer
         {
             try
             {
-                var orphans = await client.Containers.ListContainersAsync(new ContainersListParameters { All = true, Filters = labelFilter })
+                var orphans = await client.Containers.ListContainersAsync(new ContainersListParameters { All = true, Filters = labelFilter }, cts.Token)
                     .ConfigureAwait(false);
 
                 foreach (var orphan in orphans)
                 {
                     try
                     {
-                        await client.Containers.RemoveContainerAsync(orphan.ID, new ContainerRemoveParameters { Force = true, RemoveVolumes = true })
+                        await client.Containers.RemoveContainerAsync(orphan.ID, new ContainerRemoveParameters { Force = true, RemoveVolumes = true }, cts.Token)
                             .ConfigureAwait(false);
                     }
                     catch (Exception e)
@@ -280,14 +294,14 @@ public sealed class MiniStackContainer : DockerContainer
 
             try
             {
-                var volumes = await client.Volumes.ListAsync(new VolumesListParameters { Filters = labelFilter })
+                var volumes = await client.Volumes.ListAsync(new VolumesListParameters { Filters = labelFilter }, cts.Token)
                     .ConfigureAwait(false);
 
                 foreach (var volume in volumes.Volumes ?? new List<VolumeResponse>())
                 {
                     try
                     {
-                        await client.Volumes.RemoveAsync(volume.Name)
+                        await client.Volumes.RemoveAsync(volume.Name, null, cts.Token)
                             .ConfigureAwait(false);
                     }
                     catch (Exception e)
@@ -298,7 +312,7 @@ public sealed class MiniStackContainer : DockerContainer
             }
             catch (Exception e)
             {
-                Logger.LogDebug(e, "MiniStack volume cleanup skipped");
+                Logger.LogWarning(e, "Failed to list MiniStack volumes for cleanup");
             }
         }
     }

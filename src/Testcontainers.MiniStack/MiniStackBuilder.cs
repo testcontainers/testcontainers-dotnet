@@ -179,8 +179,7 @@ public sealed class MiniStackBuilder : ContainerBuilder<MiniStackBuilder, MiniSt
     /// <returns>A configured instance of <see cref="MiniStackBuilder" />.</returns>
     public MiniStackBuilder WithRealInfrastructure()
     {
-        var dockerEndpoint = (DockerResourceConfiguration.DockerEndpointAuthConfig ?? TestcontainersSettings.OS.DockerEndpointAuthConfig)?.Endpoint;
-        return WithBindMount(GetRemoteDockerSocketPath(dockerEndpoint), DockerSocketFilePath, AccessMode.ReadWrite);
+        return Merge(DockerResourceConfiguration, new MiniStackConfiguration(realInfrastructure: true));
     }
 
     /// <summary>
@@ -299,6 +298,13 @@ public sealed class MiniStackBuilder : ContainerBuilder<MiniStackBuilder, MiniSt
             .Aggregate(miniStackBuilder, (builder, scriptContent) =>
                 builder.WithResourceMapping(Encoding.UTF8.GetBytes(scriptContent.Value), FilePath.Of(ReadyScriptsDirectoryPath + scriptContent.Key)));
 
+        // The socket is mounted here, so that it follows the final Docker endpoint even
+        // when WithDockerEndpoint(...) is called after WithRealInfrastructure().
+        if (true.Equals(DockerResourceConfiguration.RealInfrastructure))
+        {
+            miniStackBuilder = miniStackBuilder.WithBindMount(GetDockerSocketPath(DockerResourceConfiguration.DockerEndpointAuthConfig.Endpoint), DockerSocketFilePath, AccessMode.ReadWrite);
+        }
+
         return new MiniStackContainer(miniStackBuilder.DockerResourceConfiguration);
     }
 
@@ -314,6 +320,8 @@ public sealed class MiniStackBuilder : ContainerBuilder<MiniStackBuilder, MiniSt
         const string scriptFileNameMessage = "The script file name must end with .sh or .py and cannot contain a path separator.";
 
         const string scriptContentMessage = "The script content cannot be null.";
+
+        const string duplicateScriptMessage = "Two scripts of the same kind cannot have the same file name.";
 
         base.Validate();
 
@@ -343,6 +351,15 @@ public sealed class MiniStackBuilder : ContainerBuilder<MiniStackBuilder, MiniSt
                 .ThrowIf(argument => argument.Value.Any(scriptContent => isInvalidScriptFileName(scriptContent.Key)), argument => new ArgumentException(scriptFileNameMessage, argument.Name))
                 .ThrowIf(argument => argument.Value.Any(scriptContent => scriptContent.Value == null), argument => new ArgumentException(scriptContentMessage, argument.Name));
         }
+
+        Func<IEnumerable<string>, IEnumerable<KeyValuePair<string, string>>, bool> hasDuplicateFileName = (scriptFilePaths, scriptContents) =>
+            scriptFilePaths.Select(Path.GetFileName).Concat(scriptContents.Select(scriptContent => scriptContent.Key)).GroupBy(fileName => fileName, StringComparer.Ordinal).Any(group => group.Count() > 1);
+
+        _ = Guard.Argument(DockerResourceConfiguration, "InitScripts")
+            .ThrowIf(argument => hasDuplicateFileName(argument.Value.InitScriptFilePaths, argument.Value.InitScriptContents), argument => new ArgumentException(duplicateScriptMessage, argument.Name));
+
+        _ = Guard.Argument(DockerResourceConfiguration, "ReadyScripts")
+            .ThrowIf(argument => hasDuplicateFileName(argument.Value.ReadyScriptFilePaths, argument.Value.ReadyScriptContents), argument => new ArgumentException(duplicateScriptMessage, argument.Name));
     }
 
     /// <inheritdoc />
@@ -351,7 +368,12 @@ public sealed class MiniStackBuilder : ContainerBuilder<MiniStackBuilder, MiniSt
         var builder = base.Init()
             .WithPortBinding(MiniStackPort, true)
             .WithConnectionStringProvider(() => new MiniStackConnectionStringProvider())
-            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
+            .WithWaitStrategy(Wait.ForUnixContainer()
+                .UntilHttpRequestIsSucceeded(request => request.ForPath(HealthPath).ForPort(MiniStackPort))
+                // The readiness endpoint returns HTTP 503 until the ready scripts have run.
+                // Images that predate it return HTTP 404 and are ready once healthy.
+                .UntilHttpRequestIsSucceeded(request => request.ForPath(ReadyPath).ForPort(MiniStackPort)
+                    .ForStatusCodeMatching(statusCode => HttpStatusCode.OK.Equals(statusCode) || HttpStatusCode.NotFound.Equals(statusCode))));
 
         // Forward the hub image name prefix so nested real-infrastructure images
         // (RDS, ElastiCache, EKS, Lambda runtimes) pull through the same private
@@ -379,70 +401,19 @@ public sealed class MiniStackBuilder : ContainerBuilder<MiniStackBuilder, MiniSt
     }
 
     /// <summary>
-    /// Resolves the Docker socket path as the Docker daemon sees it, which is the
-    /// source of the bind mount.
+    /// Resolves the source of the Docker socket bind mount the same way the Resource
+    /// Reaper does: the <c>TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE</c> setting if set,
+    /// otherwise the path of a Unix socket endpoint, otherwise <c>/var/run/docker.sock</c>.
     /// </summary>
-    /// <remarks>
-    /// Mirrors Testcontainers for Java: <c>TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE</c>
-    /// wins; a Unix socket inside the user's home directory (Docker Desktop,
-    /// Rancher Desktop, Colima) is a VM-forwarded socket, so the daemon's own
-    /// <c>/var/run/docker.sock</c> is used; any other Unix socket is used as is.
-    /// </remarks>
-    internal static string GetRemoteDockerSocketPath(Uri dockerEndpoint)
+    /// <param name="dockerEndpoint">The Docker endpoint.</param>
+    /// <returns>The Docker socket path on the Docker host.</returns>
+    private static string GetDockerSocketPath(Uri dockerEndpoint)
     {
         if (!string.IsNullOrEmpty(TestcontainersSettings.DockerSocketOverride))
         {
             return TestcontainersSettings.DockerSocketOverride;
         }
 
-        if (dockerEndpoint == null || !"unix".Equals(dockerEndpoint.Scheme, StringComparison.OrdinalIgnoreCase))
-        {
-            return DockerSocketFilePath;
-        }
-
-        var socketPath = dockerEndpoint.AbsolutePath;
-        var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-        return !string.IsNullOrEmpty(home) && socketPath.StartsWith(home.TrimEnd('/') + "/", StringComparison.Ordinal) ? DockerSocketFilePath : socketPath;
-    }
-
-    /// <inheritdoc cref="IWaitUntil" />
-    /// <remarks>
-    /// Waits for HTTP 200 on <c>/_ministack/ready</c>, which MiniStack returns once the
-    /// ready scripts have run. Images without that endpoint answer HTTP 404; for those,
-    /// HTTP 200 on <c>/_ministack/health</c> is enough.
-    /// </remarks>
-    private sealed class WaitUntil : IWaitUntil
-    {
-        /// <inheritdoc />
-        public async Task<bool> UntilAsync(IContainer container)
-        {
-            using var httpClient = new HttpClient();
-            httpClient.Timeout = TimeSpan.FromSeconds(5);
-            httpClient.BaseAddress = new UriBuilder(Uri.UriSchemeHttp, container.Hostname, container.GetMappedPublicPort(MiniStackPort)).Uri;
-
-            try
-            {
-                using var readyResponse = await httpClient.GetAsync(ReadyPath)
-                    .ConfigureAwait(false);
-
-                if (!HttpStatusCode.NotFound.Equals(readyResponse.StatusCode))
-                {
-                    return HttpStatusCode.OK.Equals(readyResponse.StatusCode);
-                }
-
-                using var healthResponse = await httpClient.GetAsync(HealthPath)
-                    .ConfigureAwait(false);
-
-                return HttpStatusCode.OK.Equals(healthResponse.StatusCode);
-            }
-            catch (HttpRequestException)
-            {
-                return false;
-            }
-            catch (TaskCanceledException)
-            {
-                return false;
-            }
-        }
+        return "unix".Equals(dockerEndpoint?.Scheme, StringComparison.OrdinalIgnoreCase) ? dockerEndpoint.AbsolutePath : DockerSocketFilePath;
     }
 }

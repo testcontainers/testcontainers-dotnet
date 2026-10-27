@@ -102,7 +102,7 @@ public sealed class MiniStackRealInfrastructureTest : IAsyncLifetime
 
                 try
                 {
-                    await tcpClient.ConnectAsync("127.0.0.1", endpoint.Port.GetValueOrDefault(), TestContext.Current.CancellationToken)
+                    await tcpClient.ConnectAsync(_miniStackContainer.Hostname, endpoint.Port.GetValueOrDefault(), TestContext.Current.CancellationToken)
                         .ConfigureAwait(false);
 
                     return true;
@@ -158,6 +158,11 @@ public sealed class MiniStackRealInfrastructureTest : IAsyncLifetime
             createCacheClusterRequest.NumCacheNodes = 1;
 
             _ = await client.CreateCacheClusterAsync(createCacheClusterRequest, TestContext.Current.CancellationToken)
+                .ConfigureAwait(true);
+
+            // MiniStack creates the Redis container in the background when it has to pull the image first.
+            await WaitUntilAsync(async () => (await ListContainersAsync(dockerClient, instanceId)
+                    .ConfigureAwait(false)).Any())
                 .ConfigureAwait(true);
 
             var nestedContainersBeforeDispose = await ListContainersAsync(dockerClient, instanceId)

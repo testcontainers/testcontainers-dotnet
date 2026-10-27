@@ -124,7 +124,7 @@ public abstract class MiniStackContainerTest : IAsyncLifetime
     public async Task GetMiniStackVersionReturnsImageTagAndServerVersion()
     {
         // Given
-        var imageTag = _miniStackContainer.Image.Tag;
+        var imageTag = new DockerImage(TestSession.GetImageFromDockerfile()).Tag;
 
         // When
         var serverVersion = await _miniStackContainer.GetMiniStackVersionAsync(TestContext.Current.CancellationToken)
@@ -132,7 +132,8 @@ public abstract class MiniStackContainerTest : IAsyncLifetime
 
         // Then
         Assert.Equal(imageTag, _miniStackContainer.GetMiniStackVersion());
-        Assert.Equal(imageTag, serverVersion);
+        Assert.True(System.Version.TryParse(serverVersion, out var version), $"'{serverVersion}' is not a version.");
+        Assert.True(!System.Version.TryParse(imageTag, out var tagVersion) || tagVersion.Equals(version), $"The server reports {serverVersion} for the image tag {imageTag}.");
     }
 
     // # --8<-- [start:CreateMiniStackContainer]
@@ -202,17 +203,20 @@ public abstract class MiniStackContainerTest : IAsyncLifetime
 
         [Theory]
         [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-        [InlineData("PERSIST_STATE")]
-        [InlineData("S3_PERSIST")]
-        [InlineData("MINISTACK_IMDS_V2_REQUIRED")]
-        public async Task EnvironmentVariableIsSet(string name)
+        [InlineData("PERSIST_STATE", "1")]
+        [InlineData("S3_PERSIST", "1")]
+        [InlineData("MINISTACK_IMDS_V2_REQUIRED", "1")]
+        [InlineData("MINISTACK_REGION", Region)]
+        [InlineData("AWS_ACCESS_KEY_ID", AccountId)]
+        [InlineData("AWS_SECRET_ACCESS_KEY", "secret")]
+        public async Task EnvironmentVariableIsSet(string name, string expected)
         {
             // When
             var execResult = await _miniStackContainer.ExecAsync(new[] { "printenv", name }, TestContext.Current.CancellationToken)
                 .ConfigureAwait(true);
 
             // Then
-            Assert.Equal("1", execResult.Stdout.Trim());
+            Assert.Equal(expected, execResult.Stdout.Trim());
         }
 
         [Fact]

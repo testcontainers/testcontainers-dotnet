@@ -50,7 +50,7 @@ The builder sets MiniStack's environment variables for the most common options:
 - `WithImdsV2Required()` sets `MINISTACK_IMDS_V2_REQUIRED=1`, so instance metadata requests without a session token are rejected.
 - `WithServices(params string[])` sets `SERVICES`, so MiniStack loads only the listed services, e.g. `WithServices("s3", "sqs")`.
 
-`GetMiniStackVersion()` returns the image tag. `GetMiniStackVersionAsync()` returns the version the running server reports, which also resolves tags such as `latest`.
+`GetMiniStackVersion()` returns the image tag, or `null` for an image referenced only by digest. `GetMiniStackVersionAsync()` returns the version the running server reports, which also resolves tags such as `latest`.
 
 If Testcontainers is configured with a hub image name prefix, the module passes it to MiniStack as `MINISTACK_IMAGE_PREFIX`, so the images MiniStack pulls for real infrastructure come from the same registry.
 
@@ -65,19 +65,21 @@ MiniStack runs shell (`.sh`) and Python (`.py`) scripts in alphabetical order of
 
 The ready scripts can use the AWS CLI (`aws`, `awslocal`) and boto3, which MiniStack preconfigures with its endpoint, region and credentials. The container is ready once `/_ministack/ready` returns HTTP 200, which happens after all ready scripts have run. If a ready script fails, `StartAsync` throws an `InvalidOperationException`, and the script output is in the container logs.
 
+Older MiniStack images have no `/_ministack/ready` endpoint and return HTTP 404. For those, the container is ready once `/_ministack/health` returns HTTP 200, the module does not wait for ready scripts, and it cannot detect a failed one.
+
 ## Real infrastructure
 
-`WithRealInfrastructure()` bind-mounts the Docker socket into the container. MiniStack then runs real containers for services such as RDS, ElastiCache, ECS and Lambda:
+`WithRealInfrastructure()` bind-mounts the Docker socket into the container. It uses the same socket path as the Resource Reaper, including the `TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE` setting. MiniStack then runs real containers for services such as RDS, ElastiCache, ECS and Lambda:
 
 === "Real Infrastructure Configuration"
     ```csharp
     --8<-- "tests/Testcontainers.MiniStack.Tests/MiniStackRealInfrastructureTest.cs:RealInfrastructureMiniStackContainer"
     ```
 
-By default, RDS reports the database container's address on the Docker network, which a test running on a macOS or Windows host cannot reach. `WithRdsPublicEndpoint()` sets `MINISTACK_RDS_PUBLIC_ENDPOINT=1`, so RDS reports `localhost` and the published host port instead.
+By default, RDS reports the database container's address on the Docker network, which a test running on a macOS or Windows host cannot reach. `WithRdsPublicEndpoint()` sets `MINISTACK_RDS_PUBLIC_ENDPOINT=1`, so RDS reports `localhost` and the published host port instead. That address works when the tests and the Docker daemon run on the same machine.
 
 !!! warning
 
     Anything running inside MiniStack, including the code of a Lambda function, gets full control over the host's container engine. Use real infrastructure only on trusted machines and CI runners.
 
-The Resource Reaper does not know about the containers MiniStack starts. When the MiniStack container is stopped or disposed, the module removes the containers and volumes that carry its `ministack.instance` label. Containers that another MiniStack instance on the same Docker daemon started are left alone.
+The Resource Reaper does not know about the containers MiniStack starts. When MiniStack is stopped, it removes them itself. Disposing the container kills MiniStack before it can do that, so the module then removes the containers and volumes that carry its `ministack.instance` label. MiniStack builds that label from `MINISTACK_HOSTNAME` (or the container hostname) and the gateway port. Containers of another MiniStack instance on the same Docker daemon are left alone, unless both instances set the same `MINISTACK_HOSTNAME` and port.
