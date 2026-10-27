@@ -34,14 +34,29 @@ public sealed class MySqlContainer : DockerContainer, IDatabaseContainer
     /// <summary>
     /// Executes the SQL script in the MySql container.
     /// </summary>
+    /// <remarks>
+    /// The script content is encoded using <see cref="Encoding.Default" />.
+    /// </remarks>
     /// <param name="scriptContent">The content of the SQL script to execute.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the SQL script has been executed.</returns>
-    public async Task<ExecResult> ExecScriptAsync(string scriptContent, CancellationToken ct = default)
+    public Task<ExecResult> ExecScriptAsync(string scriptContent, CancellationToken ct = default)
+    {
+        return ExecScriptAsync(scriptContent, Encoding.Default, ct);
+    }
+
+    /// <summary>
+    /// Executes the SQL script in the MySql container.
+    /// </summary>
+    /// <param name="scriptContent">The content of the SQL script to execute.</param>
+    /// <param name="encoding">The encoding used to write the script content to the container.</param>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>Task that completes when the SQL script has been executed.</returns>
+    public async Task<ExecResult> ExecScriptAsync(string scriptContent, Encoding encoding, CancellationToken ct = default)
     {
         var scriptFilePath = string.Join("/", string.Empty, "tmp", Guid.NewGuid().ToString("D"), Path.GetRandomFileName());
 
-        await CopyAsync(Encoding.Default.GetBytes(scriptContent), scriptFilePath, fileMode: Unix.FileMode644, ct: ct)
+        await CopyAsync(encoding.GetBytes(scriptContent), scriptFilePath, fileMode: Unix.FileMode644, ct: ct)
             .ConfigureAwait(false);
 
         return await ExecAsync(new[] { "mysql", _configuration.Database, $"--execute=source {scriptFilePath};" }, ct)
@@ -63,9 +78,9 @@ public sealed class MySqlContainer : DockerContainer, IDatabaseContainer
     }
 
     /// <summary>
-    /// Write an unobfuscated MySql configuration file that configures the client
-    /// login path. This prevents warnings in the <see cref="ExecScriptAsync" />
-    /// result about using a password on the command line.
+    /// Writes an unobfuscated MySql configuration file that configures the client
+    /// login path. This prevents warnings about using a password on the command
+    /// line in the <see cref="ExecScriptAsync(string, CancellationToken)" /> result.
     /// </summary>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the configuration file has been executed.</returns>

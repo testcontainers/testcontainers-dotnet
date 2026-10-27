@@ -56,6 +56,31 @@ public abstract class MsSqlContainerTest(MsSqlContainerTest.MsSqlDefaultFixture 
         Assert.Equal(fixture.Database, database);
     }
 
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public async Task ExecScriptWithEncodingReturnsSuccessful()
+    {
+        // Given
+        const string expectedValue = "Grüße";
+
+        // Unless sqlcmd gets the code page of the script content, it reads the
+        // script as UTF-8 and corrupts the Latin-1 encoded characters.
+        const string scriptContent = "CREATE TABLE dbo.EncodingTest (Value NVARCHAR(16)); INSERT INTO dbo.EncodingTest VALUES (N'" + expectedValue + "');";
+
+        using var command = fixture.CreateCommand("SELECT Value FROM dbo.EncodingTest;");
+
+        // When
+        var execResult = await fixture.Container.ExecScriptAsync(scriptContent, Encoding.Latin1, TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        var actualValue = await command.ExecuteScalarAsync(TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        // Then
+        Assert.True(0L.Equals(execResult.ExitCode), execResult.Stderr);
+        Assert.Equal(expectedValue, actualValue);
+    }
+
     public class MsSqlDefaultFixture(IMessageSink messageSink)
         : DbContainerFixture<MsSqlBuilder, MsSqlContainer>(messageSink)
     {
