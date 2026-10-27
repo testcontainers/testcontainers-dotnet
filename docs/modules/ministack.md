@@ -48,10 +48,22 @@ The builder sets MiniStack's environment variables for the most common options:
 - `WithCredentials(string, string)` sets `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`. MiniStack treats a 12-digit access key as the account ID.
 - `WithPersistence()` sets `PERSIST_STATE=1` and `S3_PERSIST=1`, so service state and S3 objects are written to disk and survive a restart of the same container.
 - `WithImdsV2Required()` sets `MINISTACK_IMDS_V2_REQUIRED=1`, so instance metadata requests without a session token are rejected.
+- `WithServices(params string[])` sets `SERVICES`, so MiniStack loads only the listed services, e.g. `WithServices("s3", "sqs")`.
 
 `GetMiniStackVersion()` returns the image tag. `GetMiniStackVersionAsync()` returns the version the running server reports, which also resolves tags such as `latest`.
 
 If Testcontainers is configured with a hub image name prefix, the module passes it to MiniStack as `MINISTACK_IMAGE_PREFIX`, so the images MiniStack pulls for real infrastructure come from the same registry.
+
+## Init and ready scripts
+
+MiniStack runs shell (`.sh`) and Python (`.py`) scripts in alphabetical order of their file names. Use `WithInitScript(string)` or `WithInitScriptContent(string, string)` for boot scripts, which run before MiniStack serves requests. Use `WithReadyScript(string)` or `WithReadyScriptContent(string, string)` for ready scripts, which run once MiniStack serves requests and can create AWS resources:
+
+=== "Script Configuration"
+    ```csharp
+    --8<-- "tests/Testcontainers.MiniStack.Tests/MiniStackScriptTest.cs:ScriptMiniStackContainer"
+    ```
+
+The ready scripts can use the AWS CLI (`aws`, `awslocal`) and boto3, which MiniStack preconfigures with its endpoint, region and credentials. The container is ready once `/_ministack/ready` returns HTTP 200, which happens after all ready scripts have run. If a ready script fails, `StartAsync` throws an `InvalidOperationException`, and the script output is in the container logs.
 
 ## Real infrastructure
 
@@ -61,6 +73,8 @@ If Testcontainers is configured with a hub image name prefix, the module passes 
     ```csharp
     --8<-- "tests/Testcontainers.MiniStack.Tests/MiniStackRealInfrastructureTest.cs:RealInfrastructureMiniStackContainer"
     ```
+
+By default, RDS reports the database container's address on the Docker network, which a test running on a macOS or Windows host cannot reach. `WithRdsPublicEndpoint()` sets `MINISTACK_RDS_PUBLIC_ENDPOINT=1`, so RDS reports `localhost` and the published host port instead.
 
 !!! warning
 

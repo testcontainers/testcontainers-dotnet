@@ -108,6 +108,9 @@ public sealed class MiniStackContainer : DockerContainer
 
         _instanceId = await ResolveInstanceIdAsync(ct)
             .ConfigureAwait(false);
+
+        await ThrowIfReadyScriptsFailedAsync(ct)
+            .ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -149,6 +152,35 @@ public sealed class MiniStackContainer : DockerContainer
     /// Gets the <c>ministack.instance</c> label value of this MiniStack, known once it has started.
     /// </summary>
     internal string InstanceId => _instanceId;
+
+    /// <summary>
+    /// Throws if MiniStack reports a failed ready script.
+    /// </summary>
+    /// <remarks>
+    /// MiniStack marks the ready scripts as completed even when one of them fails, and
+    /// only counts the failure. Images without the readiness endpoint are not checked.
+    /// </remarks>
+    private async Task ThrowIfReadyScriptsFailedAsync(CancellationToken ct)
+    {
+        using var httpClient = new HttpClient();
+        using var response = await httpClient.GetAsync(new Uri(new Uri(GetConnectionString()), MiniStackBuilder.ReadyPath), ct)
+            .ConfigureAwait(false);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            return;
+        }
+
+        var json = await response.Content.ReadAsStringAsync()
+            .ConfigureAwait(false);
+
+        using var ready = JsonDocument.Parse(json);
+
+        if (ready.RootElement.TryGetProperty("failed", out var failed) && failed.ValueKind == JsonValueKind.Number && failed.GetInt32() > 0)
+        {
+            throw new InvalidOperationException($"{failed.GetInt32()} MiniStack ready script(s) failed. The container logs contain the script output.");
+        }
+    }
 
     private string GetEnvironmentOrDefault(string name, string defaultValue)
     {

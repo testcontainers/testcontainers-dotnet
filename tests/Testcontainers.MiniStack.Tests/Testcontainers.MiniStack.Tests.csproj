@@ -14,6 +14,7 @@
         <PackageReference Include="AWSSDK.DynamoDBv2"/>
         <PackageReference Include="AWSSDK.ElastiCache"/>
         <PackageReference Include="AWSSDK.Lambda"/>
+        <PackageReference Include="AWSSDK.RDS"/>
         <PackageReference Include="AWSSDK.S3"/>
         <PackageReference Include="AWSSDK.SecurityToken"/>
         <PackageReference Include="AWSSDK.SQS"/>
@@ -25,6 +26,9 @@
     </ItemGroup>
     <ItemGroup>
         <None Update="Dockerfile">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="02-create-queue.py">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
     </ItemGroup>

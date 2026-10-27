@@ -7,6 +7,7 @@ public sealed class MiniStackRealInfrastructureTest : IAsyncLifetime
     // # --8<-- [start:RealInfrastructureMiniStackContainer]
     private readonly MiniStackContainer _miniStackContainer = new MiniStackBuilder(TestSession.GetImageFromDockerfile())
         .WithRealInfrastructure()
+        .WithRdsPublicEndpoint()
         .Build();
     // # --8<-- [end:RealInfrastructureMiniStackContainer]
 
@@ -68,6 +69,50 @@ public sealed class MiniStackRealInfrastructureTest : IAsyncLifetime
         // Then
         Assert.Null(invokeResponse.FunctionError);
         Assert.Equal("{\"echo\": \"ministack\"}", Encoding.UTF8.GetString(invokeResponse.Payload.ToArray()));
+    }
+
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public async Task CreateDbInstanceReturnsReachablePublicEndpoint()
+    {
+        // Given
+        using var client = new AmazonRDSClient(Credentials, GetConfig<AmazonRDSConfig>());
+
+        var createDbInstanceRequest = new CreateDBInstanceRequest();
+        createDbInstanceRequest.DBInstanceIdentifier = "db-" + Guid.NewGuid().ToString("N").Substring(0, 12);
+        createDbInstanceRequest.DBInstanceClass = "db.t3.micro";
+        createDbInstanceRequest.Engine = "postgres";
+        createDbInstanceRequest.MasterUsername = "admin";
+        createDbInstanceRequest.MasterUserPassword = "password";
+        createDbInstanceRequest.DBName = "postgres";
+        createDbInstanceRequest.AllocatedStorage = 20;
+
+        // When
+        var createDbInstanceResponse = await client.CreateDBInstanceAsync(createDbInstanceRequest, TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        var endpoint = createDbInstanceResponse.DBInstance.Endpoint;
+
+        // Then
+        Assert.Equal("localhost", endpoint.Address);
+
+        await WaitUntilAsync(async () =>
+            {
+                using var tcpClient = new TcpClient();
+
+                try
+                {
+                    await tcpClient.ConnectAsync("127.0.0.1", endpoint.Port.GetValueOrDefault(), TestContext.Current.CancellationToken)
+                        .ConfigureAwait(false);
+
+                    return true;
+                }
+                catch (SocketException)
+                {
+                    return false;
+                }
+            })
+            .ConfigureAwait(true);
     }
 
     [Fact]

@@ -41,7 +41,22 @@ public sealed class MiniStackBuilder : ContainerBuilder<MiniStackBuilder, MiniSt
 
     internal const string ImagePrefixEnvVar = "MINISTACK_IMAGE_PREFIX";
 
+    internal const string ServicesEnvVar = "SERVICES";
+
+    /// <summary>
+    /// The readiness endpoint, which reports HTTP 200 once the ready scripts have run.
+    /// </summary>
+    public const string ReadyPath = "/_ministack/ready";
+
     private const string DockerSocketFilePath = "/var/run/docker.sock";
+
+    private const string InitScriptsDirectoryPath = "/docker-entrypoint-initaws.d/";
+
+    private const string ReadyScriptsDirectoryPath = "/docker-entrypoint-initaws.d/ready.d/";
+
+    private static readonly string[] ScriptFileExtensions = { ".sh", ".py" };
+
+    private static readonly char[] PathSeparators = { '/', '\\' };
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MiniStackBuilder" /> class.
@@ -168,11 +183,123 @@ public sealed class MiniStackBuilder : ContainerBuilder<MiniStackBuilder, MiniSt
         return WithBindMount(GetRemoteDockerSocketPath(dockerEndpoint), DockerSocketFilePath, AccessMode.ReadWrite);
     }
 
+    /// <summary>
+    /// Limits MiniStack to the given AWS services.
+    /// </summary>
+    /// <remarks>
+    /// Sets <c>SERVICES</c> to a comma-separated list, e.g. <c>s3,sqs,dynamodb</c>.
+    /// MiniStack does not load the other services, and logs a warning for unknown names.
+    /// </remarks>
+    /// <param name="services">The AWS service names.</param>
+    /// <returns>A configured instance of <see cref="MiniStackBuilder" />.</returns>
+    public MiniStackBuilder WithServices(params string[] services)
+    {
+        return WithEnvironment(ServicesEnvVar, string.Join(",", services ?? Array.Empty<string>()));
+    }
+
+    /// <summary>
+    /// Makes RDS report <c>localhost</c> and the published host port as the database endpoint.
+    /// </summary>
+    /// <remarks>
+    /// Sets <c>MINISTACK_RDS_PUBLIC_ENDPOINT=1</c>. Without it, RDS in real infrastructure
+    /// mode reports the database container's address on the Docker network, which a test
+    /// running on a macOS or Windows host cannot reach.
+    /// </remarks>
+    /// <returns>A configured instance of <see cref="MiniStackBuilder" />.</returns>
+    public MiniStackBuilder WithRdsPublicEndpoint()
+    {
+        return WithEnvironment("MINISTACK_RDS_PUBLIC_ENDPOINT", "1");
+    }
+
+    /// <summary>
+    /// Copies a boot script to the container.
+    /// </summary>
+    /// <remarks>
+    /// Shell (<c>.sh</c>) and Python (<c>.py</c>) scripts run in alphabetical order of their
+    /// file names before MiniStack starts serving requests, so they cannot call the AWS APIs.
+    /// Use <see cref="WithReadyScript(string)" /> to create AWS resources.
+    /// </remarks>
+    /// <param name="scriptFilePath">The host file path of the boot script.</param>
+    /// <returns>A configured instance of <see cref="MiniStackBuilder" />.</returns>
+    public MiniStackBuilder WithInitScript(string scriptFilePath)
+    {
+        return Merge(DockerResourceConfiguration, new MiniStackConfiguration(initScriptFilePaths: new[] { scriptFilePath }));
+    }
+
+    /// <summary>
+    /// Creates a boot script in the container.
+    /// </summary>
+    /// <remarks>
+    /// See <see cref="WithInitScript(string)" /> for how the boot scripts run.
+    /// </remarks>
+    /// <param name="fileName">The file name of the boot script (e.g., <c>01-prepare.sh</c>).</param>
+    /// <param name="scriptContent">The content of the boot script.</param>
+    /// <returns>A configured instance of <see cref="MiniStackBuilder" />.</returns>
+    public MiniStackBuilder WithInitScriptContent(string fileName, string scriptContent)
+    {
+        var initScriptContents = new[] { new KeyValuePair<string, string>(fileName, scriptContent) };
+        return Merge(DockerResourceConfiguration, new MiniStackConfiguration(initScriptContents: initScriptContents));
+    }
+
+    /// <summary>
+    /// Copies a ready script to the container to seed AWS resources.
+    /// </summary>
+    /// <remarks>
+    /// Shell (<c>.sh</c>) and Python (<c>.py</c>) scripts run in alphabetical order of their
+    /// file names once MiniStack serves requests. The AWS CLI (<c>aws</c>, <c>awslocal</c>)
+    /// and boto3 are preconfigured with MiniStack's endpoint, region and credentials. The
+    /// container is ready after all ready scripts have run, and the start fails if one of
+    /// them fails.
+    /// </remarks>
+    /// <param name="scriptFilePath">The host file path of the ready script.</param>
+    /// <returns>A configured instance of <see cref="MiniStackBuilder" />.</returns>
+    public MiniStackBuilder WithReadyScript(string scriptFilePath)
+    {
+        return Merge(DockerResourceConfiguration, new MiniStackConfiguration(readyScriptFilePaths: new[] { scriptFilePath }));
+    }
+
+    /// <summary>
+    /// Creates a ready script in the container to seed AWS resources.
+    /// </summary>
+    /// <remarks>
+    /// See <see cref="WithReadyScript(string)" /> for how the ready scripts run.
+    /// </remarks>
+    /// <param name="fileName">The file name of the ready script (e.g., <c>01-seed.sh</c>).</param>
+    /// <param name="scriptContent">The content of the ready script.</param>
+    /// <returns>A configured instance of <see cref="MiniStackBuilder" />.</returns>
+    public MiniStackBuilder WithReadyScriptContent(string fileName, string scriptContent)
+    {
+        var readyScriptContents = new[] { new KeyValuePair<string, string>(fileName, scriptContent) };
+        return Merge(DockerResourceConfiguration, new MiniStackConfiguration(readyScriptContents: readyScriptContents));
+    }
+
     /// <inheritdoc />
     public override MiniStackContainer Build()
     {
         Validate();
-        return new MiniStackContainer(DockerResourceConfiguration);
+
+        // The scripts are mapped after the validation. Creating the resource mappings
+        // in the builder methods would throw for invalid arguments before Validate()
+        // can report them.
+        var miniStackBuilder = this;
+
+        miniStackBuilder = DockerResourceConfiguration.InitScriptFilePaths
+            .Aggregate(miniStackBuilder, (builder, scriptFilePath) =>
+                builder.WithResourceMapping(FilePath.Of(scriptFilePath), DirectoryPath.Of(InitScriptsDirectoryPath)));
+
+        miniStackBuilder = DockerResourceConfiguration.InitScriptContents
+            .Aggregate(miniStackBuilder, (builder, scriptContent) =>
+                builder.WithResourceMapping(Encoding.UTF8.GetBytes(scriptContent.Value), FilePath.Of(InitScriptsDirectoryPath + scriptContent.Key)));
+
+        miniStackBuilder = DockerResourceConfiguration.ReadyScriptFilePaths
+            .Aggregate(miniStackBuilder, (builder, scriptFilePath) =>
+                builder.WithResourceMapping(FilePath.Of(scriptFilePath), DirectoryPath.Of(ReadyScriptsDirectoryPath)));
+
+        miniStackBuilder = DockerResourceConfiguration.ReadyScriptContents
+            .Aggregate(miniStackBuilder, (builder, scriptContent) =>
+                builder.WithResourceMapping(Encoding.UTF8.GetBytes(scriptContent.Value), FilePath.Of(ReadyScriptsDirectoryPath + scriptContent.Key)));
+
+        return new MiniStackContainer(miniStackBuilder.DockerResourceConfiguration);
     }
 
     /// <inheritdoc />
@@ -182,7 +309,16 @@ public sealed class MiniStackBuilder : ContainerBuilder<MiniStackBuilder, MiniSt
 
         const string credentialsMessage = "The access key and the secret key must both be set.";
 
+        const string servicesMessage = "The services must contain at least one service name.";
+
+        const string scriptFileNameMessage = "The script file name must end with .sh or .py and cannot contain a path separator.";
+
+        const string scriptContentMessage = "The script content cannot be null.";
+
         base.Validate();
+
+        Predicate<string> isInvalidScriptFileName = value =>
+            string.IsNullOrEmpty(value) || value.IndexOfAny(PathSeparators) >= 0 || !ScriptFileExtensions.Any(fileExtension => value.EndsWith(fileExtension, StringComparison.Ordinal));
 
         var environments = DockerResourceConfiguration.Environments;
 
@@ -191,6 +327,22 @@ public sealed class MiniStackBuilder : ContainerBuilder<MiniStackBuilder, MiniSt
 
         _ = Guard.Argument(DockerResourceConfiguration, "Credentials")
             .ThrowIf(argument => new[] { AccessKeyEnvVar, SecretKeyEnvVar }.Any(name => environments.TryGetValue(name, out var value) && string.IsNullOrWhiteSpace(value)), argument => new ArgumentException(credentialsMessage, argument.Name));
+
+        _ = Guard.Argument(DockerResourceConfiguration, "Services")
+            .ThrowIf(argument => environments.TryGetValue(ServicesEnvVar, out var services) && services.Split(',').All(string.IsNullOrWhiteSpace), argument => new ArgumentException(servicesMessage, argument.Name));
+
+        foreach (var scriptFilePaths in new[] { DockerResourceConfiguration.InitScriptFilePaths, DockerResourceConfiguration.ReadyScriptFilePaths })
+        {
+            _ = Guard.Argument(scriptFilePaths, "ScriptFilePaths")
+                .ThrowIf(argument => argument.Value.Any(scriptFilePath => isInvalidScriptFileName(Path.GetFileName(scriptFilePath))), argument => new ArgumentException(scriptFileNameMessage, argument.Name));
+        }
+
+        foreach (var scriptContents in new[] { DockerResourceConfiguration.InitScriptContents, DockerResourceConfiguration.ReadyScriptContents })
+        {
+            _ = Guard.Argument(scriptContents, "ScriptContents")
+                .ThrowIf(argument => argument.Value.Any(scriptContent => isInvalidScriptFileName(scriptContent.Key)), argument => new ArgumentException(scriptFileNameMessage, argument.Name))
+                .ThrowIf(argument => argument.Value.Any(scriptContent => scriptContent.Value == null), argument => new ArgumentException(scriptContentMessage, argument.Name));
+        }
     }
 
     /// <inheritdoc />
@@ -199,8 +351,7 @@ public sealed class MiniStackBuilder : ContainerBuilder<MiniStackBuilder, MiniSt
         var builder = base.Init()
             .WithPortBinding(MiniStackPort, true)
             .WithConnectionStringProvider(() => new MiniStackConnectionStringProvider())
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
-                request.ForPath(HealthPath).ForPort(MiniStackPort).ForStatusCode(System.Net.HttpStatusCode.OK)));
+            .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
 
         // Forward the hub image name prefix so nested real-infrastructure images
         // (RDS, ElastiCache, EKS, Lambda runtimes) pull through the same private
@@ -252,5 +403,46 @@ public sealed class MiniStackBuilder : ContainerBuilder<MiniStackBuilder, MiniSt
         var socketPath = dockerEndpoint.AbsolutePath;
         var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         return !string.IsNullOrEmpty(home) && socketPath.StartsWith(home.TrimEnd('/') + "/", StringComparison.Ordinal) ? DockerSocketFilePath : socketPath;
+    }
+
+    /// <inheritdoc cref="IWaitUntil" />
+    /// <remarks>
+    /// Waits for HTTP 200 on <c>/_ministack/ready</c>, which MiniStack returns once the
+    /// ready scripts have run. Images without that endpoint answer HTTP 404; for those,
+    /// HTTP 200 on <c>/_ministack/health</c> is enough.
+    /// </remarks>
+    private sealed class WaitUntil : IWaitUntil
+    {
+        /// <inheritdoc />
+        public async Task<bool> UntilAsync(IContainer container)
+        {
+            using var httpClient = new HttpClient();
+            httpClient.Timeout = TimeSpan.FromSeconds(5);
+            httpClient.BaseAddress = new UriBuilder(Uri.UriSchemeHttp, container.Hostname, container.GetMappedPublicPort(MiniStackPort)).Uri;
+
+            try
+            {
+                using var readyResponse = await httpClient.GetAsync(ReadyPath)
+                    .ConfigureAwait(false);
+
+                if (!HttpStatusCode.NotFound.Equals(readyResponse.StatusCode))
+                {
+                    return HttpStatusCode.OK.Equals(readyResponse.StatusCode);
+                }
+
+                using var healthResponse = await httpClient.GetAsync(HealthPath)
+                    .ConfigureAwait(false);
+
+                return HttpStatusCode.OK.Equals(healthResponse.StatusCode);
+            }
+            catch (HttpRequestException)
+            {
+                return false;
+            }
+            catch (TaskCanceledException)
+            {
+                return false;
+            }
+        }
     }
 }
