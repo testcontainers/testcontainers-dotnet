@@ -100,7 +100,7 @@ public sealed class SeqBuilder : ContainerBuilder<SeqBuilder, SeqContainer, SeqC
         return base.Init()
             .WithPortBinding(SeqPort, true)
             .WithEnvironment("SEQ_FIRSTRUN_NOAUTHENTICATION", "true")
-            .WithConnectionStringProvider(new SeqConnectionStringProvider())
+            .WithConnectionStringProvider(() => new SeqConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
                 request.ForPort(SeqPort).ForPath("/health")));
     }

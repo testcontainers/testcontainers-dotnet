@@ -80,7 +80,7 @@ public sealed class ConsulBuilder : ContainerBuilder<ConsulBuilder, ConsulContai
             .WithPortBinding(ConsulGrpcPort, true)
             .WithCommand("agent", "-dev", "-client", "0.0.0.0")
             .WithCreateParameterModifier(cmd => cmd.HostConfig.CapAdd = new[] { "IPC_LOCK" })
-            .WithConnectionStringProvider(new ConsulConnectionStringProvider())
+            .WithConnectionStringProvider(() => new ConsulConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
                 request.ForPath("/v1/status/leader").ForPort(ConsulHttpPort)));
     }

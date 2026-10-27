@@ -190,7 +190,7 @@ namespace DotNet.Testcontainers.Images
         .Where(item => !stages.Contains(item.Image))
         .Select(item =>
         {
-          string? platform;
+          string platform;
 
           var fromArgs = ParseFromArgs(item.FromArgs).ToDictionary(arg => arg.Name, arg => arg.Value);
 
@@ -224,49 +224,65 @@ namespace DotNet.Testcontainers.Images
 
       var dockerfileArchiveFileName = Regex.Replace(_image.FullName, "[^a-zA-Z0-9]", "-", RegexOptions.None, TimeSpan.FromSeconds(1)).ToLowerInvariant();
 
-      var dockerfileArchiveFilePath = Path.Combine(Path.GetTempPath(), $"{dockerfileArchiveFileName}.tar");
+      // Image builds that run at the same time must not share the tar archive,
+      // even if they build the same image.
+      var dockerfileArchiveFilePath = Path.Combine(Path.GetTempPath(), dockerfileArchiveFileName + "-" + Guid.NewGuid().ToString("D") + ".tar");
 
       var baseDirectoryLength = _contextDirectory.FullName.TrimEnd(Path.DirectorySeparatorChar).Length + 1;
 
-      using (var tarOutputFileStream = new FileStream(dockerfileArchiveFilePath, FileMode.Create, FileAccess.Write))
+      try
       {
-        using (var tarOutputStream = new TarOutputStream(tarOutputFileStream, Encoding.Default))
+        using (var tarOutputFileStream = new FileStream(dockerfileArchiveFilePath, FileMode.Create, FileAccess.Write))
         {
-          tarOutputStream.IsStreamOwner = false;
-
-          foreach (var absoluteFilePath in GetFiles(_contextDirectory.FullName))
+          using (var tarOutputStream = new TarOutputStream(tarOutputFileStream, Encoding.Default))
           {
-            // SharpZipLib drops the root path: https://github.com/icsharpcode/SharpZipLib/pull/582.
-            var relativeFilePath = absoluteFilePath.Substring(baseDirectoryLength);
+            tarOutputStream.IsStreamOwner = false;
 
-            if (dockerIgnoreFile.Denies(relativeFilePath))
+            foreach (var absoluteFilePath in GetFiles(_contextDirectory.FullName))
             {
-              continue;
+              // SharpZipLib drops the root path: https://github.com/icsharpcode/SharpZipLib/pull/582.
+              var relativeFilePath = absoluteFilePath.Substring(baseDirectoryLength);
+
+              if (dockerIgnoreFile.Denies(relativeFilePath))
+              {
+                continue;
+              }
+
+              // If the build context already has a `Dockerfile`, we need to ignore it and
+              // instead use the one from the specified Dockerfile directory, which might be
+              // different.
+              if (_dockerfile.Name.Equals(relativeFilePath, StringComparison.Ordinal))
+              {
+                continue;
+              }
+
+              await AddAsync(absoluteFilePath, relativeFilePath, tarOutputStream)
+                .ConfigureAwait(false);
             }
 
-            // If the build context already has a `Dockerfile`, we need to ignore it and
-            // instead use the one from the specified Dockerfile directory, which might be
-            // different.
-            if (_dockerfile.Name.Equals(relativeFilePath, StringComparison.Ordinal))
-            {
-              continue;
-            }
+            var dockerfileDirectoryLength = _dockerfileDirectory.FullName
+              .TrimEnd(Path.DirectorySeparatorChar).Length + 1;
 
-            await AddAsync(absoluteFilePath, relativeFilePath, tarOutputStream)
+            var dockerfileRelativeFilePath = _dockerfile.FullName
+              .Substring(dockerfileDirectoryLength);
+
+            var dockerfileNormalizedRelativeFilePath = Unix.Instance.NormalizePath(dockerfileRelativeFilePath);
+
+            await AddAsync(_dockerfile.FullName, dockerfileNormalizedRelativeFilePath, tarOutputStream)
               .ConfigureAwait(false);
           }
-
-          var dockerfileDirectoryLength = _dockerfileDirectory.FullName
-            .TrimEnd(Path.DirectorySeparatorChar).Length + 1;
-
-          var dockerfileRelativeFilePath = _dockerfile.FullName
-            .Substring(dockerfileDirectoryLength);
-
-          var dockerfileNormalizedRelativeFilePath = Unix.Instance.NormalizePath(dockerfileRelativeFilePath);
-
-          await AddAsync(_dockerfile.FullName, dockerfileNormalizedRelativeFilePath, tarOutputStream)
-            .ConfigureAwait(false);
         }
+      }
+      catch
+      {
+        // The caller removes the tar archive,
+        // but it does not get the path of an incomplete one.
+        if (File.Exists(dockerfileArchiveFilePath))
+        {
+          File.Delete(dockerfileArchiveFilePath);
+        }
+
+        throw;
       }
 
       return dockerfileArchiveFilePath;
@@ -317,7 +333,6 @@ namespace DotNet.Testcontainers.Images
     private static IEnumerable<string> GetFiles(string path)
     {
       return Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories)
-        .AsParallel()
         .Select(Path.GetFullPath)
         .Select(Unix.Instance.NormalizePath)
         .ToArray();

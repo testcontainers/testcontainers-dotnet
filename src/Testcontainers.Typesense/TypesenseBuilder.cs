@@ -101,7 +101,7 @@ public sealed class TypesenseBuilder : ContainerBuilder<TypesenseBuilder, Typese
             .WithPortBinding(TypesensePort, true)
             .WithDataDirectory(DefaultDataDirectory)
             .WithApiKey(DefaultApiKey)
-            .WithConnectionStringProvider(new TypesenseConnectionStringProvider())
+            .WithConnectionStringProvider(() => new TypesenseConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
                 request.ForPath("/health").ForPort(TypesensePort).ForResponseMessageMatching(IsNodeReadyAsync)));
     }

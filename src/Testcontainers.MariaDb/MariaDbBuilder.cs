@@ -122,7 +122,7 @@ public sealed class MariaDbBuilder : ContainerBuilder<MariaDbBuilder, MariaDbCon
             .WithDatabase(DefaultDatabase)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
-            .WithConnectionStringProvider(new MariaDbConnectionStringProvider())
+            .WithConnectionStringProvider(() => new MariaDbConnectionStringProvider())
             .WithStartupCallback((container, ct) => container.WriteConfigurationFileAsync(ct));
     }
 

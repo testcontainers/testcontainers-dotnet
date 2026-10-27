@@ -99,5 +99,6 @@
         <PackageVersion Include="StackExchange.Redis" Version="3.1.13"/>
         <PackageVersion Include="Temporalio" Version="1.18.0"/>
         <PackageVersion Include="ToxiproxyNetCore" Version="1.0.50"/>
+        <PackageVersion Include="VaultSharp" Version="1.17.5.1"/>
     </ItemGroup>
 </Project>

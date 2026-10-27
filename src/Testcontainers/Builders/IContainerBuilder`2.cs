@@ -37,6 +37,33 @@ namespace DotNet.Testcontainers.Builders
     TBuilderEntity WithAcceptLicenseAgreement(bool acceptLicenseAgreement);
 
     /// <summary>
+    /// Enables SSL/TLS using the certificate and private key.
+    /// </summary>
+    /// <remarks>
+    /// Calling this method multiple times overrides the
+    /// previously configured certificate.
+    /// </remarks>
+    /// <param name="certificateFilePath">The SSL certificate file.</param>
+    /// <param name="certificateKeyFilePath">The SSL certificate private key file.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the module does not support SSL.</exception>
+    TBuilderEntity WithSsl(string certificateFilePath, string certificateKeyFilePath);
+
+    /// <summary>
+    /// Enables SSL/TLS using the certificate and private key.
+    /// </summary>
+    /// <remarks>
+    /// Modules that support SSL must override and implement this method to
+    /// configure the service to use the certificate. Calling this method
+    /// multiple times overrides the previously configured certificate.
+    /// </remarks>
+    /// <param name="certificateFilePath">The SSL certificate file.</param>
+    /// <param name="certificateKeyFilePath">The SSL certificate private key file.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when the module does not support SSL.</exception>
+    TBuilderEntity WithSsl(FilePath certificateFilePath, FilePath certificateKeyFilePath);
+
+    /// <summary>
     /// Sets the dependent container to resolve and start before starting this container configuration.
     /// </summary>
     /// <param name="container">The dependent container.</param>
@@ -749,9 +776,38 @@ namespace DotNet.Testcontainers.Builders
     /// <summary>
     /// Sets the connection string provider.
     /// </summary>
+    /// <remarks>
+    /// Containers built from the same builder share the connection string
+    /// provider. To create a connection string provider for each container,
+    /// use <see cref="WithConnectionStringProvider(IConnectionStringProviderFactory{TContainerEntity, TConfigurationEntity})" />
+    /// or <see cref="WithConnectionStringProvider(Func{IConnectionStringProvider{TContainerEntity, TConfigurationEntity}})" />.
+    /// </remarks>
     /// <param name="connectionStringProvider">The connection string provider.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
+    [Obsolete("Use WithConnectionStringProvider(IConnectionStringProviderFactory<TContainerEntity, TConfigurationEntity>) or WithConnectionStringProvider(Func<IConnectionStringProvider<TContainerEntity, TConfigurationEntity>>) instead.")]
     TBuilderEntity WithConnectionStringProvider(IConnectionStringProvider<TContainerEntity, TConfigurationEntity> connectionStringProvider);
+
+    /// <summary>
+    /// Sets the connection string provider factory.
+    /// </summary>
+    /// <remarks>
+    /// The factory creates a connection string provider each time a container starts.
+    /// </remarks>
+    /// <param name="connectionStringProviderFactory">The connection string provider factory.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithConnectionStringProvider(IConnectionStringProviderFactory<TContainerEntity, TConfigurationEntity> connectionStringProviderFactory);
+
+    /// <summary>
+    /// Sets the connection string provider factory.
+    /// </summary>
+    /// <remarks>
+    /// The factory creates a connection string provider each time a container starts.
+    /// </remarks>
+    /// <param name="connectionStringProviderFactory">The connection string provider factory.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithConnectionStringProvider(Func<IConnectionStringProvider<TContainerEntity, TConfigurationEntity>> connectionStringProviderFactory);
   }
 }

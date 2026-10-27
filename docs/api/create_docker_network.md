@@ -16,7 +16,7 @@ This is considered a best practice and prevents port collisions.
 
 ## Custom network
 
-A more advanced case, places one or more containers on custom networks. The communication between those containers won't require exposing ports through the host anymore. To configure and create Docker networks use `NetworkBuilder`. The following example creates a network and assigns it to two containers. The second container establishes a network connection to Deep Thought by using its network alias and receives the magic number `42`.
+A more advanced case, places one or more containers on custom networks. The communication between those containers will not require exposing ports through the host anymore. To configure and create Docker networks use `NetworkBuilder`. The following example creates a network and assigns it to two containers. The second container establishes a network connection to Deep Thought by using its network alias and receives the magic number `42`.
 
 ```csharp
 const string MagicNumber = "42";

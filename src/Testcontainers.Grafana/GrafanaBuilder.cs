@@ -113,7 +113,7 @@ public sealed class GrafanaBuilder : ContainerBuilder<GrafanaBuilder, GrafanaCon
             .WithPortBinding(GrafanaPort, true)
             .WithUsername(DefaultUsername)
             .WithPassword(DefaultPassword)
-            .WithConnectionStringProvider(new GrafanaConnectionStringProvider())
+            .WithConnectionStringProvider(() => new GrafanaConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilHttpRequestIsSucceeded(request =>
                 request.ForPath("/api/health").ForPort(GrafanaPort)));
     }

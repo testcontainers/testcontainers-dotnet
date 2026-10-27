@@ -59,6 +59,7 @@ nav:
     - modules/cassandra.md # Apache
     - modules/pulsar.md # Apache
     - modules/aspire-dashboard.md
+    - modules/azurite.md # Azure
     - modules/eventhubs.md # Azure
     - modules/servicebus.md # Azure
     - modules/chroma.md
@@ -68,6 +69,7 @@ nav:
     - modules/garnet.md
     - modules/grafana.md
     - modules/mongodb.md
+    - modules/mongodb-atlas-local.md
     - modules/mssql.md
     - modules/neo4j.md
     - modules/opensearch.md
@@ -79,5 +81,6 @@ nav:
     - modules/redis.md
     - modules/toxiproxy.md
     - modules/valkey.md
+    - modules/vault.md
   - contributing.md
   - contributing_docs.md

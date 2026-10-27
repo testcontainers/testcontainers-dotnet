@@ -28,7 +28,7 @@ To build a Docker image with Testcontainers, it's important to understand the bu
 
 !!! tip
 
-    The build context is optional. If you don't specify one, it defaults to the Dockerfile directory.
+    The build context is optional. If you do not specify one, it defaults to the Dockerfile directory.
 
 Testcontainers creates a tarball with all files and subdirectorys in the build context, incl. the Dockerfile. This tarball is sent to the Docker daemon to build the image. The build context acts as the root for all file operations in the Dockerfile, so all paths (like `COPY` commands) must be relative to it.
 
@@ -227,7 +227,7 @@ _ = new BuildKitImageFromDockerfileBuilder("docker:29.8.1-cli")
 
 ## Known issues
 
-- When building an image using Testcontainers for .NET and switching the user's context (`USER` statement) in a Dockerfile, the user won't automatically become the [owner](https://github.com/testcontainers/testcontainers-dotnet/issues/1171#issuecomment-2099197840) of the working directory, which seems to be the case when building the image from the CLI. If the running process requires write access to the working directory, it is necessary to set the permissions explicitly (the base image in this example already contains the user `app`):
+- When building an image using Testcontainers for .NET and switching the user's context (`USER` statement) in a Dockerfile, the user will not automatically become the [owner](https://github.com/testcontainers/testcontainers-dotnet/issues/1171#issuecomment-2099197840) of the working directory, which seems to be the case when building the image from the CLI. If the running process requires write access to the working directory, it is necessary to set the permissions explicitly (the base image in this example already contains the user `app`):
 
    ```dockerfile
    FROM mcr.microsoft.com/dotnet/sdk:8.0

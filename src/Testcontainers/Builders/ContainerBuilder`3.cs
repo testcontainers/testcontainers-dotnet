@@ -59,6 +59,19 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
+    public virtual TBuilderEntity WithSsl(string certificateFilePath, string certificateKeyFilePath)
+    {
+      return WithSsl(FilePath.Of(certificateFilePath), FilePath.Of(certificateKeyFilePath));
+    }
+
+    /// <inheritdoc />
+    public virtual TBuilderEntity WithSsl(FilePath certificateFilePath, FilePath certificateKeyFilePath)
+    {
+      const string sslNotSupported = "The module does not support SSL.";
+      throw new InvalidOperationException(sslNotSupported);
+    }
+
+    /// <inheritdoc />
     public TBuilderEntity DependsOn(IContainer container)
     {
       var containers = new[] { container };
@@ -208,6 +221,7 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
+    [Obsolete("Use WithResourceMapping(byte[], FilePath, UnixFileModes) instead.")]
     public TBuilderEntity WithResourceMapping(byte[] resourceContent, string filePath, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
     {
       return WithResourceMapping(new BinaryResourceMapping(resourceContent, filePath, uid, gid, fileMode));
@@ -226,6 +240,7 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
+    [Obsolete("Use one of the more specific WithResourceMapping(...) methods instead.")]
     public TBuilderEntity WithResourceMapping(string source, string target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
     {
       if (Uri.IsWellFormedUriString(source, UriKind.Absolute) && Uri.TryCreate(source, UriKind.Absolute, out var uri) && new[] { Uri.UriSchemeHttp, Uri.UriSchemeHttps, Uri.UriSchemeFile }.Contains(uri.Scheme))
@@ -246,6 +261,7 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
+    [Obsolete("Use WithResourceMapping(DirectoryPath, DirectoryPath, UnixFileModes) instead.")]
     public TBuilderEntity WithResourceMapping(DirectoryInfo source, string target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
     {
       return WithResourceMapping(DirectoryPath.Of(source.FullName), DirectoryPath.Of(target), uid, gid, fileMode);
@@ -264,6 +280,7 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
+    [Obsolete("Use WithResourceMapping(FilePath, DirectoryPath, UnixFileModes) instead.")]
     public TBuilderEntity WithResourceMapping(FileInfo source, string target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
     {
       return WithResourceMapping(FilePath.Of(source.FullName), DirectoryPath.Of(target), uid, gid, fileMode);
@@ -303,6 +320,7 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
+    [Obsolete("Use WithResourceMapping(Uri, FilePath, UnixFileModes) or WithResourceMapping(Uri, DirectoryPath, UnixFileModes) instead.")]
     public TBuilderEntity WithResourceMapping(Uri source, string target, uint uid = 0, uint gid = 0, UnixFileModes fileMode = Unix.FileMode644)
     {
       if (source.IsFile)
@@ -480,9 +498,22 @@ namespace DotNet.Testcontainers.Builders
     }
 
     /// <inheritdoc />
+    [Obsolete("Use WithConnectionStringProvider(IConnectionStringProviderFactory<TContainerEntity, TConfigurationEntity>) or WithConnectionStringProvider(Func<IConnectionStringProvider<TContainerEntity, TConfigurationEntity>>) instead.")]
     public TBuilderEntity WithConnectionStringProvider(IConnectionStringProvider<TContainerEntity, TConfigurationEntity> connectionStringProvider)
     {
-      return Clone(new ContainerConfiguration(connectionStringProvider: new ConnectionStringProvider<TContainerEntity, TConfigurationEntity>(connectionStringProvider)));
+      return WithConnectionStringProvider(() => connectionStringProvider);
+    }
+
+    /// <inheritdoc />
+    public TBuilderEntity WithConnectionStringProvider(IConnectionStringProviderFactory<TContainerEntity, TConfigurationEntity> connectionStringProviderFactory)
+    {
+      return Clone(new ContainerConfiguration(connectionStringProviderFactory: connectionStringProviderFactory.Create));
+    }
+
+    /// <inheritdoc />
+    public TBuilderEntity WithConnectionStringProvider(Func<IConnectionStringProvider<TContainerEntity, TConfigurationEntity>> connectionStringProviderFactory)
+    {
+      return WithConnectionStringProvider(new ConnectionStringProviderFactory<TContainerEntity, TConfigurationEntity>(connectionStringProviderFactory));
     }
 
     /// <inheritdoc />
