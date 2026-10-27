@@ -183,11 +183,21 @@ public sealed class MiniStackContainer : DockerContainer
         }
     }
 
+    /// <summary>
+    /// Gets a configured environment variable, or the default if it is unset or empty.
+    /// </summary>
+    /// <param name="name">The environment variable name.</param>
+    /// <param name="defaultValue">The value MiniStack uses when the variable is not set.</param>
+    /// <returns>The configured value or the default.</returns>
     private string GetEnvironmentOrDefault(string name, string defaultValue)
     {
         return _configuration.Environments.TryGetValue(name, out var value) && !string.IsNullOrEmpty(value) ? value : defaultValue;
     }
 
+    /// <summary>
+    /// Creates a Docker client for the endpoint and session the container uses.
+    /// </summary>
+    /// <returns>A Docker client that the caller disposes.</returns>
     private Docker.DotNet.IDockerClient CreateDockerClient()
     {
         return _configuration.DockerEndpointAuthConfig.GetDockerClientBuilder(_configuration.SessionId).Build();
