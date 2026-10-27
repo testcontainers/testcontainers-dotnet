@@ -68,9 +68,15 @@ namespace DotNet.Testcontainers.Configurations
         return false;
       }
 
+      // The UriBuilder escapes a question mark in the path. Set the query separately to keep it.
+      var pathAndQuery = (_pathValue ?? string.Empty).Split(new[] { '?' }, 2);
+
+      var requestUri = new UriBuilder(_schemeName, host, port, pathAndQuery[0]);
+      requestUri.Query = pathAndQuery.Length > 1 ? pathAndQuery[1] : string.Empty;
+
       using (var httpClient = new HttpClient(_httpMessageHandler ?? new HttpClientHandler(), disposeHandler: _httpMessageHandler == null))
       {
-        using (var httpRequestMessage = new HttpRequestMessage(_httpMethod, new UriBuilder(_schemeName, host, port, _pathValue).Uri))
+        using (var httpRequestMessage = new HttpRequestMessage(_httpMethod, requestUri.Uri))
         {
           foreach (var httpHeader in _httpHeaders)
           {
