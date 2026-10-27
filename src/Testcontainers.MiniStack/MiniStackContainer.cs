@@ -155,33 +155,25 @@ public sealed class MiniStackContainer : DockerContainer
     /// </remarks>
     private async Task ThrowIfReadyScriptsFailedAsync(CancellationToken ct)
     {
-        string json;
+        // The readiness wait has just succeeded against the same endpoint, so a failing
+        // request here is a real error and propagates instead of skipping the check.
+        using var response = await HttpClient.GetAsync(new Uri(new Uri(GetConnectionString()), MiniStackBuilder.ReadyPath), ct)
+            .ConfigureAwait(false);
 
-        try
+        if (HttpStatusCode.NotFound.Equals(response.StatusCode))
         {
-            using var response = await HttpClient.GetAsync(new Uri(new Uri(GetConnectionString()), MiniStackBuilder.ReadyPath), ct)
-                .ConfigureAwait(false);
-
-            if (HttpStatusCode.NotFound.Equals(response.StatusCode))
-            {
-                return;
-            }
-
-            if (!HttpStatusCode.OK.Equals(response.StatusCode))
-            {
-                // Only possible with a custom wait strategy that does not wait for the ready scripts.
-                Logger.LogWarning("MiniStack ready scripts are still running (HTTP {StatusCode}); their failures are not checked", (int)response.StatusCode);
-                return;
-            }
-
-            json = await response.Content.ReadAsStringAsync()
-                .ConfigureAwait(false);
-        }
-        catch (HttpRequestException e)
-        {
-            Logger.LogWarning(e, "Could not read the MiniStack ready state; ready script failures are not checked");
             return;
         }
+
+        if (!HttpStatusCode.OK.Equals(response.StatusCode))
+        {
+            // Only possible with a custom wait strategy that does not wait for the ready scripts.
+            Logger.LogWarning("MiniStack ready scripts are still running (HTTP {StatusCode}); their failures are not checked", (int)response.StatusCode);
+            return;
+        }
+
+        var json = await response.Content.ReadAsStringAsync()
+            .ConfigureAwait(false);
 
         using var ready = JsonDocument.Parse(json);
 
