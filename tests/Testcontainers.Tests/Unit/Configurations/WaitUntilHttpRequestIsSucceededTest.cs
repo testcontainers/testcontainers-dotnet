@@ -79,7 +79,9 @@ namespace DotNet.Testcontainers.Tests.Unit
     public async Task HttpWaitStrategySendsQueryString()
     {
       // Given
-      var httpWaitStrategy = new HttpWaitStrategy().ForPath("/health?ready=1&probe=startup");
+      const string path = "/health?ready=1&probe=startup";
+
+      var httpWaitStrategy = new HttpWaitStrategy().ForPath(path);
 
       // When
       var succeeded = await httpWaitStrategy.UntilAsync(_container)
@@ -93,7 +95,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       // Then
       Assert.True(succeeded);
-      Assert.Contains("GET /health?ready=1&probe=startup HTTP/1.1", stderr);
+      Assert.Contains($"GET {path} HTTP/1.1", stderr);
     }
 
     [Fact]
