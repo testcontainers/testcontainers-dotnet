@@ -4,20 +4,7 @@ namespace Testcontainers.Chroma;
 [PublicAPI]
 public sealed class ChromaBuilder : ContainerBuilder<ChromaBuilder, ChromaContainer, ChromaConfiguration>
 {
-    [Obsolete("This constant is obsolete and will be removed in the future. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
-    public const string ChromaImage = "chromadb/chroma:1.5.9";
-
-    public const ushort ChromaHttpPort = 8000;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ChromaBuilder" /> class.
-    /// </summary>
-    [Obsolete("This parameterless constructor is obsolete and will be removed. Use the constructor with the image parameter instead: https://github.com/testcontainers/testcontainers-dotnet/discussions/1470#discussioncomment-15185721.")]
-    [ExcludeFromCodeCoverage]
-    public ChromaBuilder()
-        : this(ChromaImage)
-    {
-    }
+    public const ushort ChromaPort = 8000;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ChromaBuilder" /> class.
@@ -74,8 +61,8 @@ public sealed class ChromaBuilder : ContainerBuilder<ChromaBuilder, ChromaContai
     protected override ChromaBuilder Init()
     {
         return base.Init()
-            .WithPortBinding(ChromaHttpPort, true)
-            .WithConnectionStringProvider(new ChromaConnectionStringProvider())
+            .WithPortBinding(ChromaPort, true)
+            .WithConnectionStringProvider(() => new ChromaConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().AddCustomWaitStrategy(new WaitUntil()));
     }
 
@@ -99,25 +86,33 @@ public sealed class ChromaBuilder : ContainerBuilder<ChromaBuilder, ChromaContai
 
     /// <inheritdoc cref="IWaitUntil" />
     /// <remarks>
-    /// Chroma is ready when its heartbeat answers. Chroma 0.5.16 and later answer the heartbeat of the v2 API,
-    /// the earlier releases have only the v1 API, and Chroma 1.x answers the v1 API with <c>410 Gone</c>.
-    /// Asking both works on every release, without reading the version from the image tag.
+    /// Uses the heartbeat endpoint to detect readiness of the Chroma container.
+    /// Chroma 0.5.16 introduced the v2 API, and Chroma 1.0.0 removed the v1 API.
+    /// The wait strategy checks the v2 heartbeat first and falls back to the v1
+    /// heartbeat for versions prior to 0.5.16.
     /// </remarks>
     private sealed class WaitUntil : IWaitUntil
     {
-        private static readonly IWaitUntil V2Heartbeat = new HttpWaitStrategy()
-            .ForPort(ChromaHttpPort)
-            .ForPath("/api/v2/heartbeat");
+        private static readonly IWaitUntil WaitUntilV2HeartbeatIsSucceeded = new HttpWaitStrategy()
+            .ForPath("/api/v2/heartbeat")
+            .ForPort(ChromaPort);
 
-        private static readonly IWaitUntil V1Heartbeat = new HttpWaitStrategy()
-            .ForPort(ChromaHttpPort)
-            .ForPath("/api/v1/heartbeat");
+        private static readonly IWaitUntil WaitUntilV1HeartbeatIsSucceeded = new HttpWaitStrategy()
+            .ForPath("/api/v1/heartbeat")
+            .ForPort(ChromaPort);
 
         /// <inheritdoc />
         public async Task<bool> UntilAsync(IContainer container)
         {
-            return await V2Heartbeat.UntilAsync(container)
-                .ConfigureAwait(false) || await V1Heartbeat.UntilAsync(container)
+            var v2HeartbeatSucceeded = await WaitUntilV2HeartbeatIsSucceeded.UntilAsync(container)
+                .ConfigureAwait(false);
+
+            if (v2HeartbeatSucceeded)
+            {
+                return true;
+            }
+
+            return await WaitUntilV1HeartbeatIsSucceeded.UntilAsync(container)
                 .ConfigureAwait(false);
         }
     }

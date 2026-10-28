@@ -14,11 +14,11 @@ public sealed class ChromaContainer : DockerContainer
     }
 
     /// <summary>
-    /// Gets the base address of the Chroma HTTP API.
+    /// Gets the Chroma base address.
     /// </summary>
-    /// <returns>The base address of the Chroma HTTP API, like <c>http://localhost:32768/</c>.</returns>
+    /// <returns>The Chroma base address.</returns>
     public string GetBaseAddress()
     {
-        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(ChromaBuilder.ChromaHttpPort)).ToString();
+        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(ChromaBuilder.ChromaPort)).ToString();
     }
 }

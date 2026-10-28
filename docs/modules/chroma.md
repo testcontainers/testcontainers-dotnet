@@ -1,6 +1,6 @@
 # Chroma
 
-[Chroma](https://www.trychroma.com/) is an open-source vector database for AI applications. It stores embeddings with their documents and metadata, and finds the nearest ones to a query, through a REST API.
+[Chroma](https://www.trychroma.com/) is an open-source vector database for AI applications. It stores embeddings together with their documents and metadata, and runs nearest neighbor queries against them.
 
 Add the following dependency to your project file:
 
@@ -8,12 +8,21 @@ Add the following dependency to your project file:
 dotnet add package Testcontainers.Chroma
 ```
 
-You can start a Chroma container instance from any .NET application. This example uses xUnit.net's `IAsyncLifetime` interface to manage the lifecycle of the container. The container is started in the `InitializeAsync` method before the test method runs, ensuring that the environment is ready for testing. After the test completes, the container is removed in the `DisposeAsync` method.
+You can start a Chroma container instance from any .NET application. Here, we create different container instances and pass them to the base test class. This allows us to test different configurations.
+
+=== "Create Container Instance"
+    ```csharp
+    --8<-- "tests/Testcontainers.Chroma.Tests/ChromaContainerTest.cs:CreateChromaContainer"
+    ```
+
+This example uses xUnit.net's `IAsyncLifetime` interface to manage the lifecycle of the container. The container is started in the `InitializeAsync` method before the test method runs, ensuring that the environment is ready for testing. After the test completes, the container is removed in the `DisposeAsync` method.
 
 === "Usage Example"
     ```csharp
-    --8<-- "tests/Testcontainers.Chroma.Tests/ChromaDefaultContainerTest.cs:UseChromaContainer"
+    --8<-- "tests/Testcontainers.Chroma.Tests/ChromaContainerTest.cs:UseChromaContainer"
     ```
+
+The test example creates a collection, adds two records, and queries the record nearest to an embedding. Use `GetBaseAddress()` to configure the Chroma client.
 
 The test example uses the following NuGet dependencies:
 
@@ -28,4 +37,4 @@ To execute the tests, use the command `dotnet test` from a terminal.
 
 ## Chroma versions
 
-The container is ready when the heartbeat of the Chroma API answers. Chroma 0.5.16 and later answer the heartbeat of the v2 API, and the earlier releases have only the v1 API, so the module asks both: it works with any Chroma image, whatever its tag.
+Chroma 0.5.16 introduced the v2 API, and Chroma 1.0.0 removed the v1 API. The module checks the v2 heartbeat first and falls back to the v1 heartbeat, so it works with versions prior to 0.5.16 as well.
