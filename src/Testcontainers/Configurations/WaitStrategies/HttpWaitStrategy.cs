@@ -20,6 +20,8 @@ namespace DotNet.Testcontainers.Configurations
 
     private const ushort HttpsPort = 443;
 
+    private static readonly char[] QuerySeparator = ['?'];
+
     private readonly IDictionary<string, string> _httpHeaders = new Dictionary<string, string>();
 
     private readonly ISet<HttpStatusCode> _httpStatusCodes = new HashSet<HttpStatusCode>();
@@ -68,9 +70,16 @@ namespace DotNet.Testcontainers.Configurations
         return false;
       }
 
+      // The UriBuilder escapes a question mark in the path.
+      // Set the query separately to keep it.
+      var pathAndQuery = (_pathValue ?? string.Empty).Split(QuerySeparator, 2);
+
+      var endpoint = new UriBuilder(_schemeName, host, port, pathAndQuery[0]);
+      endpoint.Query = pathAndQuery.ElementAtOrDefault(1) ?? string.Empty;
+
       using (var httpClient = new HttpClient(_httpMessageHandler ?? new HttpClientHandler(), disposeHandler: _httpMessageHandler == null))
       {
-        using (var httpRequestMessage = new HttpRequestMessage(_httpMethod, new UriBuilder(_schemeName, host, port, _pathValue).Uri))
+        using (var httpRequestMessage = new HttpRequestMessage(_httpMethod, endpoint.Uri))
         {
           foreach (var httpHeader in _httpHeaders)
           {
