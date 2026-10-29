@@ -76,6 +76,29 @@ namespace DotNet.Testcontainers.Tests.Unit
     }
 
     [Fact]
+    public async Task HttpWaitStrategySendsQueryString()
+    {
+      // Given
+      const string path = "/health?ready=1&probe=startup";
+
+      var httpWaitStrategy = new HttpWaitStrategy().ForPath(path);
+
+      // When
+      var succeeded = await httpWaitStrategy.UntilAsync(_container)
+        .ConfigureAwait(true);
+
+      await Task.Delay(TimeSpan.FromSeconds(1), TestContext.Current.CancellationToken)
+        .ConfigureAwait(true);
+
+      var (_, stderr) = await _container.GetLogsAsync(ct: TestContext.Current.CancellationToken)
+        .ConfigureAwait(true);
+
+      // Then
+      Assert.True(succeeded);
+      Assert.Contains($"GET {path} HTTP/1.1", stderr);
+    }
+
+    [Fact]
     public async Task HttpWaitStrategyUsesCustomHttpClientHandler()
     {
       // Given
