@@ -34,7 +34,3 @@ The test example uses the following NuGet dependencies:
 To execute the tests, use the command `dotnet test` from a terminal.
 
 --8<-- "docs/modules/_call_out_test_projects.txt"
-
-## Chroma versions
-
-Chroma 0.5.16 introduced the v2 API, and Chroma 1.0.0 removed the v1 API. The module checks the v2 heartbeat first and falls back to the v1 heartbeat, so it works with versions prior to 0.5.16 as well.
