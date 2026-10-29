@@ -35,7 +35,11 @@
         <PackageVersion Include="ArangoDBNetStandard" Version="3.1.0"/>
         <PackageVersion Include="AWSSDK.CloudWatchLogs" Version="4.0.103.2"/>
         <PackageVersion Include="AWSSDK.DynamoDBv2" Version="4.0.103.3"/>
+        <PackageVersion Include="AWSSDK.ElastiCache" Version="4.0.103.1"/>
+        <PackageVersion Include="AWSSDK.Lambda" Version="4.0.110.2"/>
+        <PackageVersion Include="AWSSDK.RDS" Version="4.0.107.1"/>
         <PackageVersion Include="AWSSDK.S3" Version="4.0.102.2"/>
+        <PackageVersion Include="AWSSDK.SecurityToken" Version="4.0.101.6"/>
         <PackageVersion Include="AWSSDK.SimpleNotificationService" Version="4.0.100.9"/>
         <PackageVersion Include="AWSSDK.SQS" Version="4.0.100.9"/>
         <PackageVersion Include="Azure.Data.Tables" Version="12.11.0"/>
