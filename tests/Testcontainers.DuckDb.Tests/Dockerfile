@@ -1,0 +1,1 @@
+FROM duckdb/duckdb:1.5.5@sha256:d17f30055ff2eeb7f45c7ac2b7e574542b91cfc7f41b73c049b99e40f5dc5b73
