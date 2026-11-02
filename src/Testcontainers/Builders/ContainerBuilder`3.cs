@@ -5,6 +5,7 @@ namespace DotNet.Testcontainers.Builders
   using System.Globalization;
   using System.IO;
   using System.Linq;
+  using System.Text;
   using System.Threading;
   using System.Threading.Tasks;
   using Docker.DotNet.Models;
@@ -548,6 +549,37 @@ namespace DotNet.Testcontainers.Builders
 
       _ = Guard.Argument(DockerResourceConfiguration, nameof(DockerResourceConfiguration.Image))
         .ThrowIf(argument => licenseAgreementNotAccepted(argument.Value), argument => new ArgumentException(string.Format(message, argument.Value.Image.FullName), argument.Name));
+    }
+
+    /// <summary>
+    /// Sets the startup script that the container runs as its main process.
+    /// </summary>
+    /// <remarks>
+    /// The startup script is copied after the container starts.
+    /// The container runs it once the script has been copied completely.
+    ///
+    /// This method sets the startup callback, as does
+    /// <see cref="WithStartupCallback(Func{TContainerEntity, CancellationToken, Task})" />.
+    /// Whichever is called last replaces the other's callback.
+    /// </remarks>
+    /// <param name="startupScript">The function that creates the startup script.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    protected TBuilderEntity WithStartupScript(Func<TContainerEntity, string> startupScript)
+    {
+      const string startupScriptFilePath = "/testcontainers.sh";
+
+      const string startupReadyFilePath = "/testcontainers.ready";
+
+      return WithEntrypoint("/bin/sh", "-c")
+        .WithCommand("while [ ! -f " + startupReadyFilePath + " ]; do sleep 0.1; done; " + startupScriptFilePath)
+        .WithStartupCallback(async (container, ct) =>
+        {
+          await container.CopyAsync(Encoding.Default.GetBytes(startupScript(container)), startupScriptFilePath, fileMode: Unix.FileMode755, ct: ct)
+            .ConfigureAwait(false);
+
+          await container.CopyAsync(Array.Empty<byte>(), startupReadyFilePath, ct: ct)
+            .ConfigureAwait(false);
+        });
     }
 
     /// <summary>

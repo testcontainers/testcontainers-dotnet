@@ -77,11 +77,9 @@ public sealed class FakeGcsServerBuilder : ContainerBuilder<FakeGcsServerBuilder
     {
         return base.Init()
             .WithPortBinding(FakeGcsServerPort, true)
-            .WithEntrypoint("/bin/sh", "-c")
-            .WithCommand("while [ ! -f " + StartupScriptFilePath + " ]; do sleep 0.1; done; " + StartupScriptFilePath)
             .WithConnectionStringProvider(() => new FakeGcsServerConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("server started"))
-            .WithStartupCallback((container, ct) =>
+            .WithStartupScript(container =>
             {
                 const char lf = '\n';
                 var startupScript = new StringBuilder();
@@ -94,7 +92,7 @@ public sealed class FakeGcsServerBuilder : ContainerBuilder<FakeGcsServerBuilder
                 // error: HttpStatusCode.NotFound. The HTTP request appears incorrect. The
                 // container logs indicate the presence of an extra slash: `PUT //upload/storage/v1`.
                 startupScript.Append("-external-url " + new UriBuilder(Uri.UriSchemeHttp, container.Hostname, container.GetMappedPublicPort(FakeGcsServerPort)).ToString().Trim('/'));
-                return container.CopyAsync(Encoding.Default.GetBytes(startupScript.ToString()), StartupScriptFilePath, fileMode: Unix.FileMode755, ct: ct);
+                return startupScript.ToString();
             });
     }
 

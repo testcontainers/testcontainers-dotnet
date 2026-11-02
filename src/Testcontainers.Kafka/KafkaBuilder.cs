@@ -237,11 +237,7 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
         // Validate that the configuration is compatible with the vendor's image.
         vendorConfiguration.Validate(kafkaBuilder.DockerResourceConfiguration);
 
-        var startupKafkaBuilder = kafkaBuilder.WithStartupCallback((container, ct) =>
-        {
-            var startupScript = vendorConfiguration.CreateStartupScript(kafkaBuilder.DockerResourceConfiguration, container);
-            return container.CopyAsync(Encoding.Default.GetBytes(startupScript), StartupScriptFilePath, fileMode: Unix.FileMode755, ct: ct);
-        });
+        var startupKafkaBuilder = kafkaBuilder.WithStartupScript(container => vendorConfiguration.CreateStartupScript(kafkaBuilder.DockerResourceConfiguration, container));
 
         return new KafkaContainer(startupKafkaBuilder.DockerResourceConfiguration);
     }
@@ -265,8 +261,6 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
             .WithEnvironment("KAFKA_LOG_FLUSH_INTERVAL_MESSAGES", long.MaxValue.ToString())
             .WithEnvironment("KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS", "0")
             .WithEnvironment("CLUSTER_ID", ClusterId)
-            .WithEntrypoint("/bin/sh", "-c")
-            .WithCommand($"while [ ! -f {StartupScriptFilePath} ]; do sleep 0.1; done; {StartupScriptFilePath}")
             .WithConnectionStringProvider(() => new KafkaConnectionStringProvider());
     }
 

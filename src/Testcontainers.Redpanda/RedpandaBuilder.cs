@@ -80,11 +80,9 @@ public sealed class RedpandaBuilder : ContainerBuilder<RedpandaBuilder, Redpanda
         return base.Init()
             .WithPortBinding(SchemaRegistryPort, true)
             .WithPortBinding(RedpandaPort, true)
-            .WithEntrypoint("/bin/sh", "-c")
-            .WithCommand("while [ ! -f " + StartupScriptFilePath + " ]; do sleep 0.1; done; " + StartupScriptFilePath)
             .WithConnectionStringProvider(() => new RedpandaConnectionStringProvider())
             .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Started Kafka API server"))
-            .WithStartupCallback((container, ct) =>
+            .WithStartupScript(container =>
             {
                 const char lf = '\n';
                 var startupScript = new StringBuilder();
@@ -96,7 +94,7 @@ public sealed class RedpandaBuilder : ContainerBuilder<RedpandaBuilder, Redpanda
                 startupScript.Append("--memory 1G ");
                 startupScript.Append("--kafka-addr PLAINTEXT://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092 ");
                 startupScript.Append("--advertise-kafka-addr PLAINTEXT://127.0.0.1:29092,OUTSIDE://" + container.Hostname + ":" + container.GetMappedPublicPort(RedpandaPort));
-                return container.CopyAsync(Encoding.Default.GetBytes(startupScript.ToString()), StartupScriptFilePath, fileMode: Unix.FileMode755, ct: ct);
+                return startupScript.ToString();
             });
     }
 
