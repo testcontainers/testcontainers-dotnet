@@ -555,7 +555,7 @@ namespace DotNet.Testcontainers.Builders
     /// Sets the startup script that the container runs as its main process.
     /// </summary>
     /// <remarks>
-    /// The startup script is copied after the container starts.
+    /// The startup script is copied each time the container starts.
     /// The container runs it once the script has been copied completely.
     ///
     /// This method sets the startup callback, as does
@@ -568,16 +568,21 @@ namespace DotNet.Testcontainers.Builders
     {
       const string startupScriptFilePath = "/testcontainers.sh";
 
+      // The container empties the ready file before it runs the startup script.
+      // After a restart, it waits until the ready file is copied again.
       const string startupReadyFilePath = "/testcontainers.ready";
 
+      // exec lets the startup script receive the container's stop signal.
+      const string startupCommand = "while [ ! -s " + startupReadyFilePath + " ]; do sleep 0.1; done; true > " + startupReadyFilePath + "; exec " + startupScriptFilePath;
+
       return WithEntrypoint("/bin/sh", "-c")
-        .WithCommand("while [ ! -f " + startupReadyFilePath + " ]; do sleep 0.1; done; " + startupScriptFilePath)
+        .WithCommand(new OverwriteEnumerable<string>(new[] { startupCommand }))
         .WithStartupCallback(async (container, ct) =>
         {
           await container.CopyAsync(Encoding.Default.GetBytes(startupScript(container)), startupScriptFilePath, fileMode: Unix.FileMode755, ct: ct)
             .ConfigureAwait(false);
 
-          await container.CopyAsync(Array.Empty<byte>(), startupReadyFilePath, ct: ct)
+          await container.CopyAsync(new byte[] { 1 }, startupReadyFilePath, fileMode: Unix.FileMode666, ct: ct)
             .ConfigureAwait(false);
         });
     }

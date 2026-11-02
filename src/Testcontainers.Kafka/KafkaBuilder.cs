@@ -175,6 +175,7 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
         return WithConsensusProtocol(ConsensusProtocol.ZooKeeper)
             .WithPortBinding(ZooKeeperPort, connectionString == null)
             .WithEnvironment("KAFKA_ZOOKEEPER_CONNECT", connectionString ?? $"localhost:{ZooKeeperPort}")
+            .WithEnvironment("KAFKA_CONTROLLED_SHUTDOWN_RETRY_BACKOFF_MS", "0")
             .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("\\[KafkaServer id=\\d+\\] started"));
     }
 
