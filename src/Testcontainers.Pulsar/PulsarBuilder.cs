@@ -126,10 +126,8 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
             .WithPortBinding(PulsarBrokerDataPort, true)
             .WithPortBinding(PulsarWebServicePort, true)
             .WithFunctionsWorker(false)
-            .WithEntrypoint("/bin/sh", "-c")
-            .WithCommand("while [ ! -f " + StartupScriptFilePath + " ]; do sleep 0.1; done; " + StartupScriptFilePath)
             .WithConnectionStringProvider(() => new PulsarConnectionStringProvider())
-            .WithStartupCallback((container, ct) => container.CopyStartupScriptAsync(ct));
+            .WithStartupScript(container => container.CreateStartupScript());
     }
 
     /// <inheritdoc />

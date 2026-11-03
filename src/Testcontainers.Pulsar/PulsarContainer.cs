@@ -89,11 +89,10 @@ public sealed class PulsarContainer : DockerContainer
     }
 
     /// <summary>
-    /// Copies the Pulsar startup script to the container.
+    /// Creates the Pulsar startup script.
     /// </summary>
-    /// <param name="ct">Cancellation token.</param>
-    /// <returns>A task that completes when the startup script has been copied.</returns>
-    internal Task CopyStartupScriptAsync(CancellationToken ct = default)
+    /// <returns>The Pulsar startup script.</returns>
+    internal string CreateStartupScript()
     {
         var startupScript = new StringWriter();
         startupScript.NewLine = "\n";
@@ -116,7 +115,7 @@ public sealed class PulsarContainer : DockerContainer
             startupScript.Write(" --no-stream-storage");
         }
 
-        return CopyAsync(Encoding.Default.GetBytes(startupScript.ToString()), PulsarBuilder.StartupScriptFilePath, fileMode: Unix.FileMode755, ct: ct);
+        return startupScript.ToString();
     }
 
     private static bool IsVersionAffectedByGhIssue22811(System.Version version)
