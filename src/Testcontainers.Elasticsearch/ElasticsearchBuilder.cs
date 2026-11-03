@@ -1,6 +1,11 @@
 namespace Testcontainers.Elasticsearch;
 
 /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
+/// <remarks>
+/// By default, the builder sets <c>ingest.geoip.downloader.enabled</c> to <c>false</c>.
+/// To use an image that does not recognize this setting, override it with
+/// <c>WithEnvironment("ingest.geoip.downloader.enabled", string.Empty)</c>.
+/// </remarks>
 [PublicAPI]
 public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder, ElasticsearchContainer, ElasticsearchConfiguration>
 {
