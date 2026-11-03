@@ -59,6 +59,20 @@ public abstract class KafkaContainerTest : IAsyncLifetime
         Assert.Equal(_kafkaContainer.GetBootstrapAddress(), _kafkaContainer.GetConnectionString());
     }
 
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public async Task ConsumerReturnsProducerMessageAfterRestart()
+    {
+        await _kafkaContainer.StopAsync(TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        await _kafkaContainer.StartAsync(TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        await ConsumerReturnsProducerMessage()
+            .ConfigureAwait(true);
+    }
+
     protected virtual ValueTask DisposeAsyncCore()
     {
         return _kafkaContainer.DisposeAsync();
@@ -123,11 +137,13 @@ public abstract class KafkaContainerTest : IAsyncLifetime
         }
     }
 
+    // Native images before 4.4.0 segfault intermittently on startup:
+    // https://issues.apache.org/jira/browse/KAFKA-20314.
     [UsedImplicitly]
     public sealed class ApacheKafkaNativeConfiguration : KafkaContainerTest
     {
         public ApacheKafkaNativeConfiguration()
-            : base(new KafkaBuilder(TestSession.GetImageFromDockerfile(stage: "apache-native-v4_1_1"))
+            : base(new KafkaBuilder(TestSession.GetImageFromDockerfile(stage: "apache-native-v4_4_0"))
                 .Build())
         {
         }
