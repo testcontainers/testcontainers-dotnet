@@ -11,6 +11,7 @@ global using Cake.Common.Tools.DotNet.Build;
 global using Cake.Common.Tools.DotNet.NuGet.Push;
 global using Cake.Common.Tools.DotNet.Pack;
 global using Cake.Common.Tools.DotNet.Restore;
+global using Cake.Common.Tools.DotNet.Run;
 global using Cake.Common.Tools.DotNet.Test;
 global using Cake.Common.Xml;
 global using Cake.Core;
