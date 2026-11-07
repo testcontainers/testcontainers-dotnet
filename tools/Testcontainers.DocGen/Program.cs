@@ -9,14 +9,17 @@ public static class Program
     public static int Main()
     {
         var srcDirectoryPath = Path.GetFullPath("src");
+        var testsDirectoryPath = Path.GetFullPath("tests");
 
         foreach (var builderType in GetBuilderTypes())
         {
-            var moduleDirectoryPath = Path.Combine(srcDirectoryPath, builderType.Assembly.GetName().Name);
+            var moduleName = builderType.Assembly.GetName().Name;
+            var moduleDirectoryPath = Path.Combine(srcDirectoryPath, moduleName);
             var builderFilePath = Path.Combine(moduleDirectoryPath, builderType.Name + ".cs");
             var generatedFilePath = Path.Combine(moduleDirectoryPath, builderType.Name + GeneratedFileSuffix);
+            var images = GetImages(Path.Combine(testsDirectoryPath, moduleName + ".Tests", "Dockerfile"));
 
-            var document = new BuilderDocumentation(builderType, File.ReadAllText(builderFilePath)).Create();
+            var document = new BuilderDocumentation(builderType, File.ReadAllText(builderFilePath), images).Create();
             File.WriteAllText(generatedFilePath, document + Environment.NewLine);
         }
 
@@ -33,6 +36,19 @@ public static class Program
             .Select(Assembly.Load)
             .SelectMany(assembly => assembly.GetExportedTypes())
             .Where(type => !type.IsAbstract && type.BaseType is { IsGenericType: true } baseType && baseType.GetGenericTypeDefinition() == typeof(ContainerBuilder<,,>));
+    }
+
+    private static List<string> GetImages(string dockerfilePath)
+    {
+        // Return the images of the module tests. The default image, which is
+        // the image of the Dockerfile stage without a name, comes first, see
+        // TestSession.GetImageFromDockerfile.
+        return File.ReadLines(dockerfilePath)
+            .Select(line => line.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries))
+            .Where(tokens => tokens.Length > 1 && "FROM".Equals(tokens[0], StringComparison.OrdinalIgnoreCase))
+            .OrderBy(tokens => tokens.Any(token => "AS".Equals(token, StringComparison.OrdinalIgnoreCase)))
+            .Select(tokens => tokens.Skip(1).First(token => !token.StartsWith("--")))
+            .ToList();
     }
 
     private static bool ValidateIncludes(string srcDirectoryPath)

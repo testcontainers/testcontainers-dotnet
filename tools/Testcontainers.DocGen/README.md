@@ -10,7 +10,7 @@ Run the tool from the repository root. It requires a running Docker environment:
 dotnet run --project tools/Testcontainers.DocGen
 ```
 
-The tool writes a `*Builder.Generated.xml` file next to each module builder and exits with `1` if an `<include>` tag does not match an element. Regenerate the files whenever the default configuration of a module changes.
+The tool writes a `*Builder.Generated.xml` file next to each module builder and exits with `1` if an `<include>` tag does not match an element. Regenerate the files whenever the default configuration of a module or the images of its tests change.
 
 Reference the generated documentation inside `<remarks>`:
 

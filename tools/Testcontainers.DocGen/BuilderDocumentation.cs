@@ -2,12 +2,6 @@ namespace Testcontainers.DocGen;
 
 internal sealed class BuilderDocumentation
 {
-    // Do not refer to a specific image. Builders that check the version treat
-    // the latest tag as the newest version. If a builder requires a known
-    // image, such as the Kafka vendor, the tool falls back to the constructor
-    // configuration.
-    private const string Image = "repository:latest";
-
     // ContainerBuilder.WithStartupScript copies the script to this path and
     // runs it as the main process of the container.
     private const string StartupScriptFilePath = "/testcontainers.sh";
@@ -28,17 +22,21 @@ internal sealed class BuilderDocumentation
 
     private readonly string _builderSource;
 
-    public BuilderDocumentation(Type builderType, string builderSource)
+    private readonly IReadOnlyList<string> _images;
+
+    public BuilderDocumentation(Type builderType, string builderSource, IReadOnlyList<string> images)
     {
         _builderType = builderType;
         _builderSource = builderSource;
+        _images = images;
     }
 
     public XDocument Create()
     {
-        var builder = Activator.CreateInstance(_builderType, Image);
+        var image = _images[0];
+        var builder = Activator.CreateInstance(_builderType, image);
         var settings = GetSettings(builder, fallback: true);
-        var defaultSettings = settings.Except(GetSettings(new ContainerBuilder(Image)));
+        var defaultSettings = settings.Except(GetSettings(new ContainerBuilder(image)));
         var setters = GetSetters(builder, settings).ToList();
 
         var constructor = CreateMember("ctor", "The builder applies the following default configuration:", defaultSettings.Select(setting =>
@@ -47,6 +45,16 @@ internal sealed class BuilderDocumentation
             var crefs = new[] { GetPortConstantCref(setting), setter == null ? null : GetMethodCref(setter.Method) };
             return CreateItem(setting.Kind, setting.Description, crefs.Where(cref => cref != null));
         }));
+
+        // The tests use other images as well, such as other versions or
+        // vendors. If their configuration differs, name the image that the
+        // list applies to.
+        var otherSettings = _images.Skip(1).Select(otherImage => GetSettings(Activator.CreateInstance(_builderType, otherImage), fallback: true).ToHashSet());
+
+        if (otherSettings.Any(imageSettings => !imageSettings.SetEquals(settings)))
+        {
+            constructor.Add(new XElement("para", "The configuration depends on the image. The list applies to ", new XElement("c", image.Split('@')[0]), "."));
+        }
 
         var methods = setters.Select(setter => CreateMember(GetMemberName(setter.Method), "The method applies the following configuration:", setter.Settings.Select(setting =>
         {
@@ -112,9 +120,10 @@ internal sealed class BuilderDocumentation
         catch (Exception e) when (fallback && e is ArgumentException or InvalidOperationException)
         {
             // The builder requires a configuration that has no default value,
-            // such as the Event Hubs service configuration or the Kafka vendor.
-            Console.Error.WriteLine($"{builder.GetType().Name}: Failed to build the container, the documentation contains only the constructor configuration. {e.Message}");
-            return builder.AsDynamic().DockerResourceConfiguration;
+            // such as the Event Hubs service configuration.
+            IContainerConfiguration configuration = builder.AsDynamic().DockerResourceConfiguration;
+            Console.Error.WriteLine($"{builder.GetType().Name}: Failed to build the container from '{configuration.Image.FullName}', the tool uses the constructor configuration instead. {e.Message}");
+            return configuration;
         }
     }
 
