@@ -20,7 +20,7 @@ public static class Program
             var images = GetImages(Path.Combine(testsDirectoryPath, moduleName + ".Tests", "Dockerfile"));
 
             var document = new BuilderDocumentation(builderType, File.ReadAllText(builderFilePath), images).Create();
-            File.WriteAllText(generatedFilePath, document + Environment.NewLine);
+            File.WriteAllText(generatedFilePath, document.ToString());
         }
 
         return ValidateIncludes(srcDirectoryPath) ? 0 : 1;
@@ -30,7 +30,8 @@ public static class Program
     {
         // Load only the referenced module assemblies. The output directory may
         // still contain assemblies of renamed or removed modules.
-        return ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES")).Split(Path.PathSeparator)
+        return ((string)AppContext.GetData("TRUSTED_PLATFORM_ASSEMBLIES"))
+            .Split(Path.PathSeparator)
             .Select(Path.GetFileNameWithoutExtension)
             .Where(assemblyName => assemblyName.StartsWith("Testcontainers."))
             .Select(Assembly.Load)

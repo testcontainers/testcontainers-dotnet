@@ -266,7 +266,10 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
         }
     }
 
-    /// <inheritdoc cref="IWaitUntil" />
+    /// <summary>
+    /// Waits until the MongoDB shell runs the JavaScript script
+    /// <see cref="ScriptContent" /> successfully.
+    /// </summary>
     private abstract class WaitUntilScriptBase : IWaitUntil
     {
         protected abstract string ScriptContent { get; }
@@ -287,7 +290,10 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
         }
     }
 
-    /// <inheritdoc cref="IWaitUntil" />
+    /// <summary>
+    /// Waits until <c>rs.status()</c> reports that the MongoDB node runs with
+    /// replication enabled, whether the replica set is initiated or not.
+    /// </summary>
     private sealed class WaitReplicaSetEnabled : WaitUntilScriptBase
     {
         // rs.status() only answers once the final mongod is serving. The official image
@@ -297,7 +303,10 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
         protected override string ScriptContent => "try{rs.status();quit(0);}catch(e){quit(e.codeName===\"NotYetInitialized\"?0:1);}";
     }
 
-    /// <inheritdoc cref="IWaitUntil" />
+    /// <summary>
+    /// Waits until the <c>hello</c> command reports that the MongoDB node
+    /// is the writable primary of the replica set.
+    /// </summary>
     private sealed class WaitReplicaSetPrimary : WaitUntilScriptBase
     {
         protected override string ScriptContent => "var r=db.runCommand({hello:1}).isWritablePrimary;quit(r===true?0:1);";

@@ -169,7 +169,9 @@ public sealed class VaultBuilder : ContainerBuilder<VaultBuilder, VaultContainer
             .ConfigureAwait(false);
     }
 
-    /// <inheritdoc cref="IWaitUntil" />
+    /// <summary>
+    /// Waits until the <c>vault status</c> command reports that Vault is unsealed.
+    /// </summary>
     /// <remarks>
     /// Uses the Vault CLI <c>status</c> command to detect readiness of the Vault container:
     /// https://developer.hashicorp.com/vault/docs/commands/status.
