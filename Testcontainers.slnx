@@ -165,4 +165,7 @@
         <Project Path="tests/Testcontainers.Xunit.Tests/Testcontainers.Xunit.Tests.csproj"/>
         <Project Path="tests/Testcontainers.XunitV3.Tests/Testcontainers.XunitV3.Tests.csproj"/>
     </Folder>
+    <Folder Name="/tools/">
+        <Project Path="tools/Testcontainers.DocGen/Testcontainers.DocGen.csproj"/>
+    </Folder>
 </Solution>
