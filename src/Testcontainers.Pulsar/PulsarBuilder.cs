@@ -38,6 +38,7 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/apachepulsar/pulsar/tags" />.
+    /// <include file="PulsarBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public PulsarBuilder(string image)
         : this(new DockerImage(image))
@@ -53,6 +54,7 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/apachepulsar/pulsar/tags" />.
+    /// <include file="PulsarBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public PulsarBuilder(IImage image)
         : this(new PulsarConfiguration())
@@ -164,7 +166,10 @@ public sealed class PulsarBuilder : ContainerBuilder<PulsarBuilder, PulsarContai
         return new ReadOnlyDictionary<string, string>(authenticationEnvVars);
     }
 
-    /// <inheritdoc cref="IWaitUntil" />
+    /// <summary>
+    /// Waits until the HTTP request <c>GET /admin/v2/namespaces/public/default</c>
+    /// is completed successfully.
+    /// </summary>
     private sealed class WaitUntil : IWaitUntil
     {
         private readonly HttpWaitStrategy _httpWaitStrategy = new HttpWaitStrategy()

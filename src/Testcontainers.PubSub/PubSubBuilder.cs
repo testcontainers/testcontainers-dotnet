@@ -28,6 +28,7 @@ public sealed class PubSubBuilder : ContainerBuilder<PubSubBuilder, PubSubContai
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://console.cloud.google.com/artifacts/docker/google.com:cloudsdktool/us/gcr.io/google-cloud-cli" />.
+    /// <include file="PubSubBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public PubSubBuilder(string image)
         : this(new DockerImage(image))
@@ -43,6 +44,7 @@ public sealed class PubSubBuilder : ContainerBuilder<PubSubBuilder, PubSubContai
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://console.cloud.google.com/artifacts/docker/google.com:cloudsdktool/us/gcr.io/google-cloud-cli" />.
+    /// <include file="PubSubBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public PubSubBuilder(IImage image)
         : this(new PubSubConfiguration())

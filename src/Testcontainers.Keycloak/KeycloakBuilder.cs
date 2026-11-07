@@ -34,6 +34,7 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://quay.io/repository/keycloak/keycloak?tab=tags" />.
+    /// <include file="KeycloakBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public KeycloakBuilder(string image)
         : this(new DockerImage(image))
@@ -49,6 +50,7 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://quay.io/repository/keycloak/keycloak?tab=tags" />.
+    /// <include file="KeycloakBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public KeycloakBuilder(IImage image)
         : this(new KeycloakConfiguration())
@@ -72,6 +74,9 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
     /// <summary>
     /// Sets the Keycloak admin username.
     /// </summary>
+    /// <remarks>
+    /// <include file="KeycloakBuilder.Generated.xml" path="doc/member[@name='WithUsername(System.String)']/*" />
+    /// </remarks>
     /// <param name="username">The Keycloak admin username.</param>
     /// <returns>A configured instance of <see cref="KeycloakBuilder" />.</returns>
     public KeycloakBuilder WithUsername(string username)
@@ -84,6 +89,9 @@ public sealed class KeycloakBuilder : ContainerBuilder<KeycloakBuilder, Keycloak
     /// <summary>
     /// Sets the Keycloak admin password.
     /// </summary>
+    /// <remarks>
+    /// <include file="KeycloakBuilder.Generated.xml" path="doc/member[@name='WithPassword(System.String)']/*" />
+    /// </remarks>
     /// <param name="password">The Keycloak admin password.</param>
     /// <returns>A configured instance of <see cref="KeycloakBuilder" />.</returns>
     public KeycloakBuilder WithPassword(string password)

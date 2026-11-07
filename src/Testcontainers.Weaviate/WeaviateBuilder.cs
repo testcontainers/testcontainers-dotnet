@@ -27,6 +27,7 @@ public sealed class WeaviateBuilder : ContainerBuilder<WeaviateBuilder, Weaviate
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/semitechnologies/weaviate/tags" />.
+    /// <include file="WeaviateBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public WeaviateBuilder(string image)
         : this(new DockerImage(image))
@@ -42,6 +43,7 @@ public sealed class WeaviateBuilder : ContainerBuilder<WeaviateBuilder, Weaviate
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/semitechnologies/weaviate/tags" />.
+    /// <include file="WeaviateBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public WeaviateBuilder(IImage image)
         : this(new WeaviateConfiguration())

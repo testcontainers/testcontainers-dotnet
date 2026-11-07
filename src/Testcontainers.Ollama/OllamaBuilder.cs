@@ -28,6 +28,7 @@ public sealed class OllamaBuilder : ContainerBuilder<OllamaBuilder, OllamaContai
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/ollama/ollama/tags" />.
+    /// <include file="OllamaBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public OllamaBuilder(string image)
         : this(new DockerImage(image))
@@ -43,6 +44,7 @@ public sealed class OllamaBuilder : ContainerBuilder<OllamaBuilder, OllamaContai
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/ollama/ollama/tags" />.
+    /// <include file="OllamaBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public OllamaBuilder(IImage image)
         : this(new OllamaConfiguration())

@@ -44,6 +44,7 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/_/elasticsearch/tags" />.
+    /// <include file="ElasticsearchBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public ElasticsearchBuilder(string image)
         : this(new DockerImage(image))
@@ -57,6 +58,7 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
     /// for the container builder configuration.
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/_/elasticsearch/tags" />.
+    /// <include file="ElasticsearchBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public ElasticsearchBuilder(IImage image)
         : this(new ElasticsearchConfiguration())
@@ -80,6 +82,9 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
     /// <summary>
     /// Sets the Elasticsearch password.
     /// </summary>
+    /// <remarks>
+    /// <include file="ElasticsearchBuilder.Generated.xml" path="doc/member[@name='WithPassword(System.String)']/*" />
+    /// </remarks>
     /// <param name="password">The Elasticsearch password.</param>
     /// <returns>A configured instance of <see cref="ElasticsearchBuilder" />.</returns>
     public ElasticsearchBuilder WithPassword(string password)
@@ -154,7 +159,10 @@ public sealed class ElasticsearchBuilder : ContainerBuilder<ElasticsearchBuilder
         return Merge(DockerResourceConfiguration, new ElasticsearchConfiguration(username: username));
     }
 
-    /// <inheritdoc cref="IWaitUntil" />
+    /// <summary>
+    /// Waits until the cluster health status is green or yellow, and the OTLP
+    /// index templates are installed if OTLP is enabled.
+    /// </summary>
     private sealed class WaitUntil : IWaitUntil
     {
         private static readonly string[] OtlpIndexTemplates = { "metrics-otel@template", "logs-otel@template", "traces-otel@template" };

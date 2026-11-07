@@ -32,6 +32,7 @@ public sealed class ToxiproxyBuilder : ContainerBuilder<ToxiproxyBuilder, Toxipr
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://github.com/Shopify/toxiproxy/pkgs/container/toxiproxy" />.
+    /// <include file="ToxiproxyBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public ToxiproxyBuilder(string image)
         : this(new DockerImage(image))
@@ -47,6 +48,7 @@ public sealed class ToxiproxyBuilder : ContainerBuilder<ToxiproxyBuilder, Toxipr
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://github.com/Shopify/toxiproxy/pkgs/container/toxiproxy" />.
+    /// <include file="ToxiproxyBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public ToxiproxyBuilder(IImage image)
         : this(new ToxiproxyConfiguration())

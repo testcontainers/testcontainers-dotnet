@@ -30,6 +30,7 @@ public sealed class FakeGcsServerBuilder : ContainerBuilder<FakeGcsServerBuilder
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/fsouza/fake-gcs-server/tags" />.
+    /// <include file="FakeGcsServerBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public FakeGcsServerBuilder(string image)
         : this(new DockerImage(image))
@@ -45,6 +46,7 @@ public sealed class FakeGcsServerBuilder : ContainerBuilder<FakeGcsServerBuilder
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/fsouza/fake-gcs-server/tags" />.
+    /// <include file="FakeGcsServerBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public FakeGcsServerBuilder(IImage image)
         : this(new FakeGcsServerConfiguration())

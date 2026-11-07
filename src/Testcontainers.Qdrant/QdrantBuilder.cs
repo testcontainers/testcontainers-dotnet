@@ -34,6 +34,7 @@ public sealed class QdrantBuilder : ContainerBuilder<QdrantBuilder, QdrantContai
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/qdrant/qdrant/tags" />.
+    /// <include file="QdrantBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public QdrantBuilder(string image)
         : this(new DockerImage(image))
@@ -49,6 +50,7 @@ public sealed class QdrantBuilder : ContainerBuilder<QdrantBuilder, QdrantContai
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/qdrant/qdrant/tags" />.
+    /// <include file="QdrantBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public QdrantBuilder(IImage image)
         : this(new QdrantConfiguration())
@@ -72,6 +74,9 @@ public sealed class QdrantBuilder : ContainerBuilder<QdrantBuilder, QdrantContai
     /// <summary>
     /// Sets the API key to secure the instance.
     /// </summary>
+    /// <remarks>
+    /// <include file="QdrantBuilder.Generated.xml" path="doc/member[@name='WithApiKey(System.String)']/*" />
+    /// </remarks>
     /// <param name="apiKey">The API key.</param>
     /// <returns>A configured instance of <see cref="QdrantBuilder" />.</returns>
     public QdrantBuilder WithApiKey(string apiKey)
@@ -134,7 +139,9 @@ public sealed class QdrantBuilder : ContainerBuilder<QdrantBuilder, QdrantContai
         return new QdrantBuilder(new QdrantConfiguration(oldValue, newValue));
     }
 
-    /// <inheritdoc cref="IWaitUntil" />
+    /// <summary>
+    /// Waits until the HTTP request <c>GET /readyz</c> is completed successfully.
+    /// </summary>
     private sealed class WaitUntil : IWaitUntil
     {
         private readonly bool _tlsEnabled;

@@ -91,6 +91,7 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/_/couchbase/tags" />.
+    /// <include file="CouchbaseBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public CouchbaseBuilder(string image)
         : this(new DockerImage(image))
@@ -104,6 +105,7 @@ public sealed class CouchbaseBuilder : ContainerBuilder<CouchbaseBuilder, Couchb
     /// for the container builder configuration.
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/_/couchbase/tags" />.
+    /// <include file="CouchbaseBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public CouchbaseBuilder(IImage image)
         : this(new CouchbaseConfiguration())

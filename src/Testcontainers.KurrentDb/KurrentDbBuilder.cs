@@ -28,6 +28,7 @@ public sealed class KurrentDbBuilder : ContainerBuilder<KurrentDbBuilder, Kurren
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/kurrentplatform/kurrentdb/tags" />.
+    /// <include file="KurrentDbBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public KurrentDbBuilder(string image)
         : this(new DockerImage(image))
@@ -43,6 +44,7 @@ public sealed class KurrentDbBuilder : ContainerBuilder<KurrentDbBuilder, Kurren
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/kurrentplatform/kurrentdb/tags" />.
+    /// <include file="KurrentDbBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public KurrentDbBuilder(IImage image)
         : this(new KurrentDbConfiguration())

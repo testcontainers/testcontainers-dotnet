@@ -34,6 +34,7 @@ public sealed class MilvusBuilder : ContainerBuilder<MilvusBuilder, MilvusContai
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/milvusdb/milvus/tags" />.
+    /// <include file="MilvusBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public MilvusBuilder(string image)
         : this(new DockerImage(image))
@@ -49,6 +50,7 @@ public sealed class MilvusBuilder : ContainerBuilder<MilvusBuilder, MilvusContai
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/milvusdb/milvus/tags" />.
+    /// <include file="MilvusBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public MilvusBuilder(IImage image)
         : this(new MilvusConfiguration())

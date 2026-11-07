@@ -52,6 +52,7 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/_/postgres/tags" />.
+    /// <include file="PostgreSqlBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public PostgreSqlBuilder(string image)
         : this(new DockerImage(image))
@@ -67,6 +68,7 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/_/postgres/tags" />.
+    /// <include file="PostgreSqlBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public PostgreSqlBuilder(IImage image)
         : this(new PostgreSqlConfiguration())
@@ -90,6 +92,9 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
     /// <summary>
     /// Sets the PostgreSql database.
     /// </summary>
+    /// <remarks>
+    /// <include file="PostgreSqlBuilder.Generated.xml" path="doc/member[@name='WithDatabase(System.String)']/*" />
+    /// </remarks>
     /// <param name="database">The PostgreSql database.</param>
     /// <returns>A configured instance of <see cref="PostgreSqlBuilder" />.</returns>
     public PostgreSqlBuilder WithDatabase(string database)
@@ -101,6 +106,9 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
     /// <summary>
     /// Sets the PostgreSql username.
     /// </summary>
+    /// <remarks>
+    /// <include file="PostgreSqlBuilder.Generated.xml" path="doc/member[@name='WithUsername(System.String)']/*" />
+    /// </remarks>
     /// <param name="username">The PostgreSql username.</param>
     /// <returns>A configured instance of <see cref="PostgreSqlBuilder" />.</returns>
     public PostgreSqlBuilder WithUsername(string username)
@@ -112,6 +120,9 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
     /// <summary>
     /// Sets the PostgreSql password.
     /// </summary>
+    /// <remarks>
+    /// <include file="PostgreSqlBuilder.Generated.xml" path="doc/member[@name='WithPassword(System.String)']/*" />
+    /// </remarks>
     /// <param name="password">The PostgreSql password.</param>
     /// <returns>A configured instance of <see cref="PostgreSqlBuilder" />.</returns>
     public PostgreSqlBuilder WithPassword(string password)
@@ -247,7 +258,9 @@ public sealed class PostgreSqlBuilder : ContainerBuilder<PostgreSqlBuilder, Post
         return new PostgreSqlBuilder(new PostgreSqlConfiguration(oldValue, newValue));
     }
 
-    /// <inheritdoc cref="IWaitUntil" />
+    /// <summary>
+    /// Waits until <c>pg_isready</c> reports that the database accepts connections.
+    /// </summary>
     private sealed class WaitUntil : IWaitUntil
     {
         private readonly IList<string> _command;

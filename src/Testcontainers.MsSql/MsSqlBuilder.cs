@@ -34,6 +34,7 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://mcr.microsoft.com/en-us/artifact/mar/mssql/server/tags" />.
+    /// <include file="MsSqlBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public MsSqlBuilder(string image)
         : this(new DockerImage(image))
@@ -49,6 +50,7 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://mcr.microsoft.com/en-us/artifact/mar/mssql/server/tags" />.
+    /// <include file="MsSqlBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public MsSqlBuilder(IImage image)
         : this(new MsSqlConfiguration())
@@ -75,6 +77,7 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
     /// <remarks>
     /// The Docker image does not allow to configure the database. It is created
     /// as part of the startup callback, which runs before any wait strategy.
+    /// <include file="MsSqlBuilder.Generated.xml" path="doc/member[@name='WithDatabase(System.String)']/*" />
     /// </remarks>
     /// <param name="database">The MsSql database.</param>
     /// <returns>A configured instance of <see cref="MsSqlBuilder" />.</returns>
@@ -87,6 +90,9 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
     /// <summary>
     /// Sets the MsSql password.
     /// </summary>
+    /// <remarks>
+    /// <include file="MsSqlBuilder.Generated.xml" path="doc/member[@name='WithPassword(System.String)']/*" />
+    /// </remarks>
     /// <param name="password">The MsSql password.</param>
     /// <returns>A configured instance of <see cref="MsSqlBuilder" />.</returns>
     public MsSqlBuilder WithPassword(string password)
@@ -203,7 +209,9 @@ public sealed class MsSqlBuilder : ContainerBuilder<MsSqlBuilder, MsSqlContainer
             .ConfigureAwait(false);
     }
 
-    /// <inheritdoc cref="IWaitUntil" />
+    /// <summary>
+    /// Waits until the <c>sqlcmd</c> utility runs <c>SELECT 1;</c> successfully.
+    /// </summary>
     /// <remarks>
     /// Uses the <c>sqlcmd</c> utility scripting variables to detect readiness of the MsSql container:
     /// https://learn.microsoft.com/en-us/sql/tools/sqlcmd/sqlcmd-utility?view=sql-server-linux-ver15#sqlcmd-scripting-variables.

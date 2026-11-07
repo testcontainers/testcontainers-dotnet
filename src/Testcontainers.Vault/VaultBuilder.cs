@@ -17,6 +17,7 @@ public sealed class VaultBuilder : ContainerBuilder<VaultBuilder, VaultContainer
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/hashicorp/vault/tags" />.
+    /// <include file="VaultBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public VaultBuilder(string image)
         : this(new DockerImage(image))
@@ -32,6 +33,7 @@ public sealed class VaultBuilder : ContainerBuilder<VaultBuilder, VaultContainer
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/hashicorp/vault/tags" />.
+    /// <include file="VaultBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public VaultBuilder(IImage image)
         : this(new VaultConfiguration())
@@ -57,6 +59,7 @@ public sealed class VaultBuilder : ContainerBuilder<VaultBuilder, VaultContainer
     /// </summary>
     /// <remarks>
     /// The Vault CLI inside the container uses the same token.
+    /// <include file="VaultBuilder.Generated.xml" path="doc/member[@name='WithRootToken(System.String)']/*" />
     /// </remarks>
     /// <param name="rootToken">The Vault root token.</param>
     /// <returns>A configured instance of <see cref="VaultBuilder" />.</returns>
@@ -166,7 +169,9 @@ public sealed class VaultBuilder : ContainerBuilder<VaultBuilder, VaultContainer
             .ConfigureAwait(false);
     }
 
-    /// <inheritdoc cref="IWaitUntil" />
+    /// <summary>
+    /// Waits until the <c>vault status</c> command reports that Vault is unsealed.
+    /// </summary>
     /// <remarks>
     /// Uses the Vault CLI <c>status</c> command to detect readiness of the Vault container:
     /// https://developer.hashicorp.com/vault/docs/commands/status.

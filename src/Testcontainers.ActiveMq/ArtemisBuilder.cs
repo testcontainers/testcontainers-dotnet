@@ -34,6 +34,7 @@ public sealed class ArtemisBuilder : ContainerBuilder<ArtemisBuilder, ArtemisCon
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/apache/activemq-artemis/tags" />.
+    /// <include file="ArtemisBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public ArtemisBuilder(string image)
         : this(new DockerImage(image))
@@ -49,6 +50,7 @@ public sealed class ArtemisBuilder : ContainerBuilder<ArtemisBuilder, ArtemisCon
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/apache/activemq-artemis/tags" />.
+    /// <include file="ArtemisBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public ArtemisBuilder(IImage image)
         : this(new ActiveMqConfiguration())
@@ -72,6 +74,9 @@ public sealed class ArtemisBuilder : ContainerBuilder<ArtemisBuilder, ArtemisCon
     /// <summary>
     /// Sets the Artemis username.
     /// </summary>
+    /// <remarks>
+    /// <include file="ArtemisBuilder.Generated.xml" path="doc/member[@name='WithUsername(System.String)']/*" />
+    /// </remarks>
     /// <param name="username">The Artemis username.</param>
     /// <returns>A configured instance of <see cref="ArtemisBuilder" />.</returns>
     public ArtemisBuilder WithUsername(string username)
@@ -83,6 +88,9 @@ public sealed class ArtemisBuilder : ContainerBuilder<ArtemisBuilder, ArtemisCon
     /// <summary>
     /// Sets the Artemis password.
     /// </summary>
+    /// <remarks>
+    /// <include file="ArtemisBuilder.Generated.xml" path="doc/member[@name='WithPassword(System.String)']/*" />
+    /// </remarks>
     /// <param name="password">The Artemis password.</param>
     /// <returns>A configured instance of <see cref="ArtemisBuilder" />.</returns>
     public ArtemisBuilder WithPassword(string password)

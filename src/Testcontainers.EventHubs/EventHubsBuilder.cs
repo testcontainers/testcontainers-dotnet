@@ -34,6 +34,7 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://mcr.microsoft.com/en-us/artifact/mar/azure-messaging/eventhubs-emulator/tags" />.
+    /// <include file="EventHubsBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public EventHubsBuilder(string image)
         : this(new DockerImage(image))
@@ -47,6 +48,7 @@ public sealed class EventHubsBuilder : ContainerBuilder<EventHubsBuilder, EventH
     /// for the container builder configuration.
     /// <remarks>
     /// Docker image tags available at <see href="https://mcr.microsoft.com/en-us/artifact/mar/azure-messaging/eventhubs-emulator/tags" />.
+    /// <include file="EventHubsBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public EventHubsBuilder(IImage image)
         : this(new EventHubsConfiguration())

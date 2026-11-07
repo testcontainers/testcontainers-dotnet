@@ -44,6 +44,7 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/confluentinc/cp-kafka/tags" />.
+    /// <include file="KafkaBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public KafkaBuilder(string image)
         : this(new DockerImage(image))
@@ -57,6 +58,7 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
     /// for the container builder configuration.
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/confluentinc/cp-kafka/tags" />.
+    /// <include file="KafkaBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public KafkaBuilder(IImage image)
         : this(new KafkaConfiguration())
