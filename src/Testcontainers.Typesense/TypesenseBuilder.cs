@@ -32,6 +32,7 @@ public sealed class TypesenseBuilder : ContainerBuilder<TypesenseBuilder, Typese
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/typesense/typesense/tags" />.
+    /// <include file="TypesenseBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public TypesenseBuilder(string image)
         : this(new DockerImage(image))
@@ -47,6 +48,7 @@ public sealed class TypesenseBuilder : ContainerBuilder<TypesenseBuilder, Typese
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/typesense/typesense/tags" />.
+    /// <include file="TypesenseBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public TypesenseBuilder(IImage image)
         : this(new TypesenseConfiguration())
@@ -70,6 +72,9 @@ public sealed class TypesenseBuilder : ContainerBuilder<TypesenseBuilder, Typese
     /// <summary>
     /// Sets the data directory.
     /// </summary>
+    /// <remarks>
+    /// <include file="TypesenseBuilder.Generated.xml" path="doc/member[@name='WithDataDirectory(System.String)']/*" />
+    /// </remarks>
     /// <param name="dataDirectoryPath">The data directory path.</param>
     /// <returns>A configured instance of <see cref="TypesenseBuilder" />.</returns>
     public TypesenseBuilder WithDataDirectory(string dataDirectoryPath)
@@ -80,6 +85,9 @@ public sealed class TypesenseBuilder : ContainerBuilder<TypesenseBuilder, Typese
     /// <summary>
     /// Sets the API key.
     /// </summary>
+    /// <remarks>
+    /// <include file="TypesenseBuilder.Generated.xml" path="doc/member[@name='WithApiKey(System.String)']/*" />
+    /// </remarks>
     /// <param name="apiKey">The API key.</param>
     /// <returns>A configured instance of <see cref="TypesenseBuilder" />.</returns>
     public TypesenseBuilder WithApiKey(string apiKey)

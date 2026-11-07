@@ -28,6 +28,7 @@ public sealed class JanusGraphBuilder : ContainerBuilder<JanusGraphBuilder, Janu
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/janusgraph/janusgraph/tags" />.
+    /// <include file="JanusGraphBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public JanusGraphBuilder(string image)
         : this(new DockerImage(image))
@@ -43,6 +44,7 @@ public sealed class JanusGraphBuilder : ContainerBuilder<JanusGraphBuilder, Janu
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/janusgraph/janusgraph/tags" />.
+    /// <include file="JanusGraphBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public JanusGraphBuilder(IImage image)
         : this(new JanusGraphConfiguration())

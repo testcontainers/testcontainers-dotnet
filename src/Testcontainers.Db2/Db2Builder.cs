@@ -34,6 +34,7 @@ public sealed class Db2Builder : ContainerBuilder<Db2Builder, Db2Container, Db2C
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/ibmcom/db2/tags" />.
+    /// <include file="Db2Builder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public Db2Builder(string image)
         : this(new DockerImage(image))
@@ -47,6 +48,7 @@ public sealed class Db2Builder : ContainerBuilder<Db2Builder, Db2Container, Db2C
     /// for the container builder configuration.
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/ibmcom/db2/tags" />.
+    /// <include file="Db2Builder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public Db2Builder(IImage image)
         : this(new Db2Configuration())
@@ -93,6 +95,9 @@ public sealed class Db2Builder : ContainerBuilder<Db2Builder, Db2Container, Db2C
     /// <summary>
     /// Sets the Db2 database name.
     /// </summary>
+    /// <remarks>
+    /// <include file="Db2Builder.Generated.xml" path="doc/member[@name='WithDatabase(System.String)']/*" />
+    /// </remarks>
     /// <param name="database">The Db2 database.</param>
     /// <returns>A configured instance of <see cref="Db2Builder" />.</returns>
     public Db2Builder WithDatabase(string database)
@@ -116,6 +121,9 @@ public sealed class Db2Builder : ContainerBuilder<Db2Builder, Db2Container, Db2C
     /// <summary>
     /// Sets the Db2 password.
     /// </summary>
+    /// <remarks>
+    /// <include file="Db2Builder.Generated.xml" path="doc/member[@name='WithPassword(System.String)']/*" />
+    /// </remarks>
     /// <param name="password">The Db2 password.</param>
     /// <returns>A configured instance of <see cref="Db2Builder" />.</returns>
     public Db2Builder WithPassword(string password)

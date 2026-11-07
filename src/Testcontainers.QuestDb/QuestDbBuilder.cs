@@ -38,6 +38,7 @@ public sealed class QuestDbBuilder : ContainerBuilder<QuestDbBuilder, QuestDbCon
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/questdb/questdb/tags" />.
+    /// <include file="QuestDbBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public QuestDbBuilder(string image)
         : this(new DockerImage(image))
@@ -53,6 +54,7 @@ public sealed class QuestDbBuilder : ContainerBuilder<QuestDbBuilder, QuestDbCon
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/questdb/questdb/tags" />.
+    /// <include file="QuestDbBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public QuestDbBuilder(IImage image)
         : this(new QuestDbConfiguration())
@@ -76,6 +78,9 @@ public sealed class QuestDbBuilder : ContainerBuilder<QuestDbBuilder, QuestDbCon
     /// <summary>
     /// Sets the QuestDb username.
     /// </summary>
+    /// <remarks>
+    /// <include file="QuestDbBuilder.Generated.xml" path="doc/member[@name='WithUsername(System.String)']/*" />
+    /// </remarks>
     /// <param name="username">The QuestDb username.</param>
     /// <returns>A configured instance of <see cref="QuestDbBuilder" />.</returns>
     public QuestDbBuilder WithUsername(string username)
@@ -87,6 +92,9 @@ public sealed class QuestDbBuilder : ContainerBuilder<QuestDbBuilder, QuestDbCon
     /// <summary>
     /// Sets the QuestDb password.
     /// </summary>
+    /// <remarks>
+    /// <include file="QuestDbBuilder.Generated.xml" path="doc/member[@name='WithPassword(System.String)']/*" />
+    /// </remarks>
     /// <param name="password">The QuestDb password.</param>
     /// <returns>A configured instance of <see cref="QuestDbBuilder" />.</returns>
     public QuestDbBuilder WithPassword(string password)

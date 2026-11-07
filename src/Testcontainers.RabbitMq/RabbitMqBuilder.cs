@@ -32,6 +32,7 @@ public sealed class RabbitMqBuilder : ContainerBuilder<RabbitMqBuilder, RabbitMq
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/_/rabbitmq/tags" />.
+    /// <include file="RabbitMqBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public RabbitMqBuilder(string image)
         : this(new DockerImage(image))
@@ -47,6 +48,7 @@ public sealed class RabbitMqBuilder : ContainerBuilder<RabbitMqBuilder, RabbitMq
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/_/rabbitmq/tags" />.
+    /// <include file="RabbitMqBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public RabbitMqBuilder(IImage image)
         : this(new RabbitMqConfiguration())
@@ -70,6 +72,9 @@ public sealed class RabbitMqBuilder : ContainerBuilder<RabbitMqBuilder, RabbitMq
     /// <summary>
     /// Sets the RabbitMq username.
     /// </summary>
+    /// <remarks>
+    /// <include file="RabbitMqBuilder.Generated.xml" path="doc/member[@name='WithUsername(System.String)']/*" />
+    /// </remarks>
     /// <param name="username">The RabbitMq username.</param>
     /// <returns>A configured instance of <see cref="RabbitMqBuilder" />.</returns>
     public RabbitMqBuilder WithUsername(string username)
@@ -81,6 +86,9 @@ public sealed class RabbitMqBuilder : ContainerBuilder<RabbitMqBuilder, RabbitMq
     /// <summary>
     /// Sets the RabbitMq password.
     /// </summary>
+    /// <remarks>
+    /// <include file="RabbitMqBuilder.Generated.xml" path="doc/member[@name='WithPassword(System.String)']/*" />
+    /// </remarks>
     /// <param name="password">The RabbitMq password.</param>
     /// <returns>A configured instance of <see cref="RabbitMqBuilder" />.</returns>
     public RabbitMqBuilder WithPassword(string password)

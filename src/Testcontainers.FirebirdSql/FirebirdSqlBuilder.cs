@@ -38,6 +38,7 @@ public sealed class FirebirdSqlBuilder : ContainerBuilder<FirebirdSqlBuilder, Fi
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/firebirdsql/firebird/tags" />.
+    /// <include file="FirebirdSqlBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public FirebirdSqlBuilder(string image)
         : this(new DockerImage(image))
@@ -51,6 +52,7 @@ public sealed class FirebirdSqlBuilder : ContainerBuilder<FirebirdSqlBuilder, Fi
     /// for the container builder configuration.
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/firebirdsql/firebird/tags" />.
+    /// <include file="FirebirdSqlBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public FirebirdSqlBuilder(IImage image)
         : this(new FirebirdSqlConfiguration())
@@ -74,6 +76,9 @@ public sealed class FirebirdSqlBuilder : ContainerBuilder<FirebirdSqlBuilder, Fi
     /// <summary>
     /// Sets the FirebirdSql database.
     /// </summary>
+    /// <remarks>
+    /// <include file="FirebirdSqlBuilder.Generated.xml" path="doc/member[@name='WithDatabase(System.String)']/*" />
+    /// </remarks>
     /// <param name="database">The FirebirdSql database.</param>
     /// <returns>A configured instance of <see cref="FirebirdSqlBuilder" />.</returns>
     public FirebirdSqlBuilder WithDatabase(string database)
@@ -85,6 +90,9 @@ public sealed class FirebirdSqlBuilder : ContainerBuilder<FirebirdSqlBuilder, Fi
     /// <summary>
     /// Sets the FirebirdSql username.
     /// </summary>
+    /// <remarks>
+    /// <include file="FirebirdSqlBuilder.Generated.xml" path="doc/member[@name='WithUsername(System.String)']/*" />
+    /// </remarks>
     /// <param name="username">The FirebirdSql username.</param>
     /// <returns>A configured instance of <see cref="FirebirdSqlBuilder" />.</returns>
     public FirebirdSqlBuilder WithUsername(string username)
@@ -96,6 +104,9 @@ public sealed class FirebirdSqlBuilder : ContainerBuilder<FirebirdSqlBuilder, Fi
     /// <summary>
     /// Sets the FirebirdSql password.
     /// </summary>
+    /// <remarks>
+    /// <include file="FirebirdSqlBuilder.Generated.xml" path="doc/member[@name='WithPassword(System.String)']/*" />
+    /// </remarks>
     /// <param name="password">The FirebirdSql password.</param>
     /// <returns>A configured instance of <see cref="FirebirdSqlBuilder" />.</returns>
     public FirebirdSqlBuilder WithPassword(string password)

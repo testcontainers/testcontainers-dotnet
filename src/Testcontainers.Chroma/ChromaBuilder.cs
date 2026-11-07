@@ -15,6 +15,7 @@ public sealed class ChromaBuilder : ContainerBuilder<ChromaBuilder, ChromaContai
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/chromadb/chroma/tags" />.
+    /// <include file="ChromaBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public ChromaBuilder(string image)
         : this(new DockerImage(image))
@@ -30,6 +31,7 @@ public sealed class ChromaBuilder : ContainerBuilder<ChromaBuilder, ChromaContai
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/chromadb/chroma/tags" />.
+    /// <include file="ChromaBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public ChromaBuilder(IImage image)
         : this(new ChromaConfiguration())
@@ -84,7 +86,9 @@ public sealed class ChromaBuilder : ContainerBuilder<ChromaBuilder, ChromaContai
         return new ChromaBuilder(new ChromaConfiguration(oldValue, newValue));
     }
 
-    /// <inheritdoc cref="IWaitUntil" />
+    /// <summary>
+    /// Waits until the heartbeat endpoint responds successfully.
+    /// </summary>
     /// <remarks>
     /// Uses the heartbeat endpoint to detect readiness of the Chroma container.
     /// Chroma 0.5.16 introduced the v2 API, and Chroma 1.0.0 removed the v1 API.

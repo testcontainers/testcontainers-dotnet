@@ -30,6 +30,7 @@ public sealed class PapercutBuilder : ContainerBuilder<PapercutBuilder, Papercut
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/changemakerstudiosus/papercut-smtp/tags" />.
+    /// <include file="PapercutBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public PapercutBuilder(string image)
         : this(new DockerImage(image))
@@ -45,6 +46,7 @@ public sealed class PapercutBuilder : ContainerBuilder<PapercutBuilder, Papercut
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/changemakerstudiosus/papercut-smtp/tags" />.
+    /// <include file="PapercutBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public PapercutBuilder(IImage image)
         : this(new PapercutConfiguration())

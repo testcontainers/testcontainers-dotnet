@@ -33,6 +33,7 @@ public sealed class FlociBuilder : ContainerBuilder<FlociBuilder, FlociContainer
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/floci/floci/tags" />.
+    /// <include file="FlociBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public FlociBuilder(string image)
         : this(new DockerImage(image))
@@ -48,6 +49,7 @@ public sealed class FlociBuilder : ContainerBuilder<FlociBuilder, FlociContainer
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/floci/floci/tags" />.
+    /// <include file="FlociBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public FlociBuilder(IImage image)
         : this(new FlociConfiguration())

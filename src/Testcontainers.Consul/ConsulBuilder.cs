@@ -30,6 +30,7 @@ public sealed class ConsulBuilder : ContainerBuilder<ConsulBuilder, ConsulContai
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/hashicorp/consul/tags" />.
+    /// <include file="ConsulBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public ConsulBuilder(string image)
         : this(new DockerImage(image))
@@ -45,6 +46,7 @@ public sealed class ConsulBuilder : ContainerBuilder<ConsulBuilder, ConsulContai
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/hashicorp/consul/tags" />.
+    /// <include file="ConsulBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public ConsulBuilder(IImage image)
         : this(new ConsulConfiguration())

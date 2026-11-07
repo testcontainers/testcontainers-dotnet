@@ -30,6 +30,7 @@ public sealed class PlaywrightBuilder : ContainerBuilder<PlaywrightBuilder, Play
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://mcr.microsoft.com/en-us/artifact/mar/playwright/tags" />.
+    /// <include file="PlaywrightBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public PlaywrightBuilder(string image)
         : this(new DockerImage(image))
@@ -45,6 +46,7 @@ public sealed class PlaywrightBuilder : ContainerBuilder<PlaywrightBuilder, Play
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://mcr.microsoft.com/en-us/artifact/mar/playwright/tags" />.
+    /// <include file="PlaywrightBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public PlaywrightBuilder(IImage image)
         : this(new PlaywrightConfiguration())

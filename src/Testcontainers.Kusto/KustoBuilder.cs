@@ -32,6 +32,7 @@ public sealed class KustoBuilder : ContainerBuilder<KustoBuilder, KustoContainer
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://learn.microsoft.com/azure/data-explorer/kusto-emulator-overview" />.
+    /// <include file="KustoBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public KustoBuilder(string image)
         : this(new DockerImage(image))
@@ -47,6 +48,7 @@ public sealed class KustoBuilder : ContainerBuilder<KustoBuilder, KustoContainer
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://learn.microsoft.com/azure/data-explorer/kusto-emulator-overview" />.
+    /// <include file="KustoBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public KustoBuilder(IImage image)
         : this(new KustoConfiguration())

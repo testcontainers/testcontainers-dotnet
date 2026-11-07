@@ -28,6 +28,7 @@ public sealed class RavenDbBuilder : ContainerBuilder<RavenDbBuilder, RavenDbCon
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/ravendb/ravendb/tags" />.
+    /// <include file="RavenDbBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public RavenDbBuilder(string image)
         : this(new DockerImage(image))
@@ -43,6 +44,7 @@ public sealed class RavenDbBuilder : ContainerBuilder<RavenDbBuilder, RavenDbCon
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/ravendb/ravendb/tags" />.
+    /// <include file="RavenDbBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public RavenDbBuilder(IImage image)
         : this(new RavenDbConfiguration())

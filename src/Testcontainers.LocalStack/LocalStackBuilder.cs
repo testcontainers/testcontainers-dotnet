@@ -28,6 +28,7 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Loca
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/localstack/localstack/tags" />.
+    /// <include file="LocalStackBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public LocalStackBuilder(string image)
         : this(new DockerImage(image))
@@ -43,6 +44,7 @@ public sealed class LocalStackBuilder : ContainerBuilder<LocalStackBuilder, Loca
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/localstack/localstack/tags" />.
+    /// <include file="LocalStackBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public LocalStackBuilder(IImage image)
         : this(new LocalStackConfiguration())

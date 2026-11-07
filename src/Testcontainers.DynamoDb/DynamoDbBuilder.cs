@@ -28,6 +28,7 @@ public sealed class DynamoDbBuilder : ContainerBuilder<DynamoDbBuilder, DynamoDb
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/amazon/dynamodb-local/tags" />.
+    /// <include file="DynamoDbBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public DynamoDbBuilder(string image)
         : this(new DockerImage(image))
@@ -43,6 +44,7 @@ public sealed class DynamoDbBuilder : ContainerBuilder<DynamoDbBuilder, DynamoDb
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/amazon/dynamodb-local/tags" />.
+    /// <include file="DynamoDbBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public DynamoDbBuilder(IImage image)
         : this(new DynamoDbConfiguration())

@@ -30,6 +30,7 @@ public sealed class K3sBuilder : ContainerBuilder<K3sBuilder, K3sContainer, K3sC
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/rancher/k3s/tags" />.
+    /// <include file="K3sBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public K3sBuilder(string image)
         : this(new DockerImage(image))
@@ -45,6 +46,7 @@ public sealed class K3sBuilder : ContainerBuilder<K3sBuilder, K3sContainer, K3sC
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/rancher/k3s/tags" />.
+    /// <include file="K3sBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public K3sBuilder(IImage image)
         : this(new K3sConfiguration())

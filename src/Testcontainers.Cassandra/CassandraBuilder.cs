@@ -30,6 +30,7 @@ public sealed class CassandraBuilder : ContainerBuilder<CassandraBuilder, Cassan
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/_/cassandra/tags" />.
+    /// <include file="CassandraBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public CassandraBuilder(string image)
         : this(new DockerImage(image))
@@ -45,6 +46,7 @@ public sealed class CassandraBuilder : ContainerBuilder<CassandraBuilder, Cassan
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/_/cassandra/tags" />.
+    /// <include file="CassandraBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public CassandraBuilder(IImage image)
         : this(new CassandraConfiguration())

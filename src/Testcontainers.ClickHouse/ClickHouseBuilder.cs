@@ -36,6 +36,7 @@ public sealed class ClickHouseBuilder : ContainerBuilder<ClickHouseBuilder, Clic
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/_/clickhouse/tags" />.
+    /// <include file="ClickHouseBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public ClickHouseBuilder(string image)
         : this(new DockerImage(image))
@@ -51,6 +52,7 @@ public sealed class ClickHouseBuilder : ContainerBuilder<ClickHouseBuilder, Clic
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/_/clickhouse/tags" />.
+    /// <include file="ClickHouseBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public ClickHouseBuilder(IImage image)
         : this(new ClickHouseConfiguration())
@@ -74,6 +76,9 @@ public sealed class ClickHouseBuilder : ContainerBuilder<ClickHouseBuilder, Clic
     /// <summary>
     /// Sets the ClickHouse database.
     /// </summary>
+    /// <remarks>
+    /// <include file="ClickHouseBuilder.Generated.xml" path="doc/member[@name='WithDatabase(System.String)']/*" />
+    /// </remarks>
     /// <param name="database">The ClickHouse database.</param>
     /// <returns>A configured instance of <see cref="ClickHouseBuilder" />.</returns>
     public ClickHouseBuilder WithDatabase(string database)
@@ -85,6 +90,9 @@ public sealed class ClickHouseBuilder : ContainerBuilder<ClickHouseBuilder, Clic
     /// <summary>
     /// Sets the ClickHouse username.
     /// </summary>
+    /// <remarks>
+    /// <include file="ClickHouseBuilder.Generated.xml" path="doc/member[@name='WithUsername(System.String)']/*" />
+    /// </remarks>
     /// <param name="username">The ClickHouse username.</param>
     /// <returns>A configured instance of <see cref="ClickHouseBuilder" />.</returns>
     public ClickHouseBuilder WithUsername(string username)
@@ -96,6 +104,9 @@ public sealed class ClickHouseBuilder : ContainerBuilder<ClickHouseBuilder, Clic
     /// <summary>
     /// Sets the ClickHouse password.
     /// </summary>
+    /// <remarks>
+    /// <include file="ClickHouseBuilder.Generated.xml" path="doc/member[@name='WithPassword(System.String)']/*" />
+    /// </remarks>
     /// <param name="password">The ClickHouse password.</param>
     /// <returns>A configured instance of <see cref="ClickHouseBuilder" />.</returns>
     public ClickHouseBuilder WithPassword(string password)

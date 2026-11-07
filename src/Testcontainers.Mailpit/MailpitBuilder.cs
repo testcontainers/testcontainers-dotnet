@@ -29,6 +29,7 @@ public sealed class MailpitBuilder : ContainerBuilder<MailpitBuilder, MailpitCon
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/axllent/mailpit/tags" />.
+    /// <include file="MailpitBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public MailpitBuilder(string image)
         : this(new DockerImage(image))
@@ -44,6 +45,7 @@ public sealed class MailpitBuilder : ContainerBuilder<MailpitBuilder, MailpitCon
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/axllent/mailpit/tags" />.
+    /// <include file="MailpitBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public MailpitBuilder(IImage image)
         : this(new MailpitConfiguration())
