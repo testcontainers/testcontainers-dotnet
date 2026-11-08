@@ -2,9 +2,11 @@ namespace Testcontainers.DocGen;
 
 public static class Program
 {
-    private const string GeneratedFileSuffix = ".Generated.xml";
+    private const string GeneratedXmlFileSuffix = ".Generated.xml";
 
-    private static readonly Regex IncludePattern = new Regex("<include file=\"(?<file>[^\"]+" + Regex.Escape(GeneratedFileSuffix) + ")\" path=\"(?<path>[^\"]+)\"");
+    private const string GeneratedMarkdownFileSuffix = ".Generated.md";
+
+    private static readonly Regex IncludePattern = new Regex("<include file=\"(?<file>[^\"]+" + Regex.Escape(GeneratedXmlFileSuffix) + ")\" path=\"(?<path>[^\"]+)\"", RegexOptions.None, TimeSpan.FromSeconds(1));
 
     public static int Main()
     {
@@ -16,11 +18,15 @@ public static class Program
             var moduleName = builderType.Assembly.GetName().Name;
             var moduleDirectoryPath = Path.Combine(srcDirectoryPath, moduleName);
             var builderFilePath = Path.Combine(moduleDirectoryPath, builderType.Name + ".cs");
-            var generatedFilePath = Path.Combine(moduleDirectoryPath, builderType.Name + GeneratedFileSuffix);
+            var generatedXmlFilePath = Path.Combine(moduleDirectoryPath, builderType.Name + GeneratedXmlFileSuffix);
+            var generatedMarkdownFilePath = Path.Combine(moduleDirectoryPath, builderType.Name + GeneratedMarkdownFileSuffix);
             var images = GetImages(Path.Combine(testsDirectoryPath, moduleName + ".Tests", "Dockerfile"));
 
+            // Render the Markdown from the XML documentation, so that the
+            // website and the IDE show the same default configuration.
             var document = new BuilderDocumentation(builderType, File.ReadAllText(builderFilePath), images).Create();
-            File.WriteAllText(generatedFilePath, document.ToString());
+            File.WriteAllText(generatedXmlFilePath, document.ToString());
+            File.WriteAllText(generatedMarkdownFilePath, MarkdownDocumentation.Create(document));
         }
 
         return ValidateIncludes(srcDirectoryPath) ? 0 : 1;
@@ -61,16 +67,16 @@ public static class Program
         // lose content when a builder changes.
         foreach (var filePath in Directory.EnumerateFiles(srcDirectoryPath, "*.cs", SearchOption.AllDirectories))
         {
-            foreach (Match match in IncludePattern.Matches(File.ReadAllText(filePath)))
+            foreach (var groups in IncludePattern.Matches(File.ReadAllText(filePath)).Select(match => match.Groups))
             {
-                var includeFilePath = Path.Combine(Path.GetDirectoryName(filePath), match.Groups["file"].Value);
+                var includeFilePath = Path.Combine(Path.GetDirectoryName(filePath), groups["file"].Value);
 
-                if (File.Exists(includeFilePath) && XDocument.Load(includeFilePath).XPathSelectElements(match.Groups["path"].Value).Any())
+                if (File.Exists(includeFilePath) && XDocument.Load(includeFilePath).XPathSelectElements(groups["path"].Value).Any())
                 {
                     continue;
                 }
 
-                Console.Error.WriteLine($"{filePath}: The include path '{match.Groups["path"].Value}' does not match any element in '{match.Groups["file"].Value}'.");
+                Console.Error.WriteLine($"{filePath}: The include path '{groups["path"].Value}' does not match any element in '{groups["file"].Value}'.");
                 isValid = false;
             }
         }

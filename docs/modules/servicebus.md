@@ -50,3 +50,7 @@ The Azure Service Bus Emulator provides a [default](https://learn.microsoft.com/
     ```csharp
     --8<-- "tests/Testcontainers.ServiceBus.Tests/ServiceBusContainerTest.cs:UseCustomConfiguration"
     ```
+
+## Default configuration
+
+--8<-- "src/Testcontainers.ServiceBus/ServiceBusBuilder.Generated.md"

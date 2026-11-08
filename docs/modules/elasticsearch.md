@@ -52,3 +52,7 @@ Besides the Elasticsearch client, any other client can be configured to trust th
     ```csharp
     --8<-- "tests/Testcontainers.Elasticsearch.Tests/ElasticsearchContainerTest.cs:UseElasticsearchCertificate"
     ```
+
+## Default configuration
+
+--8<-- "src/Testcontainers.Elasticsearch/ElasticsearchBuilder.Generated.md"

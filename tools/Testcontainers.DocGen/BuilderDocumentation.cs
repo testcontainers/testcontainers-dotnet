@@ -99,15 +99,6 @@ internal sealed class BuilderDocumentation
         }
     }
 
-    private List<Setting> GetSettings(object builder, bool fallback = false)
-    {
-        // Accept the license agreement, so that modules which require it
-        // pass the validation, and exclude it from the documentation.
-        var licenseEnvVar = (string)builder.AsDynamic().AcceptLicenseAgreementEnvVar;
-        object licensedBuilder = licenseEnvVar == null ? builder : ((dynamic)builder).WithEnvironment(licenseEnvVar, (string)builder.AsDynamic().AcceptLicenseAgreement);
-        return GetSettings(GetConfiguration(licensedBuilder, fallback)).Where(setting => !(EnvironmentVariable.Equals(setting.Kind) && setting.Name == licenseEnvVar)).ToList();
-    }
-
     private static IContainerConfiguration GetConfiguration(object builder, bool fallback)
     {
         try
@@ -127,11 +118,20 @@ internal sealed class BuilderDocumentation
         }
     }
 
+    private List<Setting> GetSettings(object builder, bool fallback = false)
+    {
+        // Accept the license agreement, so that modules which require it
+        // pass the validation, and exclude it from the documentation.
+        var licenseEnvVar = (string)builder.AsDynamic().AcceptLicenseAgreementEnvVar;
+        object licensedBuilder = licenseEnvVar == null ? builder : ((dynamic)builder).WithEnvironment(licenseEnvVar, (string)builder.AsDynamic().AcceptLicenseAgreement);
+        return GetSettings(GetConfiguration(licensedBuilder, fallback)).Where(setting => !(EnvironmentVariable.Equals(setting.Kind) && setting.Name == licenseEnvVar)).ToList();
+    }
+
     private IEnumerable<Setting> GetSettings(IContainerConfiguration configuration)
     {
-        foreach (var portBinding in OrEmpty(configuration.PortBindings))
+        foreach (var port in OrEmpty(configuration.PortBindings).Select(portBinding => portBinding.Key))
         {
-            yield return new Setting(Port, Code(portBinding.Key), portBinding.Key);
+            yield return new Setting(Port, Code(port), port);
         }
 
         foreach (var environment in OrEmpty(configuration.Environments))
@@ -139,23 +139,9 @@ internal sealed class BuilderDocumentation
             yield return new Setting(EnvironmentVariable, Code(environment.Key + "=" + environment.Value), environment.Key, environment.Value);
         }
 
-        // The startup script overrides the entrypoint and the command. They
-        // only wait for the script, so describe the script instead.
-        if (OrEmpty(configuration.Command).Any(argument => argument.Contains(StartupScriptFilePath)))
+        foreach (var processSetting in GetProcessSettings(configuration))
         {
-            yield return new Setting("Startup script", "Generates a script when the container starts and runs it as the main process.");
-        }
-        else
-        {
-            if (OrEmpty(configuration.Entrypoint).Any())
-            {
-                yield return new Setting("Entrypoint", Code(string.Join(" ", configuration.Entrypoint)));
-            }
-
-            if (OrEmpty(configuration.Command).Any())
-            {
-                yield return new Setting("Command", Code(string.Join(" ", configuration.Command)));
-            }
+            yield return processSetting;
         }
 
         foreach (var resourceMapping in OrEmpty(configuration.ResourceMappings))
@@ -195,6 +181,28 @@ internal sealed class BuilderDocumentation
         if (GetStartupCallback(configuration.StartupCallback) is { } startupCallback)
         {
             yield return new Setting("Startup callback", GetSummary(startupCallback, "Runs a callback specific to the module after the container starts."));
+        }
+    }
+
+    private static IEnumerable<Setting> GetProcessSettings(IContainerConfiguration configuration)
+    {
+        // The startup script overrides the entrypoint and the command. They
+        // only wait for the script, so describe the script instead.
+        if (OrEmpty(configuration.Command).Any(argument => argument.Contains(StartupScriptFilePath)))
+        {
+            yield return new Setting("Startup script", "Generates a script when the container starts and runs it as the main process.");
+        }
+        else
+        {
+            if (OrEmpty(configuration.Entrypoint).Any())
+            {
+                yield return new Setting("Entrypoint", Code(string.Join(" ", configuration.Entrypoint)));
+            }
+
+            if (OrEmpty(configuration.Command).Any())
+            {
+                yield return new Setting("Command", Code(string.Join(" ", configuration.Command)));
+            }
         }
     }
 
@@ -274,7 +282,7 @@ internal sealed class BuilderDocumentation
 
         // The builder wraps the module callback in a closure. Search the
         // captured delegates for the module method.
-        return startupCallback.Target?.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+        return startupCallback.Target?.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public)
             .Select(field => field.GetValue(startupCallback.Target))
             .OfType<Delegate>()
             .Select(GetStartupCallback)
@@ -287,13 +295,13 @@ internal sealed class BuilderDocumentation
         // summary of a private member from the builder source instead. The
         // declaration must follow the documentation, not a line within it.
         var declarationPattern = member is Type ? "class " + Regex.Escape(member.Name) + @"\b" : Regex.Escape(member.Name) + @"\(";
-        var match = Regex.Match(_builderSource, @"(?<doc>(?:^[ \t]*///.*\n)+)(?![ \t]*///)[^\n]*\b" + declarationPattern, RegexOptions.Multiline);
+        var match = Regex.Match(_builderSource, @"(?<doc>(?:^[ \t]*///.*\n)+)(?![ \t]*///)[^\n]*\b" + declarationPattern, RegexOptions.Multiline, TimeSpan.FromSeconds(1));
 
         XElement summary = null;
 
         if (match.Success)
         {
-            var doc = Regex.Replace(match.Groups["doc"].Value, @"^[ \t]*/// ?", string.Empty, RegexOptions.Multiline);
+            var doc = Regex.Replace(match.Groups["doc"].Value, @"^[ \t]*/// ?", string.Empty, RegexOptions.Multiline, TimeSpan.FromSeconds(1));
             summary = XElement.Parse("<doc>" + doc + "</doc>").Element("summary");
         }
 
@@ -314,7 +322,7 @@ internal sealed class BuilderDocumentation
             reference.ReplaceWith(new XElement("c", (string)reference.Attribute("cref") ?? (string)reference.Attribute("name")));
         }
 
-        return Regex.Replace(string.Concat(summary.Nodes()), @"\s+", " ").Trim();
+        return Regex.Replace(string.Concat(summary.Nodes()), @"\s+", " ", RegexOptions.None, TimeSpan.FromSeconds(1)).Trim();
     }
 
     private string GetPortConstantCref(Setting setting)

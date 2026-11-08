@@ -41,3 +41,7 @@ The Event Hubs module depends on an Azurite container instance. The module autom
     ```csharp
     --8<-- "tests/Testcontainers.EventHubs.Tests/EventHubsContainerTest.cs:ReuseExistingAzuriteContainer"
     ```
+
+## Default configuration
+
+--8<-- "src/Testcontainers.EventHubs/EventHubsBuilder.Generated.md"
