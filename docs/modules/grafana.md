@@ -42,3 +42,7 @@ Developers can enable anonymous access using the Grafana builder API `WithAnonym
 ```csharp
 GrafanaContainer _grafanaContainer = new GrafanaBuilder("grafana/grafana:12.2").WithAnonymousAccessEnabled().Build();
 ```
+
+## Default configuration
+
+--8<-- "src/Testcontainers.Grafana/GrafanaBuilder.Generated.md"

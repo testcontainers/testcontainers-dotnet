@@ -45,3 +45,7 @@ Use `WithInitScript(string)` or `WithInitScriptContent(string, string)` to seed 
     ```
 
 A restarted or reused container keeps its data and does not run the init scripts again.
+
+## Default configuration
+
+--8<-- "src/Testcontainers.MongoDbAtlasLocal/MongoDbAtlasLocalBuilder.Generated.md"

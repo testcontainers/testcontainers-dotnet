@@ -41,3 +41,7 @@ By default, MongoDB runs as a standalone instance. If your tests require a Mongo
     ```csharp
     --8<-- "tests/Testcontainers.MongoDb.Tests/MongoDbContainerTest.cs:ReplicaSetContainerConfiguration"
     ```
+
+## Default configuration
+
+--8<-- "src/Testcontainers.MongoDb/MongoDbBuilder.Generated.md"

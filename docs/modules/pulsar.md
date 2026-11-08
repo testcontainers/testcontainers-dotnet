@@ -72,3 +72,7 @@ If you need to use Pulsar Functions, use the following builder configuration to 
 ```csharp
 PulsarContainer _pulsarContainer = new PulsarBuilder("apachepulsar/pulsar:3.0.9").WithFunctions().Build();
 ```
+
+## Default configuration
+
+--8<-- "src/Testcontainers.Pulsar/PulsarBuilder.Generated.md"

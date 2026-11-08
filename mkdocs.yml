@@ -27,6 +27,7 @@ markdown_extensions:
   - pymdownx.highlight:
       linenums: true
   - pymdownx.snippets:
+      check_paths: true
       dedent_subsections: true
   - pymdownx.superfences
   - pymdownx.tabbed:

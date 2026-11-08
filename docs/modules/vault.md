@@ -45,3 +45,7 @@ Use `WithInitCommand(params string[])` to run Vault CLI commands after the conta
     ```
 
 If a command fails, the container start throws an `ExecFailedException` that contains the exit code and the output of the command. In dev mode, Vault keeps its data in memory. A restarted container starts without any data, so the init commands run on every start.
+
+## Default configuration
+
+--8<-- "src/Testcontainers.Vault/VaultBuilder.Generated.md"

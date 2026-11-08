@@ -45,3 +45,7 @@ IContainer helloWorldContainer = new ContainerBuilder("testcontainers/helloworld
     .WithNetwork(_playwrightContainer.GetNetwork())
     .Build();
 ```
+
+## Default configuration
+
+--8<-- "src/Testcontainers.Playwright/PlaywrightBuilder.Generated.md"

@@ -37,3 +37,7 @@ To execute the tests, use the command `dotnet test` from a terminal.
 ## A note to developers
 
 Once Testcontainers creates a server instance, developers may use the connection string with any of the popular data-access technologies found in the .NET ecosystem. Some of these libraries include [Entity Framework Core](https://www.nuget.org/packages/Microsoft.EntityFrameworkCore), [Dapper](https://www.nuget.org/packages/Dapper), and [NHibernate](https://www.nuget.org/packages/NHibernate). At which point, developers can execute database migrations and SQL scripts.
+
+## Default configuration
+
+--8<-- "src/Testcontainers.MsSql/MsSqlBuilder.Generated.md"

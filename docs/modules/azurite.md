@@ -75,3 +75,7 @@ By default, Azurite persists its data to disk. If your tests do not need the dat
     ```
 
 The in-memory storage is limited to 50% of the total memory of the container by default. To set a different limit, pass the limit in megabytes to `WithInMemoryPersistence`.
+
+## Default configuration
+
+--8<-- "src/Testcontainers.Azurite/AzuriteBuilder.Generated.md"
