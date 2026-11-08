@@ -89,6 +89,9 @@ public sealed class MariaDbBuilder : ContainerBuilder<MariaDbBuilder, MariaDbCon
     /// Sets the MariaDb username.
     /// </summary>
     /// <remarks>
+    /// If <paramref name="username" /> is <c>root</c>, the builder sets
+    /// <c>MARIADB_USER</c> to an empty value, because the image creates the
+    /// root user itself.
     /// <include file="MariaDbBuilder.Generated.xml" path="doc/member[@name='WithUsername(System.String)']/*" />
     /// </remarks>
     /// <param name="username">The MariaDb username.</param>

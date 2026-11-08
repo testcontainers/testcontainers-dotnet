@@ -89,6 +89,9 @@ public sealed class MySqlBuilder : ContainerBuilder<MySqlBuilder, MySqlContainer
     /// Sets the MySql username.
     /// </summary>
     /// <remarks>
+    /// If <paramref name="username" /> is <c>root</c>, the builder sets
+    /// <c>MYSQL_USER</c> to an empty value, because the image creates the
+    /// root user itself.
     /// <include file="MySqlBuilder.Generated.xml" path="doc/member[@name='WithUsername(System.String)']/*" />
     /// </remarks>
     /// <param name="username">The MySql username.</param>
