@@ -32,6 +32,7 @@ public sealed class AspireDashboardBuilder : ContainerBuilder<AspireDashboardBui
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/microsoft/dotnet-aspire-dashboard" />.
+    /// <include file="AspireDashboardBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public AspireDashboardBuilder(string image)
         : this(new DockerImage(image))
@@ -47,6 +48,7 @@ public sealed class AspireDashboardBuilder : ContainerBuilder<AspireDashboardBui
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/microsoft/dotnet-aspire-dashboard" />.
+    /// <include file="AspireDashboardBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public AspireDashboardBuilder(IImage image)
         : this(new AspireDashboardConfiguration())

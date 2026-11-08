@@ -34,6 +34,7 @@ public sealed class SftpBuilder : ContainerBuilder<SftpBuilder, SftpContainer, S
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/atmoz/sftp/tags" />.
+    /// <include file="SftpBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public SftpBuilder(string image)
         : this(new DockerImage(image))
@@ -49,6 +50,7 @@ public sealed class SftpBuilder : ContainerBuilder<SftpBuilder, SftpContainer, S
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/atmoz/sftp/tags" />.
+    /// <include file="SftpBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public SftpBuilder(IImage image)
         : this(new SftpConfiguration())

@@ -28,6 +28,7 @@ public sealed class BigtableBuilder : ContainerBuilder<BigtableBuilder, Bigtable
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://console.cloud.google.com/artifacts/docker/google.com:cloudsdktool/us/gcr.io/google-cloud-cli" />.
+    /// <include file="BigtableBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public BigtableBuilder(string image)
         : this(new DockerImage(image))
@@ -43,6 +44,7 @@ public sealed class BigtableBuilder : ContainerBuilder<BigtableBuilder, Bigtable
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://console.cloud.google.com/artifacts/docker/google.com:cloudsdktool/us/gcr.io/google-cloud-cli" />.
+    /// <include file="BigtableBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public BigtableBuilder(IImage image)
         : this(new BigtableConfiguration())

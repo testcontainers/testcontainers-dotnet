@@ -30,6 +30,7 @@ public sealed class CosmosDbBuilder : ContainerBuilder<CosmosDbBuilder, CosmosDb
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/microsoft/azure-cosmosdb-emulator" />.
+    /// <include file="CosmosDbBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public CosmosDbBuilder(string image)
         : this(new DockerImage(image))
@@ -45,6 +46,7 @@ public sealed class CosmosDbBuilder : ContainerBuilder<CosmosDbBuilder, CosmosDb
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/microsoft/azure-cosmosdb-emulator" />.
+    /// <include file="CosmosDbBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public CosmosDbBuilder(IImage image)
         : this(new CosmosDbConfiguration())

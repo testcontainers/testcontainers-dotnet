@@ -25,6 +25,7 @@ public sealed class MongoDbAtlasLocalBuilder : ContainerBuilder<MongoDbAtlasLoca
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/mongodb/mongodb-atlas-local/tags" />.
+    /// <include file="MongoDbAtlasLocalBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public MongoDbAtlasLocalBuilder(string image)
         : this(new DockerImage(image))
@@ -40,6 +41,7 @@ public sealed class MongoDbAtlasLocalBuilder : ContainerBuilder<MongoDbAtlasLoca
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/mongodb/mongodb-atlas-local/tags" />.
+    /// <include file="MongoDbAtlasLocalBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public MongoDbAtlasLocalBuilder(IImage image)
         : this(new MongoDbAtlasLocalConfiguration())
@@ -63,6 +65,9 @@ public sealed class MongoDbAtlasLocalBuilder : ContainerBuilder<MongoDbAtlasLoca
     /// <summary>
     /// Sets the MongoDb Atlas Local username.
     /// </summary>
+    /// <remarks>
+    /// <include file="MongoDbAtlasLocalBuilder.Generated.xml" path="doc/member[@name='WithUsername(System.String)']/*" />
+    /// </remarks>
     /// <param name="username">The MongoDb Atlas Local username.</param>
     /// <returns>A configured instance of <see cref="MongoDbAtlasLocalBuilder" />.</returns>
     public MongoDbAtlasLocalBuilder WithUsername(string username)
@@ -76,6 +81,9 @@ public sealed class MongoDbAtlasLocalBuilder : ContainerBuilder<MongoDbAtlasLoca
     /// <summary>
     /// Sets the MongoDb Atlas Local password.
     /// </summary>
+    /// <remarks>
+    /// <include file="MongoDbAtlasLocalBuilder.Generated.xml" path="doc/member[@name='WithPassword(System.String)']/*" />
+    /// </remarks>
     /// <param name="password">The MongoDb Atlas Local password.</param>
     /// <returns>A configured instance of <see cref="MongoDbAtlasLocalBuilder" />.</returns>
     public MongoDbAtlasLocalBuilder WithPassword(string password)
@@ -91,6 +99,7 @@ public sealed class MongoDbAtlasLocalBuilder : ContainerBuilder<MongoDbAtlasLoca
     /// </summary>
     /// <remarks>
     /// Defaults to <c>test</c>.
+    /// <include file="MongoDbAtlasLocalBuilder.Generated.xml" path="doc/member[@name='WithInitDatabase(System.String)']/*" />
     /// </remarks>
     /// <param name="database">The init database.</param>
     /// <returns>A configured instance of <see cref="MongoDbAtlasLocalBuilder" />.</returns>

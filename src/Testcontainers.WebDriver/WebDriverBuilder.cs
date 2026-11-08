@@ -58,6 +58,7 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     ///         </description>
     ///     </item>
     /// </list>
+    /// <include file="WebDriverBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public WebDriverBuilder(string image)
         : this(new DockerImage(image))
@@ -90,6 +91,7 @@ public sealed class WebDriverBuilder : ContainerBuilder<WebDriverBuilder, WebDri
     ///         </description>
     ///     </item>
     /// </list>
+    /// <include file="WebDriverBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public WebDriverBuilder(IImage image)
         : this(new WebDriverConfiguration())

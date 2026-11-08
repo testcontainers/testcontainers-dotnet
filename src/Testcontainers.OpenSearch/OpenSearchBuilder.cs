@@ -36,6 +36,7 @@ public sealed class OpenSearchBuilder : ContainerBuilder<OpenSearchBuilder, Open
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/opensearchproject/opensearch/tags" />.
+    /// <include file="OpenSearchBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public OpenSearchBuilder(string image)
         : this(new DockerImage(image))
@@ -51,6 +52,7 @@ public sealed class OpenSearchBuilder : ContainerBuilder<OpenSearchBuilder, Open
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/opensearchproject/opensearch/tags" />.
+    /// <include file="OpenSearchBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public OpenSearchBuilder(IImage image)
         : this(new OpenSearchConfiguration())
@@ -103,6 +105,7 @@ public sealed class OpenSearchBuilder : ContainerBuilder<OpenSearchBuilder, Open
     ///         </description>
     ///     </item>
     /// </list>
+    /// <include file="OpenSearchBuilder.Generated.xml" path="doc/member[@name='WithPassword(System.String)']/*" />
     /// </remarks>
     /// <param name="password">The <c>admin</c> user password.</param>
     /// <returns>A configured instance of <see cref="OpenSearchBuilder" />.</returns>
@@ -210,7 +213,10 @@ public sealed class OpenSearchBuilder : ContainerBuilder<OpenSearchBuilder, Open
         return Merge(DockerResourceConfiguration, new OpenSearchConfiguration(username: username));
     }
 
-    /// <inheritdoc cref="IWaitUntil" />
+    /// <summary>
+    /// Waits until the HTTP request <c>GET /</c> with the configured credentials
+    /// is completed successfully.
+    /// </summary>
     private sealed class WaitUntil : IWaitUntil
     {
         private readonly bool _tlsEnabled;

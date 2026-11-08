@@ -34,6 +34,7 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://mcr.microsoft.com/en-us/artifact/mar/azure-messaging/servicebus-emulator/tags" />.
+    /// <include file="ServiceBusBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public ServiceBusBuilder(string image)
         : this(new DockerImage(image))
@@ -49,6 +50,7 @@ public sealed class ServiceBusBuilder : ContainerBuilder<ServiceBusBuilder, Serv
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://mcr.microsoft.com/en-us/artifact/mar/azure-messaging/servicebus-emulator/tags" />.
+    /// <include file="ServiceBusBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public ServiceBusBuilder(IImage image)
         : this(new ServiceBusConfiguration())

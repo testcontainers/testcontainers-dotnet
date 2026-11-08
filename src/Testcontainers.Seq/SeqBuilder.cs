@@ -27,6 +27,7 @@ public sealed class SeqBuilder : ContainerBuilder<SeqBuilder, SeqContainer, SeqC
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/datalust/seq" />.
+    /// <include file="SeqBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public SeqBuilder(string image)
         : this(new DockerImage(image))
@@ -42,6 +43,7 @@ public sealed class SeqBuilder : ContainerBuilder<SeqBuilder, SeqContainer, SeqC
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/datalust/seq" />.
+    /// <include file="SeqBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public SeqBuilder(IImage image)
         : this(new SeqConfiguration())

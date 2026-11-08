@@ -30,6 +30,7 @@ public sealed class BigQueryBuilder : ContainerBuilder<BigQueryBuilder, BigQuery
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://github.com/goccy/bigquery-emulator/pkgs/container/bigquery-emulator" />.
+    /// <include file="BigQueryBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public BigQueryBuilder(string image)
         : this(new DockerImage(image))
@@ -45,6 +46,7 @@ public sealed class BigQueryBuilder : ContainerBuilder<BigQueryBuilder, BigQuery
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://github.com/goccy/bigquery-emulator/pkgs/container/bigquery-emulator" />.
+    /// <include file="BigQueryBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public BigQueryBuilder(IImage image)
         : this(new BigQueryConfiguration())

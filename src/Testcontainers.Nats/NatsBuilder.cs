@@ -32,6 +32,7 @@ public sealed class NatsBuilder : ContainerBuilder<NatsBuilder, NatsContainer, N
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/_/nats/tags" />.
+    /// <include file="NatsBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public NatsBuilder(string image)
         : this(new DockerImage(image))
@@ -47,6 +48,7 @@ public sealed class NatsBuilder : ContainerBuilder<NatsBuilder, NatsContainer, N
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/_/nats/tags" />.
+    /// <include file="NatsBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public NatsBuilder(IImage image)
         : this(new NatsConfiguration())

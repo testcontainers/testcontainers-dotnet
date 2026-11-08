@@ -38,6 +38,7 @@ public sealed class MosquittoBuilder : ContainerBuilder<MosquittoBuilder, Mosqui
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/_/eclipse-mosquitto/tags" />.
+    /// <include file="MosquittoBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public MosquittoBuilder(string image)
         : this(new DockerImage(image))
@@ -53,6 +54,7 @@ public sealed class MosquittoBuilder : ContainerBuilder<MosquittoBuilder, Mosqui
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/_/eclipse-mosquitto/tags" />.
+    /// <include file="MosquittoBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public MosquittoBuilder(IImage image)
         : this(new MosquittoConfiguration())

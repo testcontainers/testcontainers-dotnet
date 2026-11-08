@@ -30,6 +30,7 @@ public sealed class Neo4jBuilder : ContainerBuilder<Neo4jBuilder, Neo4jContainer
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/_/neo4j/tags" />.
+    /// <include file="Neo4jBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public Neo4jBuilder(string image)
         : this(new DockerImage(image))
@@ -45,6 +46,7 @@ public sealed class Neo4jBuilder : ContainerBuilder<Neo4jBuilder, Neo4jContainer
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/_/neo4j/tags" />.
+    /// <include file="Neo4jBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public Neo4jBuilder(IImage image)
         : this(new Neo4jConfiguration())

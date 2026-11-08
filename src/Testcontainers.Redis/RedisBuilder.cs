@@ -28,6 +28,7 @@ public sealed class RedisBuilder : ContainerBuilder<RedisBuilder, RedisContainer
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/_/redis/tags" />.
+    /// <include file="RedisBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public RedisBuilder(string image)
         : this(new DockerImage(image))
@@ -43,6 +44,7 @@ public sealed class RedisBuilder : ContainerBuilder<RedisBuilder, RedisContainer
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/_/redis/tags" />.
+    /// <include file="RedisBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public RedisBuilder(IImage image)
         : this(new RedisConfiguration())

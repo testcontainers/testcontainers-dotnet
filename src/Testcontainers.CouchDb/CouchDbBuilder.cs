@@ -32,6 +32,7 @@ public sealed class CouchDbBuilder : ContainerBuilder<CouchDbBuilder, CouchDbCon
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/_/couchdb/tags" />.
+    /// <include file="CouchDbBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public CouchDbBuilder(string image)
         : this(new DockerImage(image))
@@ -47,6 +48,7 @@ public sealed class CouchDbBuilder : ContainerBuilder<CouchDbBuilder, CouchDbCon
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/_/couchdb/tags" />.
+    /// <include file="CouchDbBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public CouchDbBuilder(IImage image)
         : this(new CouchDbConfiguration())
@@ -70,6 +72,9 @@ public sealed class CouchDbBuilder : ContainerBuilder<CouchDbBuilder, CouchDbCon
     /// <summary>
     /// Sets the CouchDb username.
     /// </summary>
+    /// <remarks>
+    /// <include file="CouchDbBuilder.Generated.xml" path="doc/member[@name='WithUsername(System.String)']/*" />
+    /// </remarks>
     /// <param name="username">The CouchDb username.</param>
     /// <returns>A configured instance of <see cref="CouchDbBuilder" />.</returns>
     public CouchDbBuilder WithUsername(string username)
@@ -81,6 +86,9 @@ public sealed class CouchDbBuilder : ContainerBuilder<CouchDbBuilder, CouchDbCon
     /// <summary>
     /// Sets the CouchDb password.
     /// </summary>
+    /// <remarks>
+    /// <include file="CouchDbBuilder.Generated.xml" path="doc/member[@name='WithPassword(System.String)']/*" />
+    /// </remarks>
     /// <param name="password">The CouchDb password.</param>
     /// <returns>A configured instance of <see cref="CouchDbBuilder" />.</returns>
     public CouchDbBuilder WithPassword(string password)

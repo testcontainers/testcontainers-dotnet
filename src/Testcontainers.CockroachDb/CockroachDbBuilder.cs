@@ -36,6 +36,7 @@ public sealed class CockroachDbBuilder : ContainerBuilder<CockroachDbBuilder, Co
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/cockroachdb/cockroach/tags" />.
+    /// <include file="CockroachDbBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public CockroachDbBuilder(string image)
         : this(new DockerImage(image))
@@ -51,6 +52,7 @@ public sealed class CockroachDbBuilder : ContainerBuilder<CockroachDbBuilder, Co
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/cockroachdb/cockroach/tags" />.
+    /// <include file="CockroachDbBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public CockroachDbBuilder(IImage image)
         : this(new CockroachDbConfiguration())
@@ -74,6 +76,9 @@ public sealed class CockroachDbBuilder : ContainerBuilder<CockroachDbBuilder, Co
     /// <summary>
     /// Sets the CockroachDb database.
     /// </summary>
+    /// <remarks>
+    /// <include file="CockroachDbBuilder.Generated.xml" path="doc/member[@name='WithDatabase(System.String)']/*" />
+    /// </remarks>
     /// <param name="database">The CockroachDb database.</param>
     /// <returns>A configured instance of <see cref="CockroachDbBuilder" />.</returns>
     public CockroachDbBuilder WithDatabase(string database)
@@ -85,6 +90,9 @@ public sealed class CockroachDbBuilder : ContainerBuilder<CockroachDbBuilder, Co
     /// <summary>
     /// Sets the CockroachDb username.
     /// </summary>
+    /// <remarks>
+    /// <include file="CockroachDbBuilder.Generated.xml" path="doc/member[@name='WithUsername(System.String)']/*" />
+    /// </remarks>
     /// <param name="username">The CockroachDb username.</param>
     /// <returns>A configured instance of <see cref="CockroachDbBuilder" />.</returns>
     public CockroachDbBuilder WithUsername(string username)
@@ -96,6 +104,9 @@ public sealed class CockroachDbBuilder : ContainerBuilder<CockroachDbBuilder, Co
     /// <summary>
     /// Sets the CockroachDb password.
     /// </summary>
+    /// <remarks>
+    /// <include file="CockroachDbBuilder.Generated.xml" path="doc/member[@name='WithPassword(System.String)']/*" />
+    /// </remarks>
     /// <param name="password">The CockroachDb password.</param>
     /// <returns>A configured instance of <see cref="CockroachDbBuilder" />.</returns>
     public CockroachDbBuilder WithPassword(string password)

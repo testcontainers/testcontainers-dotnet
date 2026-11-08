@@ -32,6 +32,7 @@ public sealed class GrafanaBuilder : ContainerBuilder<GrafanaBuilder, GrafanaCon
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/grafana/grafana/tags" />.
+    /// <include file="GrafanaBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public GrafanaBuilder(string image)
         : this(new DockerImage(image))
@@ -47,6 +48,7 @@ public sealed class GrafanaBuilder : ContainerBuilder<GrafanaBuilder, GrafanaCon
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/grafana/grafana/tags" />.
+    /// <include file="GrafanaBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public GrafanaBuilder(IImage image)
         : this(new GrafanaConfiguration())
@@ -70,6 +72,9 @@ public sealed class GrafanaBuilder : ContainerBuilder<GrafanaBuilder, GrafanaCon
     /// <summary>
     /// Sets the Grafana username.
     /// </summary>
+    /// <remarks>
+    /// <include file="GrafanaBuilder.Generated.xml" path="doc/member[@name='WithUsername(System.String)']/*" />
+    /// </remarks>
     /// <param name="username">The Grafana username.</param>
     /// <returns>A configured instance of <see cref="GrafanaBuilder" />.</returns>
     public GrafanaBuilder WithUsername(string username)
@@ -81,6 +86,9 @@ public sealed class GrafanaBuilder : ContainerBuilder<GrafanaBuilder, GrafanaCon
     /// <summary>
     /// Sets the Grafana password.
     /// </summary>
+    /// <remarks>
+    /// <include file="GrafanaBuilder.Generated.xml" path="doc/member[@name='WithPassword(System.String)']/*" />
+    /// </remarks>
     /// <param name="password">The Grafana password.</param>
     /// <returns>A configured instance of <see cref="GrafanaBuilder" />.</returns>
     public GrafanaBuilder WithPassword(string password)

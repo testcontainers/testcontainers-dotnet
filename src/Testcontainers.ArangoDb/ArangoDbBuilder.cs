@@ -32,6 +32,7 @@ public sealed class ArangoDbBuilder : ContainerBuilder<ArangoDbBuilder, ArangoDb
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/_/arangodb/tags" />.
+    /// <include file="ArangoDbBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public ArangoDbBuilder(string image)
         : this(new DockerImage(image))
@@ -47,6 +48,7 @@ public sealed class ArangoDbBuilder : ContainerBuilder<ArangoDbBuilder, ArangoDb
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/_/arangodb/tags" />.
+    /// <include file="ArangoDbBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public ArangoDbBuilder(IImage image)
         : this(new ArangoDbConfiguration())
@@ -70,6 +72,9 @@ public sealed class ArangoDbBuilder : ContainerBuilder<ArangoDbBuilder, ArangoDb
     /// <summary>
     /// Sets the ArangoDb password.
     /// </summary>
+    /// <remarks>
+    /// <include file="ArangoDbBuilder.Generated.xml" path="doc/member[@name='WithPassword(System.String)']/*" />
+    /// </remarks>
     /// <param name="password">The ArangoDb password.</param>
     /// <returns>A configured instance of <see cref="ArangoDbBuilder" />.</returns>
     public ArangoDbBuilder WithPassword(string password)

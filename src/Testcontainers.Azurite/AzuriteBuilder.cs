@@ -49,6 +49,7 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/microsoft/azure-storage-azurite" />.
+    /// <include file="AzuriteBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public AzuriteBuilder(string image)
         : this(new DockerImage(image))
@@ -62,6 +63,7 @@ public sealed class AzuriteBuilder : ContainerBuilder<AzuriteBuilder, AzuriteCon
     /// for the container builder configuration.
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/microsoft/azure-storage-azurite" />.
+    /// <include file="AzuriteBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public AzuriteBuilder(IImage image)
         : this(new AzuriteConfiguration())

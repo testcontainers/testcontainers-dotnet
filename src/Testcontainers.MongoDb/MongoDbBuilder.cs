@@ -36,6 +36,7 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/_/mongo/tags" />.
+    /// <include file="MongoDbBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public MongoDbBuilder(string image)
         : this(new DockerImage(image))
@@ -51,6 +52,7 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/_/mongo/tags" />.
+    /// <include file="MongoDbBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public MongoDbBuilder(IImage image)
         : this(new MongoDbConfiguration())
@@ -74,6 +76,9 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
     /// <summary>
     /// Sets the MongoDb username.
     /// </summary>
+    /// <remarks>
+    /// <include file="MongoDbBuilder.Generated.xml" path="doc/member[@name='WithUsername(System.String)']/*" />
+    /// </remarks>
     /// <param name="username">The MongoDb username.</param>
     /// <returns>A configured instance of <see cref="MongoDbBuilder" />.</returns>
     public MongoDbBuilder WithUsername(string username)
@@ -87,6 +92,9 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
     /// <summary>
     /// Sets the MongoDb password.
     /// </summary>
+    /// <remarks>
+    /// <include file="MongoDbBuilder.Generated.xml" path="doc/member[@name='WithPassword(System.String)']/*" />
+    /// </remarks>
     /// <param name="password">The MongoDb password.</param>
     /// <returns>A configured instance of <see cref="MongoDbBuilder" />.</returns>
     public MongoDbBuilder WithPassword(string password)
@@ -226,7 +234,10 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
             .ConfigureAwait(false);
     }
 
-    /// <inheritdoc cref="IWaitUntil" />
+    /// <summary>
+    /// Waits until MongoDB logs <c>Waiting for connections</c> once, or twice if
+    /// a username or password is configured.
+    /// </summary>
     private sealed class WaitIndicateReadiness : IWaitUntil
     {
         private static readonly string[] LineEndings = { "\r\n", "\n" };
@@ -255,7 +266,10 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
         }
     }
 
-    /// <inheritdoc cref="IWaitUntil" />
+    /// <summary>
+    /// Waits until the MongoDB shell runs the JavaScript script
+    /// <see cref="ScriptContent" /> successfully.
+    /// </summary>
     private abstract class WaitUntilScriptBase : IWaitUntil
     {
         protected abstract string ScriptContent { get; }
@@ -276,7 +290,10 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
         }
     }
 
-    /// <inheritdoc cref="IWaitUntil" />
+    /// <summary>
+    /// Waits until <c>rs.status()</c> reports that the MongoDB node runs with
+    /// replication enabled, whether the replica set is initiated or not.
+    /// </summary>
     private sealed class WaitReplicaSetEnabled : WaitUntilScriptBase
     {
         // rs.status() only answers once the final mongod is serving. The official image
@@ -286,7 +303,10 @@ public sealed class MongoDbBuilder : ContainerBuilder<MongoDbBuilder, MongoDbCon
         protected override string ScriptContent => "try{rs.status();quit(0);}catch(e){quit(e.codeName===\"NotYetInitialized\"?0:1);}";
     }
 
-    /// <inheritdoc cref="IWaitUntil" />
+    /// <summary>
+    /// Waits until the <c>hello</c> command reports that the MongoDB node
+    /// is the writable primary of the replica set.
+    /// </summary>
     private sealed class WaitReplicaSetPrimary : WaitUntilScriptBase
     {
         protected override string ScriptContent => "var r=db.runCommand({hello:1}).isWritablePrimary;quit(r===true?0:1);";

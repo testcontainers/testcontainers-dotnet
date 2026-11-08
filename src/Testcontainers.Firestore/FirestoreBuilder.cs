@@ -28,6 +28,7 @@ public sealed class FirestoreBuilder : ContainerBuilder<FirestoreBuilder, Firest
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://console.cloud.google.com/artifacts/docker/google.com:cloudsdktool/us/gcr.io/google-cloud-cli" />.
+    /// <include file="FirestoreBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public FirestoreBuilder(string image)
         : this(new DockerImage(image))
@@ -43,6 +44,7 @@ public sealed class FirestoreBuilder : ContainerBuilder<FirestoreBuilder, Firest
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://console.cloud.google.com/artifacts/docker/google.com:cloudsdktool/us/gcr.io/google-cloud-cli" />.
+    /// <include file="FirestoreBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public FirestoreBuilder(IImage image)
         : this(new FirestoreConfiguration())

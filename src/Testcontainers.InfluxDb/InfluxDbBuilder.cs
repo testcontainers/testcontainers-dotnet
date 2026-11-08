@@ -36,6 +36,7 @@ public sealed class InfluxDbBuilder : ContainerBuilder<InfluxDbBuilder, InfluxDb
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/_/influxdb/tags" />.
+    /// <include file="InfluxDbBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public InfluxDbBuilder(string image)
         : this(new DockerImage(image))
@@ -51,6 +52,7 @@ public sealed class InfluxDbBuilder : ContainerBuilder<InfluxDbBuilder, InfluxDb
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/_/influxdb/tags" />.
+    /// <include file="InfluxDbBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public InfluxDbBuilder(IImage image)
         : this(new InfluxDbConfiguration())
@@ -74,6 +76,9 @@ public sealed class InfluxDbBuilder : ContainerBuilder<InfluxDbBuilder, InfluxDb
     /// <summary>
     /// Sets the InfluxDb username.
     /// </summary>
+    /// <remarks>
+    /// <include file="InfluxDbBuilder.Generated.xml" path="doc/member[@name='WithUsername(System.String)']/*" />
+    /// </remarks>
     /// <param name="username">The InfluxDb username.</param>
     /// <returns>A configured instance of <see cref="InfluxDbBuilder" />.</returns>
     public InfluxDbBuilder WithUsername(string username)
@@ -85,6 +90,9 @@ public sealed class InfluxDbBuilder : ContainerBuilder<InfluxDbBuilder, InfluxDb
     /// <summary>
     /// Sets the InfluxDb password.
     /// </summary>
+    /// <remarks>
+    /// <include file="InfluxDbBuilder.Generated.xml" path="doc/member[@name='WithPassword(System.String)']/*" />
+    /// </remarks>
     /// <param name="password">The InfluxDb password.</param>
     /// <returns>A configured instance of <see cref="InfluxDbBuilder" />.</returns>
     public InfluxDbBuilder WithPassword(string password)
@@ -96,6 +104,9 @@ public sealed class InfluxDbBuilder : ContainerBuilder<InfluxDbBuilder, InfluxDb
     /// <summary>
     /// Sets the InfluxDb organization.
     /// </summary>
+    /// <remarks>
+    /// <include file="InfluxDbBuilder.Generated.xml" path="doc/member[@name='WithOrganization(System.String)']/*" />
+    /// </remarks>
     /// <param name="organization">The InfluxDb organization.</param>
     /// <returns>A configured instance of <see cref="InfluxDbBuilder" />.</returns>
     public InfluxDbBuilder WithOrganization(string organization)
@@ -107,6 +118,9 @@ public sealed class InfluxDbBuilder : ContainerBuilder<InfluxDbBuilder, InfluxDb
     /// <summary>
     /// Sets the InfluxDb bucket.
     /// </summary>
+    /// <remarks>
+    /// <include file="InfluxDbBuilder.Generated.xml" path="doc/member[@name='WithBucket(System.String)']/*" />
+    /// </remarks>
     /// <param name="bucket">The InfluxDb bucket.</param>
     /// <returns>A configured instance of <see cref="InfluxDbBuilder" />.</returns>
     public InfluxDbBuilder WithBucket(string bucket)
@@ -118,6 +132,9 @@ public sealed class InfluxDbBuilder : ContainerBuilder<InfluxDbBuilder, InfluxDb
     /// <summary>
     /// Sets the InfluxDb admin token.
     /// </summary>
+    /// <remarks>
+    /// <include file="InfluxDbBuilder.Generated.xml" path="doc/member[@name='WithAdminToken(System.String)']/*" />
+    /// </remarks>
     /// <param name="adminToken">The InfluxDb admin token.</param>
     /// <returns>A configured instance of <see cref="InfluxDbBuilder" />.</returns>
     public InfluxDbBuilder WithAdminToken(string adminToken)
@@ -129,6 +146,9 @@ public sealed class InfluxDbBuilder : ContainerBuilder<InfluxDbBuilder, InfluxDb
     /// <summary>
     /// Sets the InfluxDb retention.
     /// </summary>
+    /// <remarks>
+    /// <include file="InfluxDbBuilder.Generated.xml" path="doc/member[@name='WithRetention(System.String)']/*" />
+    /// </remarks>
     /// <param name="retention">The InfluxDb retention.</param>
     /// <returns>A configured instance of <see cref="InfluxDbBuilder" />.</returns>
     public InfluxDbBuilder WithRetention(string retention)

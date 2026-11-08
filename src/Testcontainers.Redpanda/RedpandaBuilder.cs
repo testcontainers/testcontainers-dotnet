@@ -32,6 +32,7 @@ public sealed class RedpandaBuilder : ContainerBuilder<RedpandaBuilder, Redpanda
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/redpandadata/redpanda/tags" />.
+    /// <include file="RedpandaBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public RedpandaBuilder(string image)
         : this(new DockerImage(image))
@@ -47,6 +48,7 @@ public sealed class RedpandaBuilder : ContainerBuilder<RedpandaBuilder, Redpanda
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/redpandadata/redpanda/tags" />.
+    /// <include file="RedpandaBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public RedpandaBuilder(IImage image)
         : this(new RedpandaConfiguration())

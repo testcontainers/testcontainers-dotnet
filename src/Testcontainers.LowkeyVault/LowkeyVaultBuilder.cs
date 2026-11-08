@@ -30,6 +30,7 @@ public sealed class LowkeyVaultBuilder : ContainerBuilder<LowkeyVaultBuilder, Lo
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/nagyesta/lowkey-vault/tags" />.
+    /// <include file="LowkeyVaultBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public LowkeyVaultBuilder(string image)
         : this(new DockerImage(image))
@@ -45,6 +46,7 @@ public sealed class LowkeyVaultBuilder : ContainerBuilder<LowkeyVaultBuilder, Lo
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/nagyesta/lowkey-vault/tags" />.
+    /// <include file="LowkeyVaultBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public LowkeyVaultBuilder(IImage image)
         : this(new LowkeyVaultConfiguration())

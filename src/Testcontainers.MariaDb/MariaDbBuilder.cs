@@ -34,6 +34,7 @@ public sealed class MariaDbBuilder : ContainerBuilder<MariaDbBuilder, MariaDbCon
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/_/mariadb/tags" />.
+    /// <include file="MariaDbBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public MariaDbBuilder(string image)
         : this(new DockerImage(image))
@@ -49,6 +50,7 @@ public sealed class MariaDbBuilder : ContainerBuilder<MariaDbBuilder, MariaDbCon
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/_/mariadb/tags" />.
+    /// <include file="MariaDbBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public MariaDbBuilder(IImage image)
         : this(new MariaDbConfiguration())
@@ -72,6 +74,9 @@ public sealed class MariaDbBuilder : ContainerBuilder<MariaDbBuilder, MariaDbCon
     /// <summary>
     /// Sets the MariaDb database.
     /// </summary>
+    /// <remarks>
+    /// <include file="MariaDbBuilder.Generated.xml" path="doc/member[@name='WithDatabase(System.String)']/*" />
+    /// </remarks>
     /// <param name="database">The MariaDb database.</param>
     /// <returns>A configured instance of <see cref="MariaDbBuilder" />.</returns>
     public MariaDbBuilder WithDatabase(string database)
@@ -83,6 +88,12 @@ public sealed class MariaDbBuilder : ContainerBuilder<MariaDbBuilder, MariaDbCon
     /// <summary>
     /// Sets the MariaDb username.
     /// </summary>
+    /// <remarks>
+    /// If <paramref name="username" /> is <c>root</c>, the builder sets
+    /// <c>MARIADB_USER</c> to an empty value, because the image creates the
+    /// root user itself.
+    /// <include file="MariaDbBuilder.Generated.xml" path="doc/member[@name='WithUsername(System.String)']/*" />
+    /// </remarks>
     /// <param name="username">The MariaDb username.</param>
     /// <returns>A configured instance of <see cref="MariaDbBuilder" />.</returns>
     public MariaDbBuilder WithUsername(string username)
@@ -94,6 +105,9 @@ public sealed class MariaDbBuilder : ContainerBuilder<MariaDbBuilder, MariaDbCon
     /// <summary>
     /// Sets the MariaDb password.
     /// </summary>
+    /// <remarks>
+    /// <include file="MariaDbBuilder.Generated.xml" path="doc/member[@name='WithPassword(System.String)']/*" />
+    /// </remarks>
     /// <param name="password">The MariaDb password.</param>
     /// <returns>A configured instance of <see cref="MariaDbBuilder" />.</returns>
     public MariaDbBuilder WithPassword(string password)
@@ -158,7 +172,9 @@ public sealed class MariaDbBuilder : ContainerBuilder<MariaDbBuilder, MariaDbCon
         return new MariaDbBuilder(new MariaDbConfiguration(oldValue, newValue));
     }
 
-    /// <inheritdoc cref="IWaitUntil" />
+    /// <summary>
+    /// Waits until the <c>mariadb</c> client runs <c>SELECT 1;</c> successfully.
+    /// </summary>
     private sealed class WaitUntil : IWaitUntil
     {
         private readonly IList<string> _command;

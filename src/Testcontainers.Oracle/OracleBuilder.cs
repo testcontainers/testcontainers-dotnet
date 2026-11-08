@@ -35,6 +35,7 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/gvenzl/oracle-xe/tags" />.
+    /// <include file="OracleBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public OracleBuilder(string image)
         : this(new DockerImage(image))
@@ -50,6 +51,7 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/r/gvenzl/oracle-xe/tags" />.
+    /// <include file="OracleBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public OracleBuilder(IImage image)
         : this(new OracleConfiguration())
@@ -75,6 +77,7 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
     /// </summary>
     /// <remarks>
     /// The database can only be set for Oracle 18 and onwards.
+    /// <include file="OracleBuilder.Generated.xml" path="doc/member[@name='WithDatabase(System.String)']/*" />
     /// </remarks>
     /// <param name="database">The Oracle database.</param>
     /// <returns>A configured instance of <see cref="OracleBuilder" />.</returns>
@@ -86,6 +89,9 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
     /// <summary>
     /// Sets the Oracle username.
     /// </summary>
+    /// <remarks>
+    /// <include file="OracleBuilder.Generated.xml" path="doc/member[@name='WithUsername(System.String)']/*" />
+    /// </remarks>
     /// <param name="username">The Oracle username.</param>
     /// <returns>A configured instance of <see cref="OracleBuilder" />.</returns>
     public OracleBuilder WithUsername(string username)
@@ -97,6 +103,9 @@ public sealed class OracleBuilder : ContainerBuilder<OracleBuilder, OracleContai
     /// <summary>
     /// Sets the Oracle password.
     /// </summary>
+    /// <remarks>
+    /// <include file="OracleBuilder.Generated.xml" path="doc/member[@name='WithPassword(System.String)']/*" />
+    /// </remarks>
     /// <param name="password">The Oracle password.</param>
     /// <returns>A configured instance of <see cref="OracleBuilder" />.</returns>
     public OracleBuilder WithPassword(string password)

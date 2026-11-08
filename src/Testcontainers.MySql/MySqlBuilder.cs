@@ -34,6 +34,7 @@ public sealed class MySqlBuilder : ContainerBuilder<MySqlBuilder, MySqlContainer
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/_/mysql/tags" />.
+    /// <include file="MySqlBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public MySqlBuilder(string image)
         : this(new DockerImage(image))
@@ -49,6 +50,7 @@ public sealed class MySqlBuilder : ContainerBuilder<MySqlBuilder, MySqlContainer
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://hub.docker.com/_/mysql/tags" />.
+    /// <include file="MySqlBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public MySqlBuilder(IImage image)
         : this(new MySqlConfiguration())
@@ -72,6 +74,9 @@ public sealed class MySqlBuilder : ContainerBuilder<MySqlBuilder, MySqlContainer
     /// <summary>
     /// Sets the MySql database.
     /// </summary>
+    /// <remarks>
+    /// <include file="MySqlBuilder.Generated.xml" path="doc/member[@name='WithDatabase(System.String)']/*" />
+    /// </remarks>
     /// <param name="database">The MySql database.</param>
     /// <returns>A configured instance of <see cref="MySqlBuilder" />.</returns>
     public MySqlBuilder WithDatabase(string database)
@@ -83,6 +88,12 @@ public sealed class MySqlBuilder : ContainerBuilder<MySqlBuilder, MySqlContainer
     /// <summary>
     /// Sets the MySql username.
     /// </summary>
+    /// <remarks>
+    /// If <paramref name="username" /> is <c>root</c>, the builder sets
+    /// <c>MYSQL_USER</c> to an empty value, because the image creates the
+    /// root user itself.
+    /// <include file="MySqlBuilder.Generated.xml" path="doc/member[@name='WithUsername(System.String)']/*" />
+    /// </remarks>
     /// <param name="username">The MySql username.</param>
     /// <returns>A configured instance of <see cref="MySqlBuilder" />.</returns>
     public MySqlBuilder WithUsername(string username)
@@ -94,6 +105,9 @@ public sealed class MySqlBuilder : ContainerBuilder<MySqlBuilder, MySqlContainer
     /// <summary>
     /// Sets the MySql password.
     /// </summary>
+    /// <remarks>
+    /// <include file="MySqlBuilder.Generated.xml" path="doc/member[@name='WithPassword(System.String)']/*" />
+    /// </remarks>
     /// <param name="password">The MySql password.</param>
     /// <returns>A configured instance of <see cref="MySqlBuilder" />.</returns>
     public MySqlBuilder WithPassword(string password)
@@ -158,7 +172,9 @@ public sealed class MySqlBuilder : ContainerBuilder<MySqlBuilder, MySqlContainer
         return new MySqlBuilder(new MySqlConfiguration(oldValue, newValue));
     }
 
-    /// <inheritdoc cref="IWaitUntil" />
+    /// <summary>
+    /// Waits until the <c>mysql</c> client runs <c>SELECT 1;</c> successfully.
+    /// </summary>
     private sealed class WaitUntil : IWaitUntil
     {
         private readonly IList<string> _command;
