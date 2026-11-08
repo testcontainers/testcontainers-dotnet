@@ -94,42 +94,49 @@ namespace DotNet.Testcontainers.Builders
         return RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? NpipeEndpointAuthenticationProvider.DockerEngine : UnixEndpointAuthenticationProvider.DockerEngine;
       }
 
-      using (var sha256 = SHA256.Create())
+      var dockerContextHash = GetDockerContextHash(dockerContext);
+
+      var metaFilePath = Path.Combine(_dockerConfigDirectoryPath, "contexts", "meta", dockerContextHash, "meta.json");
+
+      try
       {
-        var hashBytes = sha256.ComputeHash(Encoding.Default.GetBytes(dockerContext));
-
-#if NET10_0_OR_GREATER
-        var dockerContextHash = Convert.ToHexStringLower(hashBytes);
-#else
-        var dockerContextHash = BitConverter.ToString(hashBytes).Replace("-", string.Empty).ToLowerInvariant();
-#endif
-
-        var metaFilePath = Path.Combine(_dockerConfigDirectoryPath, "contexts", "meta", dockerContextHash, "meta.json");
-
-        try
+        using (var metaFileStream = File.OpenRead(metaFilePath))
         {
-          using (var metaFileStream = File.OpenRead(metaFilePath))
+          var meta = JsonSerializer.Deserialize(metaFileStream, SourceGenerationContext.Default.DockerContextMeta);
+          var host = meta.Endpoints?.Docker?.Host;
+
+          if (string.IsNullOrEmpty(host))
           {
-            var meta = JsonSerializer.Deserialize(metaFileStream, SourceGenerationContext.Default.DockerContextMeta);
-            var host = meta.Endpoints?.Docker?.Host;
-
-            if (string.IsNullOrEmpty(host))
-            {
-              throw new DockerConfigurationException($"The Docker host is null or empty in '{metaFilePath}' (JSONPath: Endpoints.docker.Host).");
-            }
-
-            return new Uri(host.Replace("npipe:////./", "npipe://./"));
+            throw new DockerConfigurationException($"The Docker host is null or empty in '{metaFilePath}' (JSONPath: Endpoints.docker.Host).");
           }
-        }
-        catch (Exception e) when (e is DirectoryNotFoundException or FileNotFoundException)
-        {
-          throw new DockerConfigurationException($"The Docker context '{dockerContext}' does not exist.", e);
-        }
-        catch (Exception e) when (e is not DockerConfigurationException)
-        {
-          throw new DockerConfigurationException($"The Docker context '{dockerContext}' failed to load from '{metaFilePath}'.", e);
+
+          return new Uri(host.Replace("npipe:////./", "npipe://./"));
         }
       }
+      catch (Exception e) when (e is DirectoryNotFoundException or FileNotFoundException)
+      {
+        throw new DockerConfigurationException($"The Docker context '{dockerContext}' does not exist.", e);
+      }
+      catch (Exception e) when (e is not DockerConfigurationException)
+      {
+        throw new DockerConfigurationException($"The Docker context '{dockerContext}' failed to load from '{metaFilePath}'.", e);
+      }
+    }
+
+    private static string GetDockerContextHash(string dockerContext)
+    {
+      var dockerContextBytes = Encoding.Default.GetBytes(dockerContext);
+
+#if NET9_0_OR_GREATER
+      return Convert.ToHexStringLower(SHA256.HashData(dockerContextBytes));
+#elif NET5_0_OR_GREATER
+      return Convert.ToHexString(SHA256.HashData(dockerContextBytes)).ToLowerInvariant();
+#else
+      using (var sha256 = SHA256.Create())
+      {
+        return BitConverter.ToString(sha256.ComputeHash(dockerContextBytes)).Replace("-", string.Empty).ToLowerInvariant();
+      }
+#endif
     }
 
     [CanBeNull]
