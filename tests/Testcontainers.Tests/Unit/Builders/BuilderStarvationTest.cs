@@ -18,6 +18,8 @@ namespace DotNet.Testcontainers.Tests.Unit
   {
     private const string ChildEnvironmentVariable = "TESTCONTAINERS_BUILDER_STARVATION_CHILD";
 
+    private const string MarkerFileEnvironmentVariable = "TESTCONTAINERS_BUILDER_STARVATION_MARKER";
+
     [Fact]
     public async Task ConstructingBuilderDoesNotWaitForThreadPool()
     {
@@ -44,7 +46,9 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       startInfo.ArgumentList.Add("-method");
       startInfo.ArgumentList.Add(typeof(BuilderStarvationTest).FullName + "." + nameof(Child));
+      var markerFilePath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("D"));
       startInfo.Environment[ChildEnvironmentVariable] = bool.TrueString;
+      startInfo.Environment[MarkerFileEnvironmentVariable] = markerFilePath;
 
       using var process = Process.Start(startInfo);
       Assert.NotNull(process);
@@ -66,7 +70,12 @@ namespace DotNet.Testcontainers.Tests.Unit
         process.Kill(true);
       }
 
-      Assert.True(exited && 0.Equals(process.ExitCode), await stdout + Environment.NewLine + await stderr);
+      var output = await stdout + Environment.NewLine + await stderr;
+      Assert.True(exited && 0.Equals(process.ExitCode), output);
+
+      // Guards against a child run that matched no test and exited with 0.
+      Assert.True(File.Exists(markerFilePath), "The child process did not run the scenario." + Environment.NewLine + output);
+      File.Delete(markerFilePath);
     }
 
     [Fact]
@@ -82,7 +91,8 @@ namespace DotNet.Testcontainers.Tests.Unit
       ThreadPool.SetMaxThreads(Environment.ProcessorCount, minIo);
       ThreadPool.GetMaxThreads(out var maxWorkers, out _);
 
-      using var gate = new ManualResetEventSlim(false);
+      // Not disposed: queued work items still wait on the gate after this method returns.
+      var gate = new ManualResetEventSlim(false);
       using var done = new ManualResetEventSlim(false);
 
       try
@@ -111,6 +121,7 @@ namespace DotNet.Testcontainers.Tests.Unit
         gate.Set();
 
         Assert.True(completed, "Constructing a builder waited for the thread pool.");
+        File.WriteAllText(Environment.GetEnvironmentVariable(MarkerFileEnvironmentVariable), string.Empty);
       }
       finally
       {

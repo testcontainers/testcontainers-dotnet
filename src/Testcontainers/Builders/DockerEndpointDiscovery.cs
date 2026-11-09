@@ -16,8 +16,6 @@ namespace DotNet.Testcontainers.Builders
   /// </summary>
   internal sealed class DockerEndpointDiscovery
   {
-    private static readonly TaskFactory TaskFactory = new TaskFactory(CancellationToken.None, TaskCreationOptions.None, TaskContinuationOptions.None, TaskScheduler.Default);
-
     private readonly Func<IEnumerable<DockerEndpointAuthenticationProvider>> _providers;
 
     private readonly Lazy<Task<DockerEndpointAuthenticationProvider>> _discovery;
@@ -25,7 +23,8 @@ namespace DotNet.Testcontainers.Builders
     public DockerEndpointDiscovery(Func<IEnumerable<DockerEndpointAuthenticationProvider>> providers)
     {
       _providers = providers;
-      _discovery = new Lazy<Task<DockerEndpointAuthenticationProvider>>(DiscoverAsync);
+      // Task.Run keeps the shared discovery off the first caller's synchronization context.
+      _discovery = new Lazy<Task<DockerEndpointAuthenticationProvider>>(() => Task.Run(DiscoverAsync));
     }
 
     public static DockerEndpointDiscovery Default { get; }
@@ -44,11 +43,24 @@ namespace DotNet.Testcontainers.Builders
     [ItemCanBeNull]
     public async Task<DockerEndpointAuthenticationProvider> GetProviderAsync(CancellationToken ct = default)
     {
-      var provider = await _discovery.Value
-        .ConfigureAwait(false);
+      var discovery = _discovery.Value;
 
-      ct.ThrowIfCancellationRequested();
-      return provider;
+      if (!discovery.IsCompleted && ct.CanBeCanceled)
+      {
+        // The discovery is shared, so cancelling stops the wait, not the discovery.
+        var cancelled = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        using (ct.Register(() => cancelled.TrySetResult(true)))
+        {
+          _ = await Task.WhenAny(discovery, cancelled.Task)
+            .ConfigureAwait(false);
+        }
+
+        ct.ThrowIfCancellationRequested();
+      }
+
+      return await discovery
+        .ConfigureAwait(false);
     }
 
     /// <summary>
@@ -59,16 +71,7 @@ namespace DotNet.Testcontainers.Builders
     [CanBeNull]
     public DockerEndpointAuthenticationProvider GetProvider()
     {
-      var discovery = _discovery.Value;
-
-      if (discovery.IsCompleted)
-      {
-        return discovery.GetAwaiter().GetResult();
-      }
-
-      return TaskFactory.StartNew(() => discovery, CancellationToken.None)
-        .Unwrap()
-        .ConfigureAwait(false)
+      return _discovery.Value
         .GetAwaiter()
         .GetResult();
     }
@@ -93,9 +96,6 @@ namespace DotNet.Testcontainers.Builders
 
     private async Task<DockerEndpointAuthenticationProvider> DiscoverAsync()
     {
-      // Do not capture the caller's context, the discovery is shared by all callers.
-      await Task.Yield();
-
       foreach (var provider in _providers())
       {
         if (provider.IsApplicable() && await provider.IsAvailableAsync(CancellationToken.None).ConfigureAwait(false))

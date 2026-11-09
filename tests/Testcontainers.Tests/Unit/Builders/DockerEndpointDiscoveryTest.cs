@@ -86,9 +86,64 @@ namespace DotNet.Testcontainers.Tests.Unit
     }
 
     [Fact]
+    public async Task CancellingStopsTheWaitButNotTheSharedDiscovery()
+    {
+      // Given
+      var provider = new BlockingProvider(DiscoveredEndpoint);
+      var discovery = new DockerEndpointDiscovery(() => new[] { provider });
+
+      using var cts = new CancellationTokenSource();
+
+      // When
+      var waiting = discovery.GetProviderAsync(cts.Token);
+      cts.Cancel();
+
+      var exception = await Record.ExceptionAsync(() => waiting);
+
+      provider.Release();
+      var resolved = await discovery.GetProviderAsync(TestContext.Current.CancellationToken);
+
+      // Then
+      Assert.IsAssignableFrom<OperationCanceledException>(exception);
+      Assert.Same(provider, resolved);
+    }
+
+    [Fact]
     public void DefaultOperatingSystemEndpointIsDeferred()
     {
       Assert.IsType<DeferredDockerEndpointAuthenticationConfiguration>(TestcontainersSettings.OS.DockerEndpointAuthConfig);
+    }
+
+    private sealed class BlockingProvider : DockerEndpointAuthenticationProvider
+    {
+      private readonly TaskCompletionSource<bool> _available = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+      private readonly Uri _endpoint;
+
+      public BlockingProvider(Uri endpoint)
+      {
+        _endpoint = endpoint;
+      }
+
+      public void Release()
+      {
+        _available.TrySetResult(true);
+      }
+
+      public override bool IsApplicable()
+      {
+        return true;
+      }
+
+      public override Task<bool> IsAvailableAsync(CancellationToken ct = default)
+      {
+        return _available.Task;
+      }
+
+      public override IDockerEndpointAuthenticationConfiguration GetAuthConfig()
+      {
+        return new DockerEndpointAuthenticationConfiguration(_endpoint);
+      }
     }
 
     private sealed class CountingProvider : DockerEndpointAuthenticationProvider

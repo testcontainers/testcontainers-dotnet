@@ -3,6 +3,7 @@ namespace DotNet.Testcontainers.Configurations
   using System;
   using System.Collections.Generic;
   using System.Linq;
+  using System.Runtime.CompilerServices;
   using System.Runtime.InteropServices;
   using System.Threading;
   using System.Threading.Tasks;
@@ -30,13 +31,10 @@ namespace DotNet.Testcontainers.Configurations
         new RootlessUnixEndpointAuthenticationProvider(),
       };
 
-    private static string _dockerHostOverride;
+    // A box holds the value and whether it was set, so readers never see one without the other.
+    private static volatile StrongBox<string> _dockerHostOverride;
 
-    private static bool _isDockerHostOverrideSet;
-
-    private static string _dockerSocketOverride;
-
-    private static bool _isDockerSocketOverrideSet;
+    private static volatile StrongBox<string> _dockerSocketOverride;
 
     static TestcontainersSettings()
     {
@@ -52,15 +50,11 @@ namespace DotNet.Testcontainers.Configurations
     [CanBeNull]
     public static string DockerHostOverride
     {
-      get => _isDockerHostOverrideSet
-        ? _dockerHostOverride
+      get => _dockerHostOverride is StrongBox<string> box
+        ? box.Value
         : DockerEndpointDiscovery.Default.GetProvider() is ICustomConfiguration config
           ? config.GetDockerHostOverride() : EnvironmentConfiguration.Instance.GetDockerHostOverride() ?? PropertiesFileConfiguration.Instance.GetDockerHostOverride();
-      set
-      {
-        _dockerHostOverride = value;
-        _isDockerHostOverrideSet = true;
-      }
+      set => _dockerHostOverride = new StrongBox<string>(value);
     }
 
     /// <summary>
@@ -73,15 +67,11 @@ namespace DotNet.Testcontainers.Configurations
     [CanBeNull]
     public static string DockerSocketOverride
     {
-      get => _isDockerSocketOverrideSet
-        ? _dockerSocketOverride
+      get => _dockerSocketOverride is StrongBox<string> box
+        ? box.Value
         : DockerEndpointDiscovery.Default.GetProvider() is ICustomConfiguration config
           ? config.GetDockerSocketOverride() : EnvironmentConfiguration.Instance.GetDockerSocketOverride() ?? PropertiesFileConfiguration.Instance.GetDockerSocketOverride();
-      set
-      {
-        _dockerSocketOverride = value;
-        _isDockerSocketOverrideSet = true;
-      }
+      set => _dockerSocketOverride = new StrongBox<string>(value);
     }
 
     /// <summary>
