@@ -25,7 +25,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <inheritdoc />
     public override ComposableDictionary<TKey, TValue> Compose(IReadOnlyDictionary<TKey, TValue> other)
     {
-      return new AppendDictionary<TKey, TValue>(BuildConfiguration.Combine(other, this));
+      return new AppendDictionary<TKey, TValue>(BuildConfiguration.Append(other, this));
     }
   }
 }
