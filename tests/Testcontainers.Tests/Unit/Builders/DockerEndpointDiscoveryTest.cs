@@ -53,6 +53,24 @@ namespace DotNet.Testcontainers.Tests.Unit
     }
 
     [Fact]
+    public async Task ResolvedConfigurationIsCreatedOnce()
+    {
+      // Given
+      var provider = new CountingProvider(DiscoveredEndpoint);
+      var discovery = new DockerEndpointDiscovery(() => new[] { provider });
+      var configuration = new DeferredDockerEndpointAuthenticationConfiguration(discovery);
+
+      // When
+      _ = await DeferredDockerEndpointAuthenticationConfiguration.EnsureResolvedAsync(configuration, TestContext.Current.CancellationToken);
+      _ = configuration.Endpoint;
+      _ = configuration.AuthProvider;
+      _ = await DeferredDockerEndpointAuthenticationConfiguration.EnsureResolvedAsync(configuration, TestContext.Current.CancellationToken);
+
+      // Then
+      Assert.Equal(1, provider.AuthConfigCalls);
+    }
+
+    [Fact]
     public async Task ExplicitEndpointWinsAndSkipsDiscovery()
     {
       // Given
@@ -152,12 +170,16 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       private int _availabilityChecks;
 
+      private int _authConfigCalls;
+
       public CountingProvider(Uri endpoint)
       {
         _endpoint = endpoint;
       }
 
       public int AvailabilityChecks => _availabilityChecks;
+
+      public int AuthConfigCalls => _authConfigCalls;
 
       public override bool IsApplicable()
       {
@@ -172,6 +194,7 @@ namespace DotNet.Testcontainers.Tests.Unit
 
       public override IDockerEndpointAuthenticationConfiguration GetAuthConfig()
       {
+        Interlocked.Increment(ref _authConfigCalls);
         return _endpoint == null ? null : new DockerEndpointAuthenticationConfiguration(_endpoint);
       }
     }

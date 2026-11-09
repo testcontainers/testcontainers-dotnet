@@ -16,9 +16,15 @@ namespace DotNet.Testcontainers.Builders
   {
     private readonly DockerEndpointDiscovery _discovery;
 
+    private readonly Lazy<IDockerEndpointAuthenticationConfiguration> _resolved;
+
     public DeferredDockerEndpointAuthenticationConfiguration(DockerEndpointDiscovery discovery)
     {
       _discovery = discovery;
+
+      // Providers such as mTLS load certificate files in GetAuthConfig, so it runs once.
+      // A missing endpoint is not cached here; the discovery already caches its result.
+      _resolved = new Lazy<IDockerEndpointAuthenticationConfiguration>(Resolve, LazyThreadSafetyMode.PublicationOnly);
     }
 
     public static IDockerEndpointAuthenticationConfiguration Default { get; }
@@ -54,13 +60,19 @@ namespace DotNet.Testcontainers.Builders
         return configuration;
       }
 
-      var provider = await deferred._discovery.GetProviderAsync(ct)
+      // After this, the discovery has completed and GetAuthConfig does not block.
+      _ = await deferred._discovery.GetProviderAsync(ct)
         .ConfigureAwait(false);
 
-      return provider?.GetAuthConfig() ?? throw deferred._discovery.CreateDockerUnavailableException();
+      return deferred.GetAuthConfig();
     }
 
     private IDockerEndpointAuthenticationConfiguration GetAuthConfig()
+    {
+      return _resolved.Value;
+    }
+
+    private IDockerEndpointAuthenticationConfiguration Resolve()
     {
       return _discovery.GetProvider()?.GetAuthConfig() ?? throw _discovery.CreateDockerUnavailableException();
     }
