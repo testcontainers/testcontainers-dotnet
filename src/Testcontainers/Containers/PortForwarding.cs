@@ -10,6 +10,7 @@ namespace DotNet.Testcontainers.Containers
   using DotNet.Testcontainers.Configurations;
   using JetBrains.Annotations;
   using Renci.SshNet;
+  using Renci.SshNet.Common;
 
   /// <inheritdoc cref="DockerContainer" />
   [PublicAPI]
@@ -56,7 +57,15 @@ namespace DotNet.Testcontainers.Containers
 
       if (_sshClient == null || !_sshClient.IsConnected)
       {
-        _sshClient?.Dispose();
+        try
+        {
+          _sshClient?.Dispose();
+        }
+        catch (SshConnectionException)
+        {
+          // Ignore exception for connections that do not exist anymore.
+        }
+
         _sshClient = new SshClient(Hostname, GetMappedPublicPort(PortForwardingBuilder.SshdPort), _configuration.Username, _configuration.Password);
         _sshClient.Connect();
       }
