@@ -25,6 +25,8 @@ namespace DotNet.Testcontainers.Clients
 
     private static readonly SemaphoreSlim RuntimeInitialized = new SemaphoreSlim(1, 1);
 
+    private readonly Lazy<IDockerClient> _dockerClient;
+
     /// <summary>
     /// Initializes a new instance of the <see cref="DockerApiClient" /> class.
     /// </summary>
@@ -32,7 +34,7 @@ namespace DotNet.Testcontainers.Clients
     /// <param name="dockerEndpointAuthConfig">The Docker endpoint authentication configuration.</param>
     /// <param name="logger">The logger.</param>
     protected DockerApiClient(Guid sessionId, IDockerEndpointAuthenticationConfiguration dockerEndpointAuthConfig, ILogger logger)
-      : this(Clients.GetOrAdd(dockerEndpointAuthConfig.Endpoint, _ => new Lazy<IDockerClient>(() => GetDockerClient(sessionId, dockerEndpointAuthConfig))).Value, logger)
+      : this(new Lazy<IDockerClient>(() => Clients.GetOrAdd(dockerEndpointAuthConfig.Endpoint, _ => new Lazy<IDockerClient>(() => GetDockerClient(sessionId, dockerEndpointAuthConfig))).Value), logger)
     {
     }
 
@@ -42,8 +44,13 @@ namespace DotNet.Testcontainers.Clients
     /// <param name="dockerClient">The Docker Engine API client.</param>
     /// <param name="logger">The logger.</param>
     protected DockerApiClient(IDockerClient dockerClient, ILogger logger)
+      : this(new Lazy<IDockerClient>(() => dockerClient), logger)
     {
-      DockerClient = dockerClient;
+    }
+
+    private DockerApiClient(Lazy<IDockerClient> dockerClient, ILogger logger)
+    {
+      _dockerClient = dockerClient;
       Logger = logger;
     }
 
@@ -51,7 +58,7 @@ namespace DotNet.Testcontainers.Clients
     /// Gets the Docker Engine API client.
     /// </summary>
     [NotNull]
-    protected IDockerClient DockerClient { get; }
+    protected IDockerClient DockerClient => _dockerClient.Value;
 
     /// <summary>
     /// Gets the logger.

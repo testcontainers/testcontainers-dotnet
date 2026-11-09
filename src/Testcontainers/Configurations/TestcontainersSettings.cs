@@ -30,13 +30,13 @@ namespace DotNet.Testcontainers.Configurations
         new RootlessUnixEndpointAuthenticationProvider(),
       };
 
-    [CanBeNull]
-    private static readonly IDockerEndpointAuthenticationProvider DockerEndpointAuthProvider
-      = DockerEndpointAuthProviders.FirstOrDefault(authProvider => authProvider.IsApplicable() && authProvider.IsAvailable());
+    private static string _dockerHostOverride;
 
-    [CanBeNull]
-    private static readonly IDockerEndpointAuthenticationConfiguration DockerEndpointAuthConfig
-      = DockerEndpointAuthProvider?.GetAuthConfig();
+    private static bool _isDockerHostOverrideSet;
+
+    private static string _dockerSocketOverride;
+
+    private static bool _isDockerSocketOverrideSet;
 
     static TestcontainersSettings()
     {
@@ -45,18 +45,44 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Gets or sets the Docker host override value.
     /// </summary>
+    /// <remarks>
+    /// The default value depends on the discovered Docker endpoint. Reading it before
+    /// a resource has resolved the endpoint discovers the endpoint synchronously.
+    /// </remarks>
     [CanBeNull]
-    public static string DockerHostOverride { get; set; }
-      = DockerEndpointAuthProvider is ICustomConfiguration config
-        ? config.GetDockerHostOverride() : EnvironmentConfiguration.Instance.GetDockerHostOverride() ?? PropertiesFileConfiguration.Instance.GetDockerHostOverride();
+    public static string DockerHostOverride
+    {
+      get => _isDockerHostOverrideSet
+        ? _dockerHostOverride
+        : DockerEndpointDiscovery.Default.GetProvider() is ICustomConfiguration config
+          ? config.GetDockerHostOverride() : EnvironmentConfiguration.Instance.GetDockerHostOverride() ?? PropertiesFileConfiguration.Instance.GetDockerHostOverride();
+      set
+      {
+        _dockerHostOverride = value;
+        _isDockerHostOverrideSet = true;
+      }
+    }
 
     /// <summary>
     /// Gets or sets the Docker socket override value.
     /// </summary>
+    /// <remarks>
+    /// The default value depends on the discovered Docker endpoint. Reading it before
+    /// a resource has resolved the endpoint discovers the endpoint synchronously.
+    /// </remarks>
     [CanBeNull]
-    public static string DockerSocketOverride { get; set; }
-      = DockerEndpointAuthProvider is ICustomConfiguration config
-        ? config.GetDockerSocketOverride() : EnvironmentConfiguration.Instance.GetDockerSocketOverride() ?? PropertiesFileConfiguration.Instance.GetDockerSocketOverride();
+    public static string DockerSocketOverride
+    {
+      get => _isDockerSocketOverrideSet
+        ? _dockerSocketOverride
+        : DockerEndpointDiscovery.Default.GetProvider() is ICustomConfiguration config
+          ? config.GetDockerSocketOverride() : EnvironmentConfiguration.Instance.GetDockerSocketOverride() ?? PropertiesFileConfiguration.Instance.GetDockerSocketOverride();
+      set
+      {
+        _dockerSocketOverride = value;
+        _isDockerSocketOverrideSet = true;
+      }
+    }
 
     /// <summary>
     /// Gets or sets a value indicating whether the <see cref="ResourceReaper" /> is enabled or not.
@@ -156,7 +182,7 @@ namespace DotNet.Testcontainers.Configurations
     /// </summary>
     [NotNull]
     public static IOperatingSystem OS { get; set; }
-      = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? new Windows(DockerEndpointAuthConfig) : new Unix(DockerEndpointAuthConfig);
+      = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? new Windows(DeferredDockerEndpointAuthenticationConfiguration.Default) : new Unix(DeferredDockerEndpointAuthenticationConfiguration.Default);
 
     /// <inheritdoc cref="PortForwardingContainer.ExposeHostPortsAsync" />
     public static Task ExposeHostPortsAsync(ushort port, CancellationToken ct = default)
