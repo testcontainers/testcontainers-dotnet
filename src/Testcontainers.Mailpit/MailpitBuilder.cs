@@ -89,7 +89,7 @@ public sealed class MailpitBuilder : ContainerBuilder<MailpitBuilder, MailpitCon
             throw new ArgumentNullException(nameof(credentials));
         }
 
-        if (credentials.UserName.Contains(":"))
+        if (credentials.UserName.Contains(':'))
         {
             throw new ArgumentException("The UserName cannot contain a colon (:) character.", nameof(credentials));
         }

@@ -144,7 +144,7 @@ namespace DotNet.Testcontainers.Images
       var lines = File.ReadAllLines(_dockerfile.FullName)
         .Select(line => line.Trim())
         .Where(line => !string.IsNullOrEmpty(line))
-        .Where(line => !line.StartsWith("#", StringComparison.Ordinal))
+        .Where(line => !line.StartsWith('#'))
         .ToArray();
 
       // Only ARG instructions declared before the first FROM instruction are in
@@ -198,7 +198,7 @@ namespace DotNet.Testcontainers.Images
           {
               platform = targetPlatform;
           }
-          else if (fromPlatform != null && fromPlatform.Contains("$"))
+          else if (fromPlatform != null && fromPlatform.Contains('$'))
           {
               // The Docker daemon rejects unresolved variables such as $BUILDPLATFORM.
               platform = null;

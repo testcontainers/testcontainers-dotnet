@@ -477,7 +477,7 @@ namespace DotNet.Testcontainers.Clients
 
       // The base images pull for the single platform the image build targets.
       // A multi-platform build pulls them for the platform of the Docker host.
-      var targetPlatform = string.IsNullOrEmpty(platforms) || platforms.Contains(",") ? null : platforms;
+      var targetPlatform = string.IsNullOrEmpty(platforms) || platforms.Contains(',') ? null : platforms;
 
       var baseImages = dockerfileArchive.GetBaseImages(targetPlatform);
 

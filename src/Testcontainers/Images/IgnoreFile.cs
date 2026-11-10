@@ -28,7 +28,7 @@ namespace DotNet.Testcontainers.Images
         .Select(line => line.Trim())
 
         // Remove comment.
-        .Where(line => !line.StartsWith("#", StringComparison.Ordinal))
+        .Where(line => !line.StartsWith('#'))
 
         // Exclude files and directories. The root of the build context is the root directory.
         .Select(line => line.Trim('/'))

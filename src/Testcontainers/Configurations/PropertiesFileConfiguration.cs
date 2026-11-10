@@ -42,8 +42,8 @@ namespace DotNet.Testcontainers.Configurations
       : base(lines
         .Select(line => line.Trim())
         .Where(line => !string.IsNullOrEmpty(line))
-        .Where(line => !line.StartsWith("#", StringComparison.Ordinal))
-        .Where(line => !line.StartsWith("!", StringComparison.Ordinal))
+        .Where(line => !line.StartsWith('#'))
+        .Where(line => !line.StartsWith('!'))
         .Select(line => line.Split(new[] { '=', ':', ' ' }, 2, StringSplitOptions.RemoveEmptyEntries))
         .Where(property => 2.Equals(property.Length))
         .ToDictionary(property => property[0], property => property[1]))
