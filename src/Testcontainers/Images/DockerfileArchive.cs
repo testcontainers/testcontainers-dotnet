@@ -18,11 +18,11 @@ namespace DotNet.Testcontainers.Images
   /// </summary>
   internal sealed class DockerfileArchive : ITarArchive
   {
-    private static readonly Regex ArgLinePattern = new Regex("^ARG\\s+(?<name>[A-Za-z_][A-Za-z0-9_]*)=(?:\"(?<value>[^\"]*)\"|'(?<value>[^']*)'|(?<value>\\S+))", RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
+    private static readonly Regex ArgLinePattern = new Regex("^ARG\\s+(?<name>[A-Za-z_][A-Za-z0-9_]*)=(?:\"(?<value>[^\"]*)\"|'(?<value>[^']*)'|(?<value>\\S+))", RegexOptions.IgnoreCase);
 
-    private static readonly Regex FromLinePattern = new Regex("^FROM\\s+(?<arg>--\\S+\\s)*(?<image>\\S+).*", RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
+    private static readonly Regex FromLinePattern = new Regex("^FROM\\s+(?<arg>--\\S+\\s)*(?<image>\\S+).*", RegexOptions.IgnoreCase);
 
-    private static readonly Regex VariablePattern = new Regex("\\$(\\{(?<name>[A-Za-z_][A-Za-z0-9_]*)\\}|(?<name>[A-Za-z_][A-Za-z0-9_]*))", RegexOptions.None, TimeSpan.FromSeconds(1));
+    private static readonly Regex VariablePattern = new Regex("\\$(\\{(?<name>[A-Za-z_][A-Za-z0-9_]*)\\}|(?<name>[A-Za-z_][A-Za-z0-9_]*))");
 
     private readonly DirectoryInfo _contextDirectory;
 
@@ -222,7 +222,7 @@ namespace DotNet.Testcontainers.Images
 
       var dockerIgnoreFile = new DockerIgnoreFile(_dockerfileDirectory, dockerIgnoreFileName, _dockerfile.Name, _logger);
 
-      var dockerfileArchiveFileName = Regex.Replace(_image.FullName, "[^a-zA-Z0-9]", "-", RegexOptions.None, TimeSpan.FromSeconds(1)).ToLowerInvariant();
+      var dockerfileArchiveFileName = Regex.Replace(_image.FullName, "[^a-zA-Z0-9]", "-").ToLowerInvariant();
 
       // Image builds that run at the same time must not share the tar archive,
       // even if they build the same image.

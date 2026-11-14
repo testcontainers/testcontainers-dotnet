@@ -60,7 +60,7 @@ namespace DotNet.Testcontainers.Builders
     /// </remarks>
     private static readonly string[] PathSeparators = { ":", ";", "|", "," };
 
-    private static readonly Regex ProjectNameRegex = new Regex("^[a-z0-9][a-z0-9_-]*$", RegexOptions.None, TimeSpan.FromSeconds(1));
+    private static readonly Regex ProjectNameRegex = new Regex("^[a-z0-9][a-z0-9_-]*$");
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ComposeBuilder" /> class.

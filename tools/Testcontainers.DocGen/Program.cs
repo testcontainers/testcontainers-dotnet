@@ -6,7 +6,7 @@ public static class Program
 
     private const string GeneratedMarkdownFileSuffix = ".Generated.md";
 
-    private static readonly Regex IncludePattern = new Regex("<include file=\"(?<file>[^\"]+" + Regex.Escape(GeneratedXmlFileSuffix) + ")\" path=\"(?<path>[^\"]+)\"", RegexOptions.None, TimeSpan.FromSeconds(1));
+    private static readonly Regex IncludePattern = new Regex("<include file=\"(?<file>[^\"]+" + Regex.Escape(GeneratedXmlFileSuffix) + ")\" path=\"(?<path>[^\"]+)\"");
 
     public static int Main()
     {

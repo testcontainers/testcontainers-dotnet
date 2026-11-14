@@ -26,6 +26,6 @@ public sealed class K3sContainer : DockerContainer
 
         var server = new UriBuilder(Uri.UriSchemeHttps, Hostname, GetMappedPublicPort(K3sBuilder.KubeSecurePort)).ToString();
 
-        return Regex.Replace(kubeconfig, "server:\\s?[:/\\.\\d\\w]+", "server: " + server, RegexOptions.None, TimeSpan.FromSeconds(1));
+        return Regex.Replace(kubeconfig, "server:\\s?[:/\\.\\d\\w]+", "server: " + server);
     }
 }

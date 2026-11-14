@@ -44,7 +44,7 @@ namespace DotNet.Testcontainers.Images
       }
 
       private ReferenceRegex()
-        : base(Pattern, RegexOptions.Compiled, TimeSpan.FromSeconds(5))
+        : base(Pattern, RegexOptions.Compiled)
       {
       }
 

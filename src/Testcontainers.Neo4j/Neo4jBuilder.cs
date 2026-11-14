@@ -119,7 +119,7 @@ public sealed class Neo4jBuilder : ContainerBuilder<Neo4jBuilder, Neo4jContainer
         else if (image.MatchVersion(v => Array.Exists(operatingSystems, v.Contains)))
         {
             MatchEvaluator evaluator = match => $"{enterpriseSuffix}-{match.Value}";
-            tag = Regex.Replace(image.Tag, string.Join("|", operatingSystems), evaluator, RegexOptions.None, TimeSpan.FromSeconds(1));
+            tag = Regex.Replace(image.Tag, string.Join("|", operatingSystems), evaluator);
         }
         else
         {

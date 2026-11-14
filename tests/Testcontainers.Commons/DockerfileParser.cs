@@ -2,7 +2,7 @@ namespace DotNet.Testcontainers.Commons;
 
 internal sealed class DockerfileParser
 {
-    private static readonly Regex FromLinePattern = new Regex("^FROM\\s+(?<arg>--\\S+\\s)*(?<image>\\S+).*", RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
+    private static readonly Regex FromLinePattern = new Regex("^FROM\\s+(?<arg>--\\S+\\s)*(?<image>\\S+).*", RegexOptions.IgnoreCase);
 
     private readonly string _filePath;
 
