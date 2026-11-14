@@ -45,6 +45,7 @@ $DATABASE_MODULES = @(
     "Testcontainers.MySql",
     "Testcontainers.Oracle",
     "Testcontainers.PostgreSql",
+    "Testcontainers.TUnit",
     "Testcontainers.Xunit",
     "Testcontainers.XunitV3"
 )
