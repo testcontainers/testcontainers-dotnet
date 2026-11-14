@@ -102,7 +102,7 @@ await TestcontainersSettings.ExposeHostPortsAsync(8080)
   .ConfigureAwait(false);
 ```
 
-From the perspective of a container, the test host is available through the hostname `host.testcontainers.internal`. Ports are forwarded one-to-one.
+From the perspective of a container, the test host is available through the hostname `host.testcontainers.internal`. Ports are forwarded one-to-one. A forwarded port stays active until the test process exits. Exposing a port that is already forwarded has no effect.
 
 ```csharp title="Sending a GET request to the test host"
 _ = await curlContainer.ExecAsync(new[] { "curl", "http://host.testcontainers.internal:8080" })

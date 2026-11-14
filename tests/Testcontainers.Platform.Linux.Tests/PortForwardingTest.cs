@@ -124,3 +124,24 @@ public abstract class PortForwardingTest : IAsyncLifetime
         }
     }
 }
+
+public sealed class PortForwardingDuplicateHostPortTest
+{
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public async Task SkipsAlreadyForwardedHostPort()
+    {
+        // Given
+        const ushort port = 8080;
+
+        await TestcontainersSettings.ExposeHostPortsAsync(port, TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        // When
+        var exception = await Record.ExceptionAsync(() => TestcontainersSettings.ExposeHostPortsAsync(port, TestContext.Current.CancellationToken))
+            .ConfigureAwait(true);
+
+        // Then
+        Assert.Null(exception);
+    }
+}
