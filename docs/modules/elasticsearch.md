@@ -53,6 +53,8 @@ Besides the Elasticsearch client, any other client can be configured to trust th
     --8<-- "tests/Testcontainers.Elasticsearch.Tests/ElasticsearchContainerTest.cs:UseElasticsearchCertificate"
     ```
 
+The module sets `ingest.geoip.downloader.enabled=false`. Some custom images do not know this setting and fail to start. Setting it to an empty value only helps up to Elasticsearch 8.2. Remove it instead, see [Composing environment variables](../api/create_docker_container.md#composing-environment-variables).
+
 ## Default configuration
 
 --8<-- "src/Testcontainers.Elasticsearch/ElasticsearchBuilder.Generated.md"
