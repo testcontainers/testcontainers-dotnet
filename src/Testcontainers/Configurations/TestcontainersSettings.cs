@@ -3,6 +3,7 @@ namespace DotNet.Testcontainers.Configurations
   using System;
   using System.Collections.Generic;
   using System.Linq;
+  using System.Runtime.CompilerServices;
   using System.Runtime.InteropServices;
   using System.Threading;
   using System.Threading.Tasks;
@@ -30,13 +31,10 @@ namespace DotNet.Testcontainers.Configurations
         new RootlessUnixEndpointAuthenticationProvider(),
       };
 
-    [CanBeNull]
-    private static readonly IDockerEndpointAuthenticationProvider DockerEndpointAuthProvider
-      = DockerEndpointAuthProviders.FirstOrDefault(authProvider => authProvider.IsApplicable() && authProvider.IsAvailable());
+    // A box holds the value and whether it was set, so readers never see one without the other.
+    private static volatile StrongBox<string> _dockerHostOverride;
 
-    [CanBeNull]
-    private static readonly IDockerEndpointAuthenticationConfiguration DockerEndpointAuthConfig
-      = DockerEndpointAuthProvider?.GetAuthConfig();
+    private static volatile StrongBox<string> _dockerSocketOverride;
 
     static TestcontainersSettings()
     {
@@ -45,18 +43,36 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Gets or sets the Docker host override value.
     /// </summary>
+    /// <remarks>
+    /// The default value depends on the discovered Docker endpoint. Reading it before
+    /// a resource has resolved the endpoint discovers the endpoint synchronously.
+    /// </remarks>
     [CanBeNull]
-    public static string DockerHostOverride { get; set; }
-      = DockerEndpointAuthProvider is ICustomConfiguration config
-        ? config.GetDockerHostOverride() : EnvironmentConfiguration.Instance.GetDockerHostOverride() ?? PropertiesFileConfiguration.Instance.GetDockerHostOverride();
+    public static string DockerHostOverride
+    {
+      get => _dockerHostOverride is StrongBox<string> box
+        ? box.Value
+        : DockerEndpointDiscovery.Default.GetProvider() is ICustomConfiguration config
+          ? config.GetDockerHostOverride() : EnvironmentConfiguration.Instance.GetDockerHostOverride() ?? PropertiesFileConfiguration.Instance.GetDockerHostOverride();
+      set => _dockerHostOverride = new StrongBox<string>(value);
+    }
 
     /// <summary>
     /// Gets or sets the Docker socket override value.
     /// </summary>
+    /// <remarks>
+    /// The default value depends on the discovered Docker endpoint. Reading it before
+    /// a resource has resolved the endpoint discovers the endpoint synchronously.
+    /// </remarks>
     [CanBeNull]
-    public static string DockerSocketOverride { get; set; }
-      = DockerEndpointAuthProvider is ICustomConfiguration config
-        ? config.GetDockerSocketOverride() : EnvironmentConfiguration.Instance.GetDockerSocketOverride() ?? PropertiesFileConfiguration.Instance.GetDockerSocketOverride();
+    public static string DockerSocketOverride
+    {
+      get => _dockerSocketOverride is StrongBox<string> box
+        ? box.Value
+        : DockerEndpointDiscovery.Default.GetProvider() is ICustomConfiguration config
+          ? config.GetDockerSocketOverride() : EnvironmentConfiguration.Instance.GetDockerSocketOverride() ?? PropertiesFileConfiguration.Instance.GetDockerSocketOverride();
+      set => _dockerSocketOverride = new StrongBox<string>(value);
+    }
 
     /// <summary>
     /// Gets or sets a value indicating whether the <see cref="ResourceReaper" /> is enabled or not.
@@ -156,7 +172,7 @@ namespace DotNet.Testcontainers.Configurations
     /// </summary>
     [NotNull]
     public static IOperatingSystem OS { get; set; }
-      = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? new Windows(DockerEndpointAuthConfig) : new Unix(DockerEndpointAuthConfig);
+      = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? new Windows(DeferredDockerEndpointAuthenticationConfiguration.Default) : new Unix(DeferredDockerEndpointAuthenticationConfiguration.Default);
 
     /// <inheritdoc cref="PortForwardingContainer.ExposeHostPortsAsync" />
     public static Task ExposeHostPortsAsync(ushort port, CancellationToken ct = default)
