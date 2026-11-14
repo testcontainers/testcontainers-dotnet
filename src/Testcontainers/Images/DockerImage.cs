@@ -186,7 +186,7 @@ namespace DotNet.Testcontainers.Images
         return false;
       }
 
-      var versionMatch = Regex.Match(Tag, "^(\\d+)(\\.\\d+)?(\\.\\d+)?", RegexOptions.None, TimeSpan.FromSeconds(1));
+      var versionMatch = Regex.Match(Tag, "^(\\d+)(\\.\\d+)?(\\.\\d+)?");
 
       if (!versionMatch.Success)
       {

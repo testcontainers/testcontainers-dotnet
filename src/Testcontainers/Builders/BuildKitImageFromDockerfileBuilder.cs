@@ -51,7 +51,7 @@ namespace DotNet.Testcontainers.Builders
     /// The id is part of the path of the file that carries the build secret inside the
     /// Docker CLI container, and part of the Docker CLI argument that references it.
     /// </remarks>
-    private static readonly Regex IdRegex = new Regex("^[A-Za-z0-9][A-Za-z0-9_.-]*$", RegexOptions.None, TimeSpan.FromSeconds(1));
+    private static readonly Regex IdRegex = new Regex("^[A-Za-z0-9][A-Za-z0-9_.-]*$");
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BuildKitImageFromDockerfileBuilder" /> class.
@@ -120,7 +120,7 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public BuildKitImageFromDockerfileBuilder WithDockerfile(string dockerfile)
     {
-      var dockerfileFilePath = Regex.Replace(dockerfile, "^\\.(\\/|\\\\)", string.Empty, RegexOptions.None, TimeSpan.FromSeconds(1));
+      var dockerfileFilePath = Regex.Replace(dockerfile, "^\\.(\\/|\\\\)", string.Empty);
       return Merge(DockerResourceConfiguration, new BuildKitImageFromDockerfileConfiguration(dockerfile: dockerfileFilePath));
     }
 
