@@ -148,12 +148,10 @@ namespace DotNet.Testcontainers.Images
     /// </summary>
     private readonly struct EscapeRegex : ISearchAndReplace<string>
     {
-      private static readonly Regex Pattern = new Regex("[\\-\\[\\]\\/\\{\\}\\(\\)\\+\\?\\.\\\\\\^\\$\\|]");
-
       /// <inheritdoc />
       public string Replace(string input)
       {
-        return Pattern.Replace(input, "\\$&");
+        return RegexPatterns.RegexMetacharacter().Replace(input, "\\$&");
       }
     }
 
