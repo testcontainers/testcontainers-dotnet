@@ -3,7 +3,6 @@ namespace DotNet.Testcontainers.Builders
   using System;
   using System.Collections.Generic;
   using System.IO;
-  using System.Text.RegularExpressions;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Images;
@@ -72,7 +71,7 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public ImageFromDockerfileBuilder WithDockerfile(string dockerfile)
     {
-      var dockerfileFilePath = Regex.Replace(dockerfile, "^\\.(\\/|\\\\)", string.Empty);
+      var dockerfileFilePath = RegexPatterns.CurrentDirectoryPrefix().Replace(dockerfile, string.Empty);
       return Merge(DockerResourceConfiguration, new ImageFromDockerfileConfiguration(dockerfile: dockerfileFilePath));
     }
 
