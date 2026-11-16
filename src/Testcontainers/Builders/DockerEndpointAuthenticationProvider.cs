@@ -30,6 +30,20 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public virtual bool IsAvailable()
     {
+      return TaskFactory.StartNew(() => IsAvailableAsync(CancellationToken.None), CancellationToken.None)
+        .Unwrap()
+        .ConfigureAwait(false)
+        .GetAwaiter()
+        .GetResult();
+    }
+
+    /// <summary>
+    /// Checks asynchronously whether a connection to the Docker endpoint can be established.
+    /// </summary>
+    /// <param name="ct">Cancellation token.</param>
+    /// <returns>True when a connection to the Docker endpoint can be established, otherwise false.</returns>
+    public virtual async Task<bool> IsAvailableAsync(CancellationToken ct = default)
+    {
       var authConfig = GetAuthConfig();
 
       if (authConfig == null)
@@ -37,32 +51,25 @@ namespace DotNet.Testcontainers.Builders
         return false;
       }
 
-      return TaskFactory.StartNew(async () =>
+      using (var dockerClient = authConfig.GetDockerClientBuilder(ResourceReaper.DefaultSessionId).Build())
+      {
+        try
         {
-          using (var dockerClient = authConfig.GetDockerClientBuilder(ResourceReaper.DefaultSessionId).Build())
-          {
-            try
-            {
-              await dockerClient.System.PingAsync(CancellationToken.None)
-                .ConfigureAwait(false);
+          await dockerClient.System.PingAsync(ct)
+            .ConfigureAwait(false);
 
-              _cachedException = null;
+          _cachedException = null;
 
-              return true;
-            }
-            catch (Exception e)
-            {
-              var message = $"Failed to connect to Docker endpoint at '{dockerClient.Options.Endpoint}'.";
-              _cachedException = new DockerUnavailableException(message, e);
+          return true;
+        }
+        catch (Exception e)
+        {
+          var message = $"Failed to connect to Docker endpoint at '{dockerClient.Options.Endpoint}'.";
+          _cachedException = new DockerUnavailableException(message, e);
 
-              return false;
-            }
-          }
-        }, CancellationToken.None)
-        .Unwrap()
-        .ConfigureAwait(false)
-        .GetAwaiter()
-        .GetResult();
+          return false;
+        }
+      }
     }
 
     /// <inheritdoc />

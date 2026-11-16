@@ -6,6 +6,7 @@ namespace DotNet.Testcontainers.Volumes
   using System.Threading.Tasks;
   using Docker.DotNet;
   using Docker.DotNet.Models;
+  using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
   using JetBrains.Annotations;
@@ -88,6 +89,9 @@ namespace DotNet.Testcontainers.Volumes
     protected override async Task UnsafeCreateAsync(CancellationToken ct = default)
     {
       ThrowIfLockNotAcquired();
+
+      _ = await DeferredDockerEndpointAuthenticationConfiguration.EnsureResolvedAsync(_configuration.DockerEndpointAuthConfig, ct)
+        .ConfigureAwait(false);
 
       if (Exists())
       {

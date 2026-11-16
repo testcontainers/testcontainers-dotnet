@@ -9,6 +9,7 @@ namespace DotNet.Testcontainers.Containers
   using System.Threading.Tasks;
   using Docker.DotNet;
   using Docker.DotNet.Models;
+  using DotNet.Testcontainers.Builders;
   using DotNet.Testcontainers.Clients;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Images;
@@ -519,6 +520,9 @@ namespace DotNet.Testcontainers.Containers
     protected override async Task UnsafeCreateAsync(CancellationToken ct = default)
     {
       ThrowIfLockNotAcquired();
+
+      _ = await DeferredDockerEndpointAuthenticationConfiguration.EnsureResolvedAsync(_configuration.DockerEndpointAuthConfig, ct)
+        .ConfigureAwait(false);
 
       if (Exists())
       {
