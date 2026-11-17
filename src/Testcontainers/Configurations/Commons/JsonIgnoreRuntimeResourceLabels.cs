@@ -19,7 +19,7 @@ namespace DotNet.Testcontainers.Configurations
       TestcontainersClient.TestcontainersSessionIdLabel,
     };
 
-    public override void Write(Utf8JsonWriter writer, IReadOnlyDictionary<string, string> value, JsonSerializerOptions options)
+    public override void Write(Utf8JsonWriter writer, IEnumerable<KeyValuePair<string, string>> value, JsonSerializerOptions options)
     {
       var labels = value.Where(label => !IgnoreLabels.Contains(label.Key)).ToDictionary(label => label.Key, label => label.Value);
       base.Write(writer, labels, options);

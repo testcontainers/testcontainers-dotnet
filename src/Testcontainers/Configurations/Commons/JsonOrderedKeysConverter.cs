@@ -6,19 +6,19 @@ namespace DotNet.Testcontainers.Configurations
   using System.Text.Json;
   using System.Text.Json.Serialization;
 
-  internal class JsonOrderedKeysConverter : JsonConverter<IReadOnlyDictionary<string, string>>
+  internal class JsonOrderedKeysConverter : JsonConverter<IEnumerable<KeyValuePair<string, string>>>
   {
     public override bool CanConvert(Type typeToConvert)
     {
       return typeof(IEnumerable<KeyValuePair<string, string>>).IsAssignableFrom(typeToConvert);
     }
 
-    public override IReadOnlyDictionary<string, string> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override IEnumerable<KeyValuePair<string, string>> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
       return JsonSerializer.Deserialize<IReadOnlyDictionary<string, string>>(ref reader);
     }
 
-    public override void Write(Utf8JsonWriter writer, IReadOnlyDictionary<string, string> value, JsonSerializerOptions options)
+    public override void Write(Utf8JsonWriter writer, IEnumerable<KeyValuePair<string, string>> value, JsonSerializerOptions options)
     {
       writer.WriteStartObject();
 

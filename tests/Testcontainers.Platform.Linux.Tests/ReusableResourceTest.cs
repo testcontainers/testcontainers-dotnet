@@ -175,6 +175,22 @@ public sealed class ReusableResourceTest : IAsyncLifetime
 
             [Fact]
             [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+            public void ForSameKeyValuePairsInDifferentOrder()
+            {
+                // Given
+                var configuration1 = new KeyValuePairsConfiguration(new KeyValuePair<string, string>("keyA", "valueA"), new KeyValuePair<string, string>("keyB", "valueB"));
+                var configuration2 = new KeyValuePairsConfiguration(new KeyValuePair<string, string>("keyB", "valueB"), new KeyValuePair<string, string>("keyA", "valueA"));
+
+                // When
+                var hash1 = configuration1.GetReuseHash();
+                var hash2 = configuration2.GetReuseHash();
+
+                // Then
+                Assert.Equal(hash1, hash2);
+            }
+
+            [Fact]
+            [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
             public void ForCustomReuseHashProvider()
             {
                 // Given
@@ -198,6 +214,15 @@ public sealed class ReusableResourceTest : IAsyncLifetime
             {
                 var hash1 = new ReuseHashContainerBuilder().WithName("Name1").GetReuseHash();
                 var hash2 = new ReuseHashContainerBuilder().WithName("Name2").GetReuseHash();
+                Assert.NotEqual(hash1, hash2);
+            }
+
+            [Fact]
+            [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+            public void ForDifferentKeyValuePairs()
+            {
+                var hash1 = new KeyValuePairsConfiguration(new KeyValuePair<string, string>("key", "value1")).GetReuseHash();
+                var hash2 = new KeyValuePairsConfiguration(new KeyValuePair<string, string>("key", "value2")).GetReuseHash();
                 Assert.NotEqual(hash1, hash2);
             }
         }
@@ -273,6 +298,15 @@ public sealed class ReusableResourceTest : IAsyncLifetime
                 Assert.Equal(EnabledCleanUpExceptionMessage, exception.Message);
             }
         }
+    }
+
+    private sealed class KeyValuePairsConfiguration : ContainerConfiguration
+    {
+        public KeyValuePairsConfiguration(params KeyValuePair<string, string>[] keyValuePairs)
+            => KeyValuePairs = keyValuePairs;
+
+        [UsedImplicitly]
+        public IEnumerable<KeyValuePair<string, string>> KeyValuePairs { get; }
     }
 
     private sealed class ReuseHashContainerBuilder : ContainerBuilder<ReuseHashContainerBuilder, DockerContainer, ContainerConfiguration>
