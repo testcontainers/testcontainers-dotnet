@@ -20,8 +20,8 @@ namespace DotNet.Testcontainers
     /// <param name="buffer">The buffer to write the data into.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>
-    /// A task that completes when the bytes have been read, returning the number
-    /// of bytes read into the buffer.
+    /// Task that completes when the bytes have been read,
+    /// returning the number of bytes read into the buffer.
     /// </returns>
     public static async ValueTask<int> ReadAsync(this Stream stream, Memory<byte> buffer, CancellationToken ct = default)
     {
@@ -46,7 +46,7 @@ namespace DotNet.Testcontainers
     /// <param name="stream">The stream to write to.</param>
     /// <param name="buffer">The buffer to read the data from.</param>
     /// <param name="ct">Cancellation token.</param>
-    /// <returns>A task that completes when the bytes have been written.</returns>
+    /// <returns>Task that completes when the bytes have been written.</returns>
     public static async ValueTask WriteAsync(this Stream stream, ReadOnlyMemory<byte> buffer, CancellationToken ct = default)
     {
       if (MemoryMarshal.TryGetArray(buffer, out var segment))
