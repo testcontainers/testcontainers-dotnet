@@ -17,7 +17,7 @@ internal interface IDbContainerTestMethods
     /// <returns>A new, closed connection to the database.</returns>
     DbConnection CreateConnection();
 
-#if NET8_0_OR_GREATER
+#if NET7_0_OR_GREATER
     /// <summary>
     /// Returns a new, open connection to the database.
     /// </summary>
