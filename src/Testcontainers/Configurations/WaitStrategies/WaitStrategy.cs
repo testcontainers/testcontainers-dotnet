@@ -199,7 +199,12 @@ namespace DotNet.Testcontainers.Configurations
         {
           // Stop the task that is still pending. Either the timeout, or the
           // evaluation of the condition that did not complete in time.
+#if NET8_0_OR_GREATER
+          await linkedCts.CancelAsync()
+            .ConfigureAwait(false);
+#else
           linkedCts.Cancel();
+#endif
         }
       }
 

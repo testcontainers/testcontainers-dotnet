@@ -84,7 +84,7 @@ public sealed class ElasticsearchContainer : DockerContainer
         var certificateBytes = await ReadFileAsync(ElasticsearchBuilder.ElasticsearchHttpCaCertificateFilePath, ct)
             .ConfigureAwait(false);
 
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
         return X509Certificate2.CreateFromPem(Encoding.Default.GetString(certificateBytes));
 #else
         return new X509Certificate2(certificateBytes);
