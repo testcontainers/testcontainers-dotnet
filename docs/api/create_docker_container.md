@@ -214,6 +214,34 @@ Using `OverwriteEnumerable<string>(Array.Empty<string>())` removes all default c
 
     You can create your own `ComposableEnumerable<T>` implementation to control exactly how configuration values are composed or modified.
 
+## Composing environment variables
+
+`WithEnvironment` adds environment variables and replaces values with the same name. It keeps the variables a module already set. To change that, pass a `ComposableDictionary<string, string>` to `WithEnvironment(IReadOnlyDictionary<string, string>)`. `OverwriteDictionary<string, string>` replaces all previously set environment variables, and `AppendDictionary<string, string>` keeps the default behavior.
+
+!!! warning
+
+    `OverwriteDictionary<string, string>` also removes the environment variables a module needs, for example credentials or single-node settings. To drop one variable, remove only that one.
+
+To remove a single environment variable, implement your own `ComposableDictionary<string, string>`:
+
+```csharp title="Removing an environment variable"
+var elasticsearchContainer = new ElasticsearchBuilder("elasticsearch:8.18.0")
+  .WithEnvironment(new RemoveEnvironment("ingest.geoip.downloader.enabled"))
+  .Build();
+
+public sealed class RemoveEnvironment : ComposableDictionary<string, string>
+{
+  private readonly string _name;
+
+  public RemoveEnvironment(string name) : base(null) => _name = name;
+
+  public override ComposableDictionary<string, string> Compose(IReadOnlyDictionary<string, string> other)
+    => new AppendDictionary<string, string>(other
+      .Where(item => !_name.Equals(item.Key, StringComparison.Ordinal))
+      .ToDictionary(item => item.Key, item => item.Value));
+}
+```
+
 ## Reusing builder configurations
 
 Because [builders are immutable](builder_configurations.md#builders-are-immutable), you can share a common configuration and derive multiple containers from it, for example for A/B testing:

@@ -56,6 +56,41 @@ namespace DotNet.Testcontainers.Tests.Unit
       Assert.Equal(expected, actual);
     }
 
+    [Fact]
+    public void CombineReadOnlyDictionariesOverwritesWithOverwriteDictionary()
+    {
+      var oldValue = new Dictionary<string, string> { ["A"] = "old" };
+      var newValue = new OverwriteDictionary<string, string>(new Dictionary<string, string> { ["B"] = "new" });
+      var actual = BuildConfiguration.Combine<string, string>(oldValue, newValue);
+      Assert.Equal(new Dictionary<string, string> { ["B"] = "new" }, actual);
+    }
+
+    [Fact]
+    public void CombineReadOnlyDictionariesClearsWithEmptyOverwriteDictionary()
+    {
+      var oldValue = new Dictionary<string, string> { ["A"] = "old" };
+      var newValue = new OverwriteDictionary<string, string>(new Dictionary<string, string>());
+      var actual = BuildConfiguration.Combine<string, string>(oldValue, newValue);
+      Assert.Empty(actual);
+    }
+
+    [Fact]
+    public void CombineReadOnlyDictionariesAppendsWithAppendDictionary()
+    {
+      var oldValue = new Dictionary<string, string> { ["A"] = "old", ["B"] = "old" };
+      var newValue = new AppendDictionary<string, string>(new Dictionary<string, string> { ["B"] = "new" });
+      var actual = BuildConfiguration.Combine<string, string>(oldValue, newValue);
+      Assert.Equal(new Dictionary<string, string> { ["A"] = "old", ["B"] = "new" }, actual);
+    }
+
+    [Fact]
+    public void CombineReadOnlyDictionariesKeepsComposableDictionaryWithoutOldValue()
+    {
+      var newValue = new OverwriteDictionary<string, string>(new Dictionary<string, string> { ["B"] = "new" });
+      var actual = BuildConfiguration.Combine<string, string>(null, newValue);
+      Assert.Same(newValue, actual);
+    }
+
     [Theory]
     [ClassData(typeof(ComposableEnumerableCombinationTestData))]
     public void CombineComposableEnumerables(

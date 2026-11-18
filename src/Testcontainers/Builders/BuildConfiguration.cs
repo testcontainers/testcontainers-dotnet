@@ -180,7 +180,33 @@ namespace DotNet.Testcontainers.Builders
         return newValue;
       }
 
-      if (newValue.Count == 0)
+      if (newValue is ComposableDictionary<TKey, TValue> composable)
+      {
+        return composable.Compose(oldValue);
+      }
+
+      return Append(oldValue, newValue);
+    }
+
+    /// <summary>
+    /// Adds the new configuration to the old one. Keys in <paramref name="newValue" />
+    /// replace the same keys in <paramref name="oldValue" />.
+    /// </summary>
+    /// <param name="oldValue">The old configuration.</param>
+    /// <param name="newValue">The new configuration.</param>
+    /// <typeparam name="TKey">The type of keys in the dictionary.</typeparam>
+    /// <typeparam name="TValue">The type of values in the dictionary.</typeparam>
+    /// <returns>An updated configuration.</returns>
+    internal static IReadOnlyDictionary<TKey, TValue> Append<TKey, TValue>(
+      IReadOnlyDictionary<TKey, TValue> oldValue,
+      IReadOnlyDictionary<TKey, TValue> newValue)
+    {
+      if (oldValue == null)
+      {
+        return newValue;
+      }
+
+      if (newValue == null || newValue.Count == 0)
       {
         return oldValue;
       }

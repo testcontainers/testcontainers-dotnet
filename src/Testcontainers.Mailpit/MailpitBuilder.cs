@@ -94,10 +94,6 @@ public sealed class MailpitBuilder : ContainerBuilder<MailpitBuilder, MailpitCon
             throw new ArgumentException("The UserName cannot contain a colon (:) character.", nameof(credentials));
         }
 
-        // TODO:
-        // This prepares a full environment replacement once dictionary composition
-        // supports ComposableDictionary for environments. Until that, stale keys
-        // are still preserved by the current IReadOnlyDictionary merge behavior.
         var environments = DockerResourceConfiguration.Environments.ToDictionary(item => item.Key, item => item.Value);
         environments.Remove("MP_SMTP_AUTH_ALLOW_INSECURE");
         environments.Remove("MP_SMTP_TLS_CERT");
