@@ -566,6 +566,13 @@ namespace DotNet.Testcontainers.Builders
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     protected TBuilderEntity WithStartupScript(Func<TContainerEntity, string> startupScript)
     {
+      return WithStartupScript((container, _) => startupScript(container));
+    }
+
+    /// <inheritdoc cref="WithStartupScript(Func{TContainerEntity, string})" />
+    /// <param name="startupScript">The function that creates the startup script from the container and its configuration.</param>
+    protected TBuilderEntity WithStartupScript(Func<TContainerEntity, TConfigurationEntity, string> startupScript)
+    {
       const string startupScriptFilePath = "/testcontainers.sh";
 
       // The container empties the ready file before it runs the startup script.
@@ -577,9 +584,9 @@ namespace DotNet.Testcontainers.Builders
 
       return WithEntrypoint("/bin/sh", "-c")
         .WithCommand(new OverwriteEnumerable<string>(new[] { startupCommand }))
-        .WithStartupCallback(async (container, ct) =>
+        .WithStartupCallback(async (container, configuration, ct) =>
         {
-          await container.CopyAsync(Encoding.Default.GetBytes(startupScript(container)), startupScriptFilePath, fileMode: Unix.FileMode755, ct: ct)
+          await container.CopyAsync(Encoding.Default.GetBytes(startupScript(container, configuration)), startupScriptFilePath, fileMode: Unix.FileMode755, ct: ct)
             .ConfigureAwait(false);
 
           await container.CopyAsync(new byte[] { 1 }, startupReadyFilePath, fileMode: Unix.FileMode666, ct: ct)
