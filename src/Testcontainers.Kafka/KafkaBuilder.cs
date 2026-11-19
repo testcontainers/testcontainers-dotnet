@@ -215,7 +215,7 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
         KafkaBuilder kafkaBuilder;
 
         // Instead of this approach, should we consider using a builder for each vendor?
-        var vendorConfiguration = VendorConfigurations.Single(v => v.Vendor.Equals(DockerResourceConfiguration.Vendor) || v.IsImageFromVendor(DockerResourceConfiguration.Image));
+        var vendorConfiguration = VendorConfigurations.Single(v => v.Vendor == DockerResourceConfiguration.Vendor || v.IsImageFromVendor(DockerResourceConfiguration.Image));
 
         var defaultConsensusProtocol = vendorConfiguration.GetConsensusProtocol(DockerResourceConfiguration.Image);
 
@@ -240,7 +240,15 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
         // Validate that the configuration is compatible with the vendor's image.
         vendorConfiguration.Validate(kafkaBuilder.DockerResourceConfiguration);
 
-        var startupKafkaBuilder = kafkaBuilder.WithStartupScript(container => vendorConfiguration.CreateStartupScript(kafkaBuilder.DockerResourceConfiguration, container));
+        var startupCallback = kafkaBuilder.DockerResourceConfiguration.StartupCallback;
+        var startupKafkaBuilder = kafkaBuilder.WithStartupCallback(async (container, configuration, ct) =>
+        {
+            await CopyStartupScriptAsync(container, vendorConfiguration.CreateStartupScript(configuration, container), ct)
+                .ConfigureAwait(false);
+
+            await startupCallback(container, configuration, ct)
+                .ConfigureAwait(false);
+        });
 
         return new KafkaContainer(startupKafkaBuilder.DockerResourceConfiguration);
     }
@@ -264,7 +272,8 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
             .WithEnvironment("KAFKA_LOG_FLUSH_INTERVAL_MESSAGES", long.MaxValue.ToString())
             .WithEnvironment("KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS", "0")
             .WithEnvironment("CLUSTER_ID", ClusterId)
-            .WithConnectionStringProvider(() => new KafkaConnectionStringProvider());
+            .WithConnectionStringProvider(() => new KafkaConnectionStringProvider())
+            .WithStartupScript();
     }
 
     /// <inheritdoc />
