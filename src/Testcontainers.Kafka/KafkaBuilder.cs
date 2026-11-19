@@ -215,7 +215,7 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
         KafkaBuilder kafkaBuilder;
 
         // Instead of this approach, should we consider using a builder for each vendor?
-        var vendorConfiguration = GetVendorConfiguration(DockerResourceConfiguration);
+        var vendorConfiguration = VendorConfigurations.Single(v => v.Vendor == DockerResourceConfiguration.Vendor || v.IsImageFromVendor(DockerResourceConfiguration.Image));
 
         var defaultConsensusProtocol = vendorConfiguration.GetConsensusProtocol(DockerResourceConfiguration.Image);
 
@@ -240,7 +240,17 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
         // Validate that the configuration is compatible with the vendor's image.
         vendorConfiguration.Validate(kafkaBuilder.DockerResourceConfiguration);
 
-        return new KafkaContainer(kafkaBuilder.DockerResourceConfiguration);
+        var startupCallback = kafkaBuilder.DockerResourceConfiguration.StartupCallback;
+        var startupKafkaBuilder = kafkaBuilder.WithStartupCallback(async (container, configuration, ct) =>
+        {
+            await CopyStartupScriptAsync(container, vendorConfiguration.CreateStartupScript(configuration, container), ct)
+                .ConfigureAwait(false);
+
+            await startupCallback(container, configuration, ct)
+                .ConfigureAwait(false);
+        });
+
+        return new KafkaContainer(startupKafkaBuilder.DockerResourceConfiguration);
     }
 
     /// <inheritdoc />
@@ -263,7 +273,7 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
             .WithEnvironment("KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS", "0")
             .WithEnvironment("CLUSTER_ID", ClusterId)
             .WithConnectionStringProvider(() => new KafkaConnectionStringProvider())
-            .WithStartupScript((container, configuration) => GetVendorConfiguration(configuration).CreateStartupScript(configuration, container));
+            .WithStartupScript();
     }
 
     /// <inheritdoc />
@@ -296,15 +306,5 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
     protected override KafkaBuilder Merge(KafkaConfiguration oldValue, KafkaConfiguration newValue)
     {
         return new KafkaBuilder(new KafkaConfiguration(oldValue, newValue));
-    }
-
-    /// <summary>
-    /// Gets the vendor configuration for the specified Kafka configuration.
-    /// </summary>
-    /// <param name="configuration">The Kafka configuration.</param>
-    /// <returns>The matching vendor configuration.</returns>
-    private static IKafkaVendorConfiguration GetVendorConfiguration(KafkaConfiguration configuration)
-    {
-        return VendorConfigurations.Single(v => v.Vendor == configuration.Vendor || v.IsImageFromVendor(configuration.Image));
     }
 }

@@ -1,9 +1,71 @@
 namespace Testcontainers.Kafka;
 
+using System.Threading;
 using DotNet.Testcontainers.Configurations;
 
 public sealed class KafkaEntrypointTest
 {
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public async Task StartsWithCompletedStartupCallback()
+    {
+        await using var container = new KafkaBuilder("apache/kafka:4.0.2")
+            .WithStartupCallback((_, _) => Task.CompletedTask)
+            .Build();
+        using var timeout = CancellationTokenSource.CreateLinkedTokenSource(TestContext.Current.CancellationToken);
+        timeout.CancelAfter(TimeSpan.FromSeconds(60));
+
+        await container.StartAsync(timeout.Token)
+            .ConfigureAwait(true);
+
+        Assert.Equal(TestcontainersStates.Running, container.State);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public async Task CopiesStartupScriptWhenStartupCallbackIsReplaced(bool configurationCallback)
+    {
+        var callbackCount = 0;
+        var builder = new KafkaBuilder("apache/kafka:4.0.2")
+            .WithKRaft()
+            .WithStartupCallback((_, _) => throw new InvalidOperationException("The replaced callback must not run."));
+
+        async Task OnStartup(KafkaContainer container, CancellationToken ct)
+        {
+            var startupScript = await container.ReadFileAsync(KafkaBuilder.StartupScriptFilePath, ct)
+                .ConfigureAwait(true);
+            Assert.Contains("exec /etc/kafka/docker/run", Encoding.Default.GetString(startupScript));
+
+            _ = await container.ReadFileAsync("/testcontainers.ready", ct)
+                .ConfigureAwait(true);
+            callbackCount++;
+        }
+
+        builder = configurationCallback
+            ? builder.WithStartupCallback((container, configuration, ct) =>
+            {
+                Assert.Equal(ConsensusProtocol.KRaft, configuration.ConsensusProtocol);
+                return OnStartup(container, ct);
+            })
+            : builder.WithStartupCallback(OnStartup);
+
+        await using var container = builder.Build();
+        using var timeout = CancellationTokenSource.CreateLinkedTokenSource(TestContext.Current.CancellationToken);
+        timeout.CancelAfter(TimeSpan.FromSeconds(60));
+
+        for (var start = 0; start < 2; start++)
+        {
+            await container.StartAsync(timeout.Token)
+                .ConfigureAwait(true);
+            Assert.Equal(start + 1, callbackCount);
+
+            await container.StopAsync(timeout.Token)
+                .ConfigureAwait(true);
+        }
+    }
+
     [Theory]
     [InlineData(false, false)]
     [InlineData(false, true)]
