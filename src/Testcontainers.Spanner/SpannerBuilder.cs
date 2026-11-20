@@ -17,6 +17,7 @@ public sealed class SpannerBuilder : ContainerBuilder<SpannerBuilder, SpannerCon
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://github.com/GoogleCloudPlatform/cloud-spanner-emulator/releases" />.
+    /// <include file="SpannerBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public SpannerBuilder(string image)
         : this(new DockerImage(image))
@@ -32,6 +33,7 @@ public sealed class SpannerBuilder : ContainerBuilder<SpannerBuilder, SpannerCon
     /// </param>
     /// <remarks>
     /// Docker image tags available at <see href="https://github.com/GoogleCloudPlatform/cloud-spanner-emulator/releases" />.
+    /// <include file="SpannerBuilder.Generated.xml" path="doc/member[@name='ctor']/*" />
     /// </remarks>
     public SpannerBuilder(IImage image)
         : this(new SpannerConfiguration())
