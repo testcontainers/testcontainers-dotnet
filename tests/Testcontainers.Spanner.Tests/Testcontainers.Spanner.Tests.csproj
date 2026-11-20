@@ -11,7 +11,8 @@
         <PackageReference Include="coverlet.collector"/>
         <PackageReference Include="xunit.runner.visualstudio"/>
         <PackageReference Include="xunit.v3"/>
-        <PackageReference Include="Google.Cloud.Spanner.Data"/>
+        <PackageReference Include="Google.Cloud.Spanner.Admin.Database.V1"/>
+        <PackageReference Include="Google.Cloud.Spanner.Admin.Instance.V1"/>
         <!-- -8<- [end:PackageReferences] -->
     </ItemGroup>
     <ItemGroup>
