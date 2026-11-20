@@ -97,4 +97,24 @@ public sealed class SpannerContainerTest : IAsyncLifetime
         Assert.Equal(_spannerContainer.GetEmulatorGrpcEndpoint(), _spannerContainer.GetConnectionString());
     }
     // # --8<-- [end:UseSpannerContainer]
+
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public async Task GetInstanceConfigsReturnsHttpStatusCodeOk()
+    {
+        // Given
+        using var httpClient = new HttpClient();
+        httpClient.BaseAddress = new Uri(Uri.UriSchemeHttp + "://" + _spannerContainer.GetEmulatorHttpEndpoint());
+
+        // When
+        using var httpResponse = await httpClient.GetAsync("v1/projects/test-project/instanceConfigs", TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        var instanceConfigs = await httpResponse.Content.ReadAsStringAsync(TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        // Then
+        Assert.Equal(HttpStatusCode.OK, httpResponse.StatusCode);
+        Assert.Contains("projects/test-project/instanceConfigs/emulator-config", instanceConfigs);
+    }
 }
