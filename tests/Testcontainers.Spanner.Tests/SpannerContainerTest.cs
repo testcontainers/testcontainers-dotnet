@@ -2,14 +2,11 @@ namespace Testcontainers.Spanner;
 
 public sealed class SpannerContainerTest : IAsyncLifetime
 {
-    private const string ProjectId = "test-project";
-
-    private const string InstanceId = "test-instance";
-
-    private const string DatabaseId = "test-database";
-
+    // # --8<-- [start:CreateSpannerContainer]
     private readonly SpannerContainer _spannerContainer = new SpannerBuilder(TestSession.GetImageFromDockerfile()).Build();
+    // # --8<-- [end:CreateSpannerContainer]
 
+    // # --8<-- [start:UseSpannerContainer]
     public async ValueTask InitializeAsync()
     {
         await _spannerContainer.StartAsync()
@@ -26,20 +23,26 @@ public sealed class SpannerContainerTest : IAsyncLifetime
     public async Task SelectReturnsInsertedRow()
     {
         // Given
+        const string projectId = "test-project";
+
+        const string instanceId = "test-instance";
+
+        const string databaseId = "test-database";
+
         const string name = "Testcontainers";
 
-        var instanceName = new InstanceName(ProjectId, InstanceId);
+        var instanceName = new InstanceName(projectId, instanceId);
 
-        var databaseName = new DatabaseName(ProjectId, InstanceId, DatabaseId);
+        var databaseName = new DatabaseName(projectId, instanceId, databaseId);
 
         var instance = new Instance();
-        instance.Config = new InstanceConfigName(ProjectId, "emulator-config").ToString();
-        instance.DisplayName = InstanceId;
+        instance.Config = new InstanceConfigName(projectId, "emulator-config").ToString();
+        instance.DisplayName = instanceId;
         instance.NodeCount = 1;
 
         var createDatabaseRequest = new CreateDatabaseRequest();
         createDatabaseRequest.ParentAsInstanceName = instanceName;
-        createDatabaseRequest.CreateStatement = "CREATE DATABASE `" + DatabaseId + "`";
+        createDatabaseRequest.CreateStatement = "CREATE DATABASE `" + databaseId + "`";
         createDatabaseRequest.ExtraStatements.Add("CREATE TABLE Users (Id INT64 NOT NULL, Name STRING(MAX)) PRIMARY KEY (Id)");
 
         var instanceAdminClientBuilder = new InstanceAdminClientBuilder();
@@ -60,7 +63,7 @@ public sealed class SpannerContainerTest : IAsyncLifetime
         var databaseAdminClient = await databaseAdminClientBuilder.BuildAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var createInstanceOperation = await instanceAdminClient.CreateInstanceAsync(new ProjectName(ProjectId), InstanceId, instance)
+        var createInstanceOperation = await instanceAdminClient.CreateInstanceAsync(new ProjectName(projectId), instanceId, instance)
             .ConfigureAwait(true);
 
         _ = await createInstanceOperation.PollUntilCompletedAsync()
@@ -93,4 +96,5 @@ public sealed class SpannerContainerTest : IAsyncLifetime
         Assert.Equal(name, actualName);
         Assert.Equal(_spannerContainer.GetEmulatorGrpcEndpoint(), _spannerContainer.GetConnectionString());
     }
+    // # --8<-- [end:UseSpannerContainer]
 }
