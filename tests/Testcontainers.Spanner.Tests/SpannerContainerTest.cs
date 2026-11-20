@@ -20,7 +20,7 @@ public sealed class SpannerContainerTest : IAsyncLifetime
 
     [Fact]
     [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
-    public async Task SelectReturnsInsertedRow()
+    public async Task GetDatabaseDdlReturnsCreateTable()
     {
         // Given
         const string projectId = "test-project";
@@ -29,7 +29,7 @@ public sealed class SpannerContainerTest : IAsyncLifetime
 
         const string databaseId = "test-database";
 
-        const string name = "Testcontainers";
+        const string createTable = "CREATE TABLE Users (\n  Id INT64 NOT NULL,\n  Name STRING(MAX),\n) PRIMARY KEY(Id)";
 
         var instanceName = new InstanceName(projectId, instanceId);
 
@@ -43,7 +43,7 @@ public sealed class SpannerContainerTest : IAsyncLifetime
         var createDatabaseRequest = new CreateDatabaseRequest();
         createDatabaseRequest.ParentAsInstanceName = instanceName;
         createDatabaseRequest.CreateStatement = "CREATE DATABASE `" + databaseId + "`";
-        createDatabaseRequest.ExtraStatements.Add("CREATE TABLE Users (Id INT64 NOT NULL, Name STRING(MAX)) PRIMARY KEY (Id)");
+        createDatabaseRequest.ExtraStatements.Add(createTable);
 
         var instanceAdminClientBuilder = new InstanceAdminClientBuilder();
         instanceAdminClientBuilder.Endpoint = _spannerContainer.GetEmulatorGrpcEndpoint();
@@ -52,10 +52,6 @@ public sealed class SpannerContainerTest : IAsyncLifetime
         var databaseAdminClientBuilder = new DatabaseAdminClientBuilder();
         databaseAdminClientBuilder.Endpoint = _spannerContainer.GetEmulatorGrpcEndpoint();
         databaseAdminClientBuilder.ChannelCredentials = ChannelCredentials.Insecure;
-
-        var connectionStringBuilder = new SpannerConnectionStringBuilder("Data Source=" + databaseName, ChannelCredentials.Insecure);
-        connectionStringBuilder.Host = _spannerContainer.Hostname;
-        connectionStringBuilder.Port = _spannerContainer.GetMappedPublicPort(SpannerBuilder.SpannerGrpcPort);
 
         var instanceAdminClient = await instanceAdminClientBuilder.BuildAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
@@ -75,25 +71,12 @@ public sealed class SpannerContainerTest : IAsyncLifetime
         _ = await createDatabaseOperation.PollUntilCompletedAsync()
             .ConfigureAwait(true);
 
-        await using var connection = new SpannerConnection(connectionStringBuilder);
-
-        var parameters = new SpannerParameterCollection();
-        parameters.Add("Id", SpannerDbType.Int64, 1);
-        parameters.Add("Name", SpannerDbType.String, name);
-
-        using var insertCommand = connection.CreateInsertCommand("Users", parameters);
-
-        _ = await insertCommand.ExecuteNonQueryAsync(TestContext.Current.CancellationToken)
-            .ConfigureAwait(true);
-
         // When
-        using var selectCommand = connection.CreateSelectCommand("SELECT Name FROM Users WHERE Id = 1");
-
-        var actualName = await selectCommand.ExecuteScalarAsync<string>(TestContext.Current.CancellationToken)
+        var databaseDdl = await databaseAdminClient.GetDatabaseDdlAsync(databaseName)
             .ConfigureAwait(true);
 
         // Then
-        Assert.Equal(name, actualName);
+        Assert.Equal(createTable, Assert.Single(databaseDdl.Statements));
         Assert.Equal(_spannerContainer.GetEmulatorGrpcEndpoint(), _spannerContainer.GetConnectionString());
     }
     // # --8<-- [end:UseSpannerContainer]

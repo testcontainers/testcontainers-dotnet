@@ -7,6 +7,5 @@ global using Google.Api.Gax.ResourceNames;
 global using Google.Cloud.Spanner.Admin.Database.V1;
 global using Google.Cloud.Spanner.Admin.Instance.V1;
 global using Google.Cloud.Spanner.Common.V1;
-global using Google.Cloud.Spanner.Data;
 global using Grpc.Core;
 global using Xunit;
