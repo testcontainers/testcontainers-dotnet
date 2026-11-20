@@ -76,6 +76,7 @@
         <Project Path="src/Testcontainers.Seq/Testcontainers.Seq.csproj"/>
         <Project Path="src/Testcontainers.ServiceBus/Testcontainers.ServiceBus.csproj"/>
         <Project Path="src/Testcontainers.Sftp/Testcontainers.Sftp.csproj"/>
+        <Project Path="src/Testcontainers.Spanner/Testcontainers.Spanner.csproj"/>
         <Project Path="src/Testcontainers.Temporal/Testcontainers.Temporal.csproj"/>
         <Project Path="src/Testcontainers.Toxiproxy/Testcontainers.Toxiproxy.csproj"/>
         <Project Path="src/Testcontainers.Typesense/Testcontainers.Typesense.csproj"/>
