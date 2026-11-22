@@ -28,10 +28,6 @@ namespace DotNet.Testcontainers.Builders
     where TContainerEntity : IContainer
     where TConfigurationEntity : IContainerConfiguration
   {
-    private const string StartupScriptFilePath = "/testcontainers.sh";
-
-    private const string StartupReadyFilePath = "/testcontainers.ready";
-
     /// <summary>
     /// Initializes a new instance of the <see cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" /> class.
     /// </summary>
@@ -570,42 +566,43 @@ namespace DotNet.Testcontainers.Builders
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     protected TBuilderEntity WithStartupScript(Func<TContainerEntity, string> startupScript)
     {
-      return WithStartupScript()
-        .WithStartupCallback((container, ct) => CopyStartupScriptAsync(container, startupScript(container), ct));
+      return WithStartupScript((container, _) => startupScript(container));
     }
 
     /// <summary>
-    /// Sets the entrypoint and command that wait for the startup script to be copied completely before running it.
+    /// Sets the startup script that the container runs as its main process.
     /// </summary>
     /// <remarks>
-    /// The module must copy the startup script and ready file using <see cref="CopyStartupScriptAsync" /> each time the container starts.
+    /// The startup script is copied each time the container starts.
+    /// The container runs it once the script has been copied completely.
+    ///
+    /// This method sets the startup callback, as does
+    /// <see cref="WithStartupCallback(Func{TContainerEntity, CancellationToken, Task})" />.
+    /// Whichever is called last replaces the other's callback.
     /// </remarks>
+    /// <param name="startupScript">The function that creates the startup script.</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
-    protected TBuilderEntity WithStartupScript()
+    protected TBuilderEntity WithStartupScript(Func<TContainerEntity, TConfigurationEntity, string> startupScript)
     {
+      const string startupScriptFilePath = "/testcontainers.sh";
+
       // The container empties the ready file before it runs the startup script.
       // After a restart, it waits until the ready file is copied again.
+      const string startupReadyFilePath = "/testcontainers.ready";
+
       // exec lets the startup script receive the container's stop signal.
-      const string startupCommand = "while [ ! -s " + StartupReadyFilePath + " ]; do sleep 0.1; done; true > " + StartupReadyFilePath + "; exec " + StartupScriptFilePath;
+      const string startupCommand = "while [ ! -s " + startupReadyFilePath + " ]; do sleep 0.1; done; true > " + startupReadyFilePath + "; exec " + startupScriptFilePath;
 
       return WithEntrypoint("/bin/sh", "-c")
-        .WithCommand(new OverwriteEnumerable<string>(new[] { startupCommand }));
-    }
+        .WithCommand(new OverwriteEnumerable<string>(new[] { startupCommand }))
+        .WithStartupCallback(async (container, configuration, ct) =>
+        {
+          await container.CopyAsync(Encoding.Default.GetBytes(startupScript(container, configuration)), startupScriptFilePath, fileMode: Unix.FileMode755, ct: ct)
+            .ConfigureAwait(false);
 
-    /// <summary>
-    /// Copies the startup script completely before publishing its ready file.
-    /// </summary>
-    /// <param name="container">The container.</param>
-    /// <param name="startupScript">The startup script.</param>
-    /// <param name="ct">Cancellation token.</param>
-    /// <returns>A task that completes when the startup script and ready file have been copied.</returns>
-    protected static async Task CopyStartupScriptAsync(TContainerEntity container, string startupScript, CancellationToken ct = default)
-    {
-      await container.CopyAsync(Encoding.Default.GetBytes(startupScript), StartupScriptFilePath, fileMode: Unix.FileMode755, ct: ct)
-        .ConfigureAwait(false);
-
-      await container.CopyAsync(new byte[] { 1 }, StartupReadyFilePath, fileMode: Unix.FileMode666, ct: ct)
-        .ConfigureAwait(false);
+          await container.CopyAsync(new byte[] { 1 }, startupReadyFilePath, fileMode: Unix.FileMode666, ct: ct)
+            .ConfigureAwait(false);
+        });
     }
 
     /// <summary>
