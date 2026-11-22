@@ -305,6 +305,6 @@ public sealed class KafkaBuilder : ContainerBuilder<KafkaBuilder, KafkaContainer
     /// <returns>The vendor configuration.</returns>
     private static IKafkaVendorConfiguration GetVendorConfiguration(KafkaConfiguration resourceConfiguration)
     {
-        return VendorConfigurations.Single(v => v.Vendor.Equals(resourceConfiguration.Vendor) || v.IsImageFromVendor(resourceConfiguration.Image));
+        return VendorConfigurations.Single(v => v.Vendor == resourceConfiguration.Vendor || v.IsImageFromVendor(resourceConfiguration.Image));
     }
 }

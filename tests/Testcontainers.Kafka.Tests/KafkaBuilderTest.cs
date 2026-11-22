@@ -2,6 +2,26 @@ namespace Testcontainers.Kafka;
 
 public sealed class KafkaBuilderTests
 {
+    [Theory]
+    [InlineData("")]
+    [InlineData("confluent-v8_2_4")]
+    [InlineData("apache-v4_1_1")]
+    [InlineData("apache-native-v4_4_0")]
+    public void ImplicitVendorWithKnownImageDoesNotThrow(string stage)
+    {
+        var exception = Record.Exception(() => new KafkaBuilder(TestSession.GetImageFromDockerfile(stage: stage)).Build());
+        Assert.Null(exception);
+    }
+
+    [Theory]
+    [InlineData(KafkaVendor.ApacheSoftwareFoundation)]
+    [InlineData(KafkaVendor.Confluent)]
+    public void ExplicitVendorWithCustomImageDoesNotThrow(KafkaVendor vendor)
+    {
+        var exception = Record.Exception(() => new KafkaBuilder("custom/kafka:1.0.0").WithVendor(vendor).Build());
+        Assert.Null(exception);
+    }
+
     [Fact]
     public void KRaftWithConfluentPre7ThrowsArgumentException()
     {
