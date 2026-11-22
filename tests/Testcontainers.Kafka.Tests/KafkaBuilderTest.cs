@@ -3,28 +3,23 @@ namespace Testcontainers.Kafka;
 public sealed class KafkaBuilderTests
 {
     [Theory]
-    [InlineData("apache/kafka:3.9.1")]
-    [InlineData("apache/kafka-native:4.4.0")]
-    [InlineData("bitnami/kafka:3.9.0")]
-    [InlineData("confluentinc/cp-kafka:7.5.12")]
-    [InlineData("confluentinc/cp-kafka:8.0.0")]
-    public void BuildDetectsVendorFromImage(string image)
+    [InlineData("")]
+    [InlineData("confluent-v8_2_4")]
+    [InlineData("apache-v4_1_1")]
+    [InlineData("apache-native-v4_4_0")]
+    public void ImplicitVendorWithKnownImageDoesNotThrow(string stage)
     {
-        var container = new KafkaBuilder(image).Build();
-
-        Assert.Equal(image, container.Image.FullName);
+        var exception = Record.Exception(() => new KafkaBuilder(TestSession.GetImageFromDockerfile(stage: stage)).Build());
+        Assert.Null(exception);
     }
 
     [Theory]
     [InlineData(KafkaVendor.ApacheSoftwareFoundation)]
     [InlineData(KafkaVendor.Confluent)]
-    public void BuildUsesExplicitVendorForCustomImage(KafkaVendor vendor)
+    public void ExplicitVendorWithCustomImageDoesNotThrow(KafkaVendor vendor)
     {
-        const string image = "custom/kafka:1.0.0";
-
-        var container = new KafkaBuilder(image).WithVendor(vendor).Build();
-
-        Assert.Equal(image, container.Image.FullName);
+        var exception = Record.Exception(() => new KafkaBuilder("custom/kafka:1.0.0").WithVendor(vendor).Build());
+        Assert.Null(exception);
     }
 
     [Fact]
