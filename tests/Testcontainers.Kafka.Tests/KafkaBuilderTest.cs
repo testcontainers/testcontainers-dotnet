@@ -63,6 +63,36 @@ public sealed class KafkaBuilderTests
         Assert.Null(exception);
     }
 
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public async Task CustomEntrypointAndCommandArePreserved()
+    {
+        // Given
+        var entrypoint = new[] { "/bin/bash", "-c" };
+
+        var command = new[] { "trap : TERM INT; sleep infinity & wait" };
+
+        using var dockerClient = TestcontainersSettings.OS.DockerEndpointAuthConfig.GetDockerClientBuilder(Guid.NewGuid()).Build();
+
+        await using var container = new KafkaBuilder(TestSession.GetImageFromDockerfile(stage: "apache-v4_1_1"))
+            .WithKRaft()
+            .WithEntrypoint(entrypoint)
+            .WithCommand(new OverwriteEnumerable<string>(command))
+            .WithWaitStrategy(Wait.ForUnixContainer())
+            .Build();
+
+        // When
+        await container.StartAsync(TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        var response = await dockerClient.Containers.InspectContainerAsync(container.Id, TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        // Then
+        Assert.Equal(entrypoint, response.Config.Entrypoint);
+        Assert.Equal(command, response.Config.Cmd);
+    }
+
     private static void ExpectArgEx(string message, Action testCode)
     {
         var exception = Assert.Throws<ArgumentException>(testCode);
