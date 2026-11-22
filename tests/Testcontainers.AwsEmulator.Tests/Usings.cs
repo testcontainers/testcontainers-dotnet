@@ -1,0 +1,14 @@
+global using System;
+global using System.IO;
+global using System.Net;
+global using System.Net.Http;
+global using System.Security.Cryptography.X509Certificates;
+global using System.Threading.Tasks;
+global using Amazon.Runtime;
+global using Amazon.S3;
+global using Amazon.S3.Model;
+global using Amazon.SQS;
+global using Amazon.SQS.Model;
+global using DotNet.Testcontainers.Commons;
+global using DotNet.Testcontainers.Configurations;
+global using Xunit;
