@@ -22,7 +22,15 @@ This example uses xUnit.net's `IAsyncLifetime` interface to manage the lifecycle
     --8<-- "tests/Testcontainers.Spanner.Tests/SpannerContainerTest.cs:UseSpannerContainer"
     ```
 
-The emulator starts without any instance or database. The test example creates an instance with the emulator's `emulator-config` configuration and a database with a table, then reads the table definition back. To read and write data, use the clients of `Google.Cloud.Spanner.Data` or `Google.Cloud.Spanner.V1` the same way. Use `GetEmulatorGrpcEndpoint()` to configure the Spanner clients. It returns the endpoint in the `host:port` format, which can also be used as the value of the `SPANNER_EMULATOR_HOST` environment variable. `GetEmulatorHttpEndpoint()` returns the endpoint of the REST API.
+The emulator starts without any instance or database. The test example creates an instance with the emulator's `emulator-config` configuration and a database with a table, then reads the table definition back. Use `GetEmulatorGrpcEndpoint()` to configure the Spanner clients. It returns the endpoint in the `host:port` format, which can also be used as the value of the `SPANNER_EMULATOR_HOST` environment variable. `GetEmulatorHttpEndpoint()` returns the endpoint of the REST API.
+
+To read and write data, use `Google.Cloud.Spanner.Data` or `Google.Cloud.Spanner.V1`. `Google.Cloud.Spanner.Data` ignores `SPANNER_EMULATOR_HOST` unless the connection string sets `EmulatorDetection=EmulatorOnly`:
+
+```csharp
+Environment.SetEnvironmentVariable("SPANNER_EMULATOR_HOST", spannerContainer.GetEmulatorGrpcEndpoint());
+
+var connectionString = "Data Source=projects/test-project/instances/test-instance/databases/test-database;EmulatorDetection=EmulatorOnly";
+```
 
 The test example uses the following NuGet dependencies:
 
