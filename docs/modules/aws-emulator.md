@@ -44,15 +44,15 @@ To execute the tests, use the command `dotnet test` from a terminal.
 The emulator generates its credentials and its certificate during the startup. Read them after the container has started:
 
 ```csharp title="Gets the AWS Emulator connection string"
-string connectionString = _awsEmulatorContainer.GetConnectionString();
-```
-
-```csharp title="Gets the AWS Emulator credentials"
-AwsEmulatorCredentials credentials = await _awsEmulatorContainer.GetCredentialsAsync();
+var connectionString = _awsEmulatorContainer.GetConnectionString();
 ```
 
 ```csharp title="Gets the AWS Emulator certificate"
-X509Certificate2 certificate = await _awsEmulatorContainer.GetCertificateAsync();
+var certificate = await _awsEmulatorContainer.GetCertificateAsync();
+```
+
+```csharp title="Gets the AWS Emulator credentials"
+var credentials = await _awsEmulatorContainer.GetCredentialsAsync();
 ```
 
 The emulator rejects requests that are not signed with the generated credentials. The credentials are valid for the emulator instance only and cannot authenticate to AWS.
