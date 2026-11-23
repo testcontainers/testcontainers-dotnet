@@ -2,6 +2,26 @@ namespace Testcontainers.Kafka;
 
 public sealed class KafkaBuilderTests
 {
+    [Theory]
+    [InlineData("")]
+    [InlineData("confluent-v8_2_4")]
+    [InlineData("apache-v4_1_1")]
+    [InlineData("apache-native-v4_4_0")]
+    public void ImplicitVendorWithKnownImageDoesNotThrow(string stage)
+    {
+        var exception = Record.Exception(() => new KafkaBuilder(TestSession.GetImageFromDockerfile(stage: stage)).Build());
+        Assert.Null(exception);
+    }
+
+    [Theory]
+    [InlineData(KafkaVendor.ApacheSoftwareFoundation)]
+    [InlineData(KafkaVendor.Confluent)]
+    public void ExplicitVendorWithCustomImageDoesNotThrow(KafkaVendor vendor)
+    {
+        var exception = Record.Exception(() => new KafkaBuilder("custom/kafka:1.0.0").WithVendor(vendor).Build());
+        Assert.Null(exception);
+    }
+
     [Fact]
     public void KRaftWithConfluentPre7ThrowsArgumentException()
     {
@@ -36,6 +56,36 @@ public sealed class KafkaBuilderTests
     {
         var exception = Record.Exception(() => new KafkaBuilder(image).Build());
         Assert.Null(exception);
+    }
+
+    [Fact]
+    [Trait(nameof(DockerCli.DockerPlatform), nameof(DockerCli.DockerPlatform.Linux))]
+    public async Task CustomEntrypointAndCommandArePreserved()
+    {
+        // Given
+        var entrypoint = new[] { "/bin/bash", "-c" };
+
+        var command = new[] { "trap : TERM INT; sleep infinity & wait" };
+
+        using var dockerClient = TestcontainersSettings.OS.DockerEndpointAuthConfig.GetDockerClientBuilder(Guid.NewGuid()).Build();
+
+        await using var container = new KafkaBuilder(TestSession.GetImageFromDockerfile(stage: "apache-v4_1_1"))
+            .WithKRaft()
+            .WithEntrypoint(entrypoint)
+            .WithCommand(new OverwriteEnumerable<string>(command))
+            .WithWaitStrategy(Wait.ForUnixContainer())
+            .Build();
+
+        // When
+        await container.StartAsync(TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        var response = await dockerClient.Containers.InspectContainerAsync(container.Id, TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
+
+        // Then
+        Assert.Equal(entrypoint, response.Config.Entrypoint);
+        Assert.Equal(command, response.Config.Cmd);
     }
 
     private static void ExpectArgEx(string message, Action testCode)

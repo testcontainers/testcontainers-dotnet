@@ -211,7 +211,7 @@ namespace DotNet.Testcontainers.Containers
 
       try
       {
-#if NET6_0_OR_GREATER
+#if NET8_0_OR_GREATER
         await _maintainConnectionCts.CancelAsync()
           .ConfigureAwait(false);
 #else
@@ -314,13 +314,8 @@ namespace DotNet.Testcontainers.Containers
 
       var readBytes = new byte[AcknowledgementBufferSizeInBytes];
 
-#if NETSTANDARD2_0
-      await stream.WriteAsync(sendBytes, 0, sendBytes.Length, ct)
-        .ConfigureAwait(false);
-#else
       await stream.WriteAsync(sendBytes, ct)
         .ConfigureAwait(false);
-#endif
 
       await stream.FlushAsync(ct)
         .ConfigureAwait(false);
@@ -331,13 +326,8 @@ namespace DotNet.Testcontainers.Containers
 
         do
         {
-#if NETSTANDARD2_0
-          var numberOfBytes = await stream.ReadAsync(readBytes, 0, readBytes.Length, ct)
-            .ConfigureAwait(false);
-#else
           var numberOfBytes = await stream.ReadAsync(readBytes, ct)
             .ConfigureAwait(false);
-#endif
 
           if (numberOfBytes == 0)
           {
@@ -352,25 +342,15 @@ namespace DotNet.Testcontainers.Containers
           if (indexOfNewLine == -1)
           {
             // We have not received the entire message yet. Read from stream again.
-#if NETSTANDARD2_0
-            await messageBuffer.WriteAsync(readBytes, 0, numberOfBytes, ct)
-              .ConfigureAwait(false);
-#else
             await messageBuffer.WriteAsync(readBytes.AsMemory(0, numberOfBytes), ct)
               .ConfigureAwait(false);
-#endif
 
             hasAcknowledge = false;
           }
           else
           {
-#if NETSTANDARD2_0
-            await messageBuffer.WriteAsync(readBytes, 0, indexOfNewLine, ct)
-              .ConfigureAwait(false);
-#else
             await messageBuffer.WriteAsync(readBytes.AsMemory(0, indexOfNewLine), ct)
               .ConfigureAwait(false);
-#endif
 
             var buffer = messageBuffer.GetBuffer();
 
@@ -408,7 +388,7 @@ namespace DotNet.Testcontainers.Containers
 
         try
         {
-#if NET6_0_OR_GREATER
+#if NET5_0_OR_GREATER
           await tcpClient.ConnectAsync(host, port, ct)
             .ConfigureAwait(false);
 #else
@@ -485,10 +465,12 @@ namespace DotNet.Testcontainers.Containers
 
           try
           {
-#if NET6_0_OR_GREATER
+#if NET5_0_OR_GREATER
             await tcpClient.ConnectAsync(host, port, ct)
               .ConfigureAwait(false);
 #else
+            // The overload that takes a cancellation token is not available.
+            // The loop checks the cancellation token before each connection attempt.
             await tcpClient.ConnectAsync(host, port)
               .ConfigureAwait(false);
 #endif
@@ -520,13 +502,8 @@ namespace DotNet.Testcontainers.Containers
             while (!_maintainConnectionCts.IsCancellationRequested)
             {
               // Keep the connection to Ryuk up.
-#if NETSTANDARD2_0
-              var numberOfBytes = await stream.ReadAsync(readBytes, 0, readBytes.Length, _maintainConnectionCts.Token)
-                .ConfigureAwait(false);
-#else
               var numberOfBytes = await stream.ReadAsync(readBytes, _maintainConnectionCts.Token)
                 .ConfigureAwait(false);
-#endif
 
               if (numberOfBytes == 0)
               {

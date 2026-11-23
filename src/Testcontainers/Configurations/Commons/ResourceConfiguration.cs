@@ -103,7 +103,7 @@ namespace DotNet.Testcontainers.Configurations
 
       var jsonUtf8Bytes = JsonSerializer.SerializeToUtf8Bytes(this, GetType(), DefaultJsonSerializerOptions.Instance);
 
-#if NET6_0_OR_GREATER
+#if NET5_0_OR_GREATER
       return Convert.ToBase64String(SHA1.HashData(jsonUtf8Bytes));
 #else
       using (var sha1 = SHA1.Create())

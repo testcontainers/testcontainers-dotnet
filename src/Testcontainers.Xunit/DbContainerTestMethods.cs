@@ -5,7 +5,7 @@ internal sealed class DbContainerTestMethods(DbProviderFactory dbProviderFactory
     private readonly DbProviderFactory _dbProviderFactory = dbProviderFactory ?? throw new ArgumentNullException(nameof(dbProviderFactory));
     private readonly Lazy<string> _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
 
-#if NET8_0_OR_GREATER
+#if NET7_0_OR_GREATER
     [CanBeNull]
     private DbDataSource _dbDataSource;
     private DbDataSource DbDataSource

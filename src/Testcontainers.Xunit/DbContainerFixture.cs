@@ -50,7 +50,7 @@ public abstract class DbContainerFixture<TBuilderEntity, TContainerEntity>(IMess
     /// <inheritdoc />
     public DbConnection CreateConnection() => _testMethods.CreateConnection();
 
-#if NET8_0_OR_GREATER
+#if NET7_0_OR_GREATER
     /// <inheritdoc />
     public DbConnection OpenConnection() => _testMethods.OpenConnection();
 
