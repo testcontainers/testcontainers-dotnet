@@ -9,10 +9,10 @@ namespace Testcontainers.AwsEmulator;
 /// instance only and cannot authenticate to AWS.
 /// </remarks>
 [PublicAPI]
-public sealed class AwsEmulatorCredentials
+public readonly record struct AwsEmulatorCredentials
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="AwsEmulatorCredentials" /> class.
+    /// Initializes a new instance of the <see cref="AwsEmulatorCredentials" /> struct.
     /// </summary>
     /// <param name="accessKey">The access key.</param>
     /// <param name="secretKey">The secret key.</param>
