@@ -35,8 +35,9 @@ public sealed class LowkeyVaultContainer : DockerContainer
     /// <summary>
     /// Gets the default certificate from the Lowkey Vault service.
     /// </summary>
+    /// <param name="ct">Cancellation token.</param>
     /// <returns>A collection containing the default <see cref="X509Certificate2" />.</returns>
-    public async Task<X509Certificate2Collection> GetCertificateAsync()
+    public async Task<X509Certificate2Collection> GetCertificateAsync(CancellationToken ct = default)
     {
         const string defaultCertFilePathUriPath = "/metadata/default-cert/lowkey-vault.p12";
 
@@ -46,7 +47,7 @@ public sealed class LowkeyVaultContainer : DockerContainer
 
         using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, requestUri);
 
-        using var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage)
+        using var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage, ct)
             .ConfigureAwait(false);
 
         httpResponseMessage.EnsureSuccessStatusCode();
@@ -54,7 +55,7 @@ public sealed class LowkeyVaultContainer : DockerContainer
         var certificateBytes = await httpResponseMessage.Content.ReadAsByteArrayAsync()
             .ConfigureAwait(false);
 
-        var certificatePassword = await GetCertificatePasswordAsync()
+        var certificatePassword = await GetCertificatePasswordAsync(ct)
             .ConfigureAwait(false);
 
 #if NET9_0_OR_GREATER
@@ -68,8 +69,9 @@ public sealed class LowkeyVaultContainer : DockerContainer
     /// <summary>
     /// Gets the password for the default certificate from the Lowkey Vault service.
     /// </summary>
+    /// <param name="ct">Cancellation token.</param>
     /// <returns>The default certificate password.</returns>
-    public async Task<string> GetCertificatePasswordAsync()
+    public async Task<string> GetCertificatePasswordAsync(CancellationToken ct = default)
     {
         const string defaultCertPasswordUriPath = "/metadata/default-cert/password";
 
@@ -79,7 +81,7 @@ public sealed class LowkeyVaultContainer : DockerContainer
 
         using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, requestUri);
 
-        using var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage)
+        using var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage, ct)
             .ConfigureAwait(false);
 
         httpResponseMessage.EnsureSuccessStatusCode();

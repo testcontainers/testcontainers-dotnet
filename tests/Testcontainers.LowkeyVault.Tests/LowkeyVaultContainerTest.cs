@@ -25,7 +25,8 @@ public abstract class LowkeyVaultContainerTest : IAsyncLifetime
     public async Task ServerCertificateValidationSucceedsWithTrustedCertificate()
     {
         // Given
-        var certificates = await _lowkeyVaultContainer.GetCertificateAsync();
+        var certificates = await _lowkeyVaultContainer.GetCertificateAsync(TestContext.Current.CancellationToken)
+            .ConfigureAwait(true);
 
         using var httpMessageHandler = new HttpClientHandler();
         httpMessageHandler.ServerCertificateCustomValidationCallback = (_, cert, _, _) => certificates.IndexOf(cert) > -1;

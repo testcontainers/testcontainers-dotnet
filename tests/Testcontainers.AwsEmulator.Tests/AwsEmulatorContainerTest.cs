@@ -21,10 +21,10 @@ public sealed class AwsEmulatorContainerTest : IAsyncLifetime
         // The emulator generates the certificate and the credentials during the
         // startup. Read them after the container has started.
         var certificate = await _awsEmulatorContainer.GetCertificateAsync()
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         var credentials = await _awsEmulatorContainer.GetCredentialsAsync()
-            .ConfigureAwait(false);
+            .ConfigureAwait(true);
 
         _httpClientFactory = new AwsEmulatorHttpClientFactory(certificate);
         _awsCredentials = new BasicAWSCredentials(credentials.AccessKey, credentials.SecretKey);
