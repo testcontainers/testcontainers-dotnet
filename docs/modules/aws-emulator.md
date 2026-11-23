@@ -74,6 +74,8 @@ The emulator accepts HTTPS requests only. Instead of accepting any certificate, 
 
 Some AWS services return URLs or open additional listeners for their resources. These URLs contain the address and port of the emulator inside the container, and the module does not rewrite them or map the additional ports. For example, the SQS queue URL contains the container port. The AWS client uses it to identify the queue, but sends the requests to the configured service URL.
 
+The module reads the generated certificate and credentials from a directory that depends on the `HOME` environment variable and the port of the emulator. Do not override them, otherwise `GetCertificateAsync()` and `GetCredentialsAsync()` fail.
+
 ## Default configuration
 
 --8<-- "src/Testcontainers.AwsEmulator/AwsEmulatorBuilder.Generated.md"

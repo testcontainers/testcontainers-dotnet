@@ -12,9 +12,9 @@ public sealed class AwsEmulatorBuilder : ContainerBuilder<AwsEmulatorBuilder, Aw
 
     // The emulator writes the generated files to a
     // directory named after the port it listens on.
-    public const string CertificateFilePath = HomeDirectoryPath + "/.aws/emulator/9297/ca.pem";
+    public static readonly string CertificateFilePath = string.Join("/", HomeDirectoryPath, ".aws", "emulator", AwsEmulatorPort, "ca.pem");
 
-    public const string CredentialsFilePath = HomeDirectoryPath + "/.aws/emulator/9297/emulator_credentials";
+    public static readonly string CredentialsFilePath = string.Join("/", HomeDirectoryPath, ".aws", "emulator", AwsEmulatorPort, "emulator_credentials");
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AwsEmulatorBuilder" /> class.
@@ -80,7 +80,7 @@ public sealed class AwsEmulatorBuilder : ContainerBuilder<AwsEmulatorBuilder, Aw
         // directory. Set it instead of relying on the image's home directory.
         return base.Init()
             .WithPortBinding(AwsEmulatorPort, true)
-            .WithCommand("--bind", "0.0.0.0", "--port", "9297", "--auth", "on")
+            .WithCommand("--bind", "0.0.0.0", "--port", AwsEmulatorPort.ToString(), "--auth", "on")
             .WithEnvironment("HOME", HomeDirectoryPath)
             .WithEnvironment("EMULATOR_TELEMETRY", "off")
             .WithConnectionStringProvider(() => new AwsEmulatorConnectionStringProvider())

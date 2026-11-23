@@ -36,6 +36,8 @@ public sealed class AwsEmulatorContainer : DockerContainer
     /// The emulator generates a self-signed certificate during the startup.
     /// Configure the client to trust it instead of accepting any certificate. The
     /// certificate is valid for <c>localhost</c>, <c>127.0.0.1</c> and <c>::1</c>.
+    /// The validation fails if the Docker host is reached through another
+    /// hostname or IP address.
     /// </remarks>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the certificate has been read, returning the AWS Emulator certificate.</returns>
