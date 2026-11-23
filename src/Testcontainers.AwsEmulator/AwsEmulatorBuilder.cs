@@ -10,8 +10,8 @@ public sealed class AwsEmulatorBuilder : ContainerBuilder<AwsEmulatorBuilder, Aw
 
     public const string HomeDirectoryPath = "/tmp/testcontainers-aws";
 
-    // The emulator writes the generated files to a directory named after
-    // the port it listens on.
+    // The emulator writes the generated files to a
+    // directory named after the port it listens on.
     public const string CertificateFilePath = HomeDirectoryPath + "/.aws/emulator/9297/ca.pem";
 
     public const string CredentialsFilePath = HomeDirectoryPath + "/.aws/emulator/9297/emulator_credentials";
@@ -106,7 +106,8 @@ public sealed class AwsEmulatorBuilder : ContainerBuilder<AwsEmulatorBuilder, Aw
     }
 
     /// <summary>
-    /// Waits until the HTTPS request <c>GET /__admin/health</c> to port <c>9297</c> is completed successfully.
+    /// Waits until the HTTPS request <c>GET /__admin/health</c>
+    /// to port <c>9297</c> is completed successfully.
     /// </summary>
     /// <remarks>
     /// The emulator generates its certificate during the startup. The wait
