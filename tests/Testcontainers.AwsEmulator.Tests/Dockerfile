@@ -1,0 +1,1 @@
+FROM ghcr.io/xsavikx/aws-emulator:1.0.509.1-20261118.43@sha256:e3bc2f190f3132e37aaacef5f64379ce518ee2294f647631f072778ec43d6c6f
