@@ -52,8 +52,13 @@ public sealed class LowkeyVaultContainer : DockerContainer
 
         httpResponseMessage.EnsureSuccessStatusCode();
 
+#if NET5_0_OR_GREATER
+        var certificateBytes = await httpResponseMessage.Content.ReadAsByteArrayAsync(ct)
+            .ConfigureAwait(false);
+#else
         var certificateBytes = await httpResponseMessage.Content.ReadAsByteArrayAsync()
             .ConfigureAwait(false);
+#endif
 
         var certificatePassword = await GetCertificatePasswordAsync(ct)
             .ConfigureAwait(false);
@@ -86,7 +91,12 @@ public sealed class LowkeyVaultContainer : DockerContainer
 
         httpResponseMessage.EnsureSuccessStatusCode();
 
+#if NET5_0_OR_GREATER
+        return await httpResponseMessage.Content.ReadAsStringAsync(ct)
+            .ConfigureAwait(false);
+#else
         return await httpResponseMessage.Content.ReadAsStringAsync()
             .ConfigureAwait(false);
+#endif
     }
 }

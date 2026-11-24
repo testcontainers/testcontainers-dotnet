@@ -97,7 +97,7 @@ public sealed class AwsEmulatorContainer : DockerContainer
         {
             line = line.Trim();
 
-            if (line.StartsWith("[", StringComparison.Ordinal))
+            if (line.Length > 0 && line[0] == '[')
             {
                 isDefaultProfile = DefaultProfile.Equals(line, StringComparison.Ordinal);
                 continue;
