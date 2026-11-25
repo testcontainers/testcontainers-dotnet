@@ -59,20 +59,20 @@ public sealed class SpannerContainerTest : IAsyncLifetime
         var databaseAdminClient = await databaseAdminClientBuilder.BuildAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
-        var createInstanceOperation = await instanceAdminClient.CreateInstanceAsync(new ProjectName(projectId), instanceId, instance)
+        var createInstanceOperation = await instanceAdminClient.CreateInstanceAsync(new ProjectName(projectId), instanceId, instance, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         _ = await createInstanceOperation.PollUntilCompletedAsync()
             .ConfigureAwait(true);
 
-        var createDatabaseOperation = await databaseAdminClient.CreateDatabaseAsync(createDatabaseRequest)
+        var createDatabaseOperation = await databaseAdminClient.CreateDatabaseAsync(createDatabaseRequest, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         _ = await createDatabaseOperation.PollUntilCompletedAsync()
             .ConfigureAwait(true);
 
         // When
-        var databaseDdl = await databaseAdminClient.GetDatabaseDdlAsync(databaseName)
+        var databaseDdl = await databaseAdminClient.GetDatabaseDdlAsync(databaseName, TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         // Then
@@ -87,7 +87,7 @@ public sealed class SpannerContainerTest : IAsyncLifetime
     {
         // Given
         using var httpClient = new HttpClient();
-        httpClient.BaseAddress = new Uri(Uri.UriSchemeHttp + "://" + _spannerContainer.GetEmulatorHttpEndpoint());
+        httpClient.BaseAddress = new Uri(_spannerContainer.GetEmulatorHttpEndpoint());
 
         // When
         using var httpResponse = await httpClient.GetAsync("v1/projects/test-project/instanceConfigs", TestContext.Current.CancellationToken)

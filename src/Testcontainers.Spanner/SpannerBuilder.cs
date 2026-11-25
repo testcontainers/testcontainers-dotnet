@@ -70,7 +70,7 @@ public sealed class SpannerBuilder : ContainerBuilder<SpannerBuilder, SpannerCon
             .WithPortBinding(SpannerGrpcPort, true)
             .WithPortBinding(SpannerHttpPort, true)
             .WithConnectionStringProvider(() => new SpannerConnectionStringProvider())
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Cloud Spanner emulator running\\."));
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Cloud Spanner emulator running"));
     }
 
     /// <inheritdoc />

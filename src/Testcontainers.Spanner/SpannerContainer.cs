@@ -16,25 +16,21 @@ public sealed class SpannerContainer : DockerContainer
     /// <summary>
     /// Gets the Spanner emulator gRPC endpoint.
     /// </summary>
-    /// <remarks>
-    /// The endpoint has the format <c>host:port</c>, as expected by the
-    /// <c>SPANNER_EMULATOR_HOST</c> environment variable.
-    /// </remarks>
     /// <returns>The Spanner emulator gRPC endpoint.</returns>
     public string GetEmulatorGrpcEndpoint()
     {
-        return Hostname + ":" + GetMappedPublicPort(SpannerBuilder.SpannerGrpcPort);
+        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(SpannerBuilder.SpannerGrpcPort)).ToString();
     }
 
     /// <summary>
-    /// Gets the Spanner emulator HTTP (REST) endpoint.
+    /// Gets the Spanner emulator HTTP endpoint.
     /// </summary>
     /// <remarks>
-    /// The endpoint has the format <c>host:port</c>.
+    /// The endpoint serves the REST API of the emulator.
     /// </remarks>
     /// <returns>The Spanner emulator HTTP endpoint.</returns>
     public string GetEmulatorHttpEndpoint()
     {
-        return Hostname + ":" + GetMappedPublicPort(SpannerBuilder.SpannerHttpPort);
+        return new UriBuilder(Uri.UriSchemeHttp, Hostname, GetMappedPublicPort(SpannerBuilder.SpannerHttpPort)).ToString();
     }
 }
