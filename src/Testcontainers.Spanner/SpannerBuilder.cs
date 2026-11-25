@@ -64,13 +64,13 @@ public sealed class SpannerBuilder : ContainerBuilder<SpannerBuilder, SpannerCon
     /// <inheritdoc />
     protected override SpannerBuilder Init()
     {
-        // The gRPC server logs "Cloud Spanner Emulator running." first. The REST
-        // gateway logs "Cloud Spanner emulator running." once both servers are up.
+        // The gateway logs "Cloud Spanner emulator running." after the gRPC server
+        // answers requests, as it starts the REST server.
         return base.Init()
             .WithPortBinding(SpannerGrpcPort, true)
             .WithPortBinding(SpannerHttpPort, true)
             .WithConnectionStringProvider(() => new SpannerConnectionStringProvider())
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged("Cloud Spanner emulator running"));
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilMessageIsLogged(".*Cloud Spanner emulator running\\..*"));
     }
 
     /// <inheritdoc />

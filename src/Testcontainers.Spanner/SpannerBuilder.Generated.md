@@ -4,4 +4,4 @@ The builder applies the following default configuration:
 
 - Port: `9010` (see `SpannerBuilder.SpannerGrpcPort`)
 - Port: `9020` (see `SpannerBuilder.SpannerHttpPort`)
-- Wait strategy: Waits until a message matching `Cloud Spanner emulator running` is logged.
+- Wait strategy: Waits until a message matching `.*Cloud Spanner emulator running\..*` is logged.

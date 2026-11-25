@@ -10,7 +10,7 @@
         <description>Port: <c>9020</c> (see <see cref="F:Testcontainers.Spanner.SpannerBuilder.SpannerHttpPort" />)</description>
       </item>
       <item>
-        <description>Wait strategy: Waits until a message matching <c>Cloud Spanner emulator running</c> is logged.</description>
+        <description>Wait strategy: Waits until a message matching <c>.*Cloud Spanner emulator running\..*</c> is logged.</description>
       </item>
     </list>
   </member>
