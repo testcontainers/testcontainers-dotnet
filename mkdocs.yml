@@ -69,6 +69,7 @@ nav:
     - modules/db2.md
     - modules/elasticsearch.md
     - modules/garnet.md
+    - modules/spanner.md # Google Cloud
     - modules/grafana.md
     - modules/mongodb.md
     - modules/mongodb-atlas-local.md

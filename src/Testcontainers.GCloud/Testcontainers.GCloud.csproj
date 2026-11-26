@@ -8,5 +8,6 @@
         <ProjectReference Include="../Testcontainers.Bigtable/Testcontainers.Bigtable.csproj"/>
         <ProjectReference Include="../Testcontainers.Firestore/Testcontainers.Firestore.csproj"/>
         <ProjectReference Include="../Testcontainers.PubSub/Testcontainers.PubSub.csproj"/>
+        <ProjectReference Include="../Testcontainers.Spanner/Testcontainers.Spanner.csproj"/>
     </ItemGroup>
 </Project>
