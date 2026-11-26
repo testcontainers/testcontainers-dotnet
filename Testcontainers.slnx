@@ -19,6 +19,7 @@
         <Project Path="src/Testcontainers.ActiveMq/Testcontainers.ActiveMq.csproj"/>
         <Project Path="src/Testcontainers.ArangoDb/Testcontainers.ArangoDb.csproj"/>
         <Project Path="src/Testcontainers.AspireDashboard/Testcontainers.AspireDashboard.csproj"/>
+        <Project Path="src/Testcontainers.AwsEmulator/Testcontainers.AwsEmulator.csproj"/>
         <Project Path="src/Testcontainers.Azurite/Testcontainers.Azurite.csproj"/>
         <Project Path="src/Testcontainers.BigQuery/Testcontainers.BigQuery.csproj"/>
         <Project Path="src/Testcontainers.Bigtable/Testcontainers.Bigtable.csproj"/>
@@ -91,6 +92,7 @@
         <Project Path="tests/Testcontainers.ActiveMq.Tests/Testcontainers.ActiveMq.Tests.csproj"/>
         <Project Path="tests/Testcontainers.ArangoDb.Tests/Testcontainers.ArangoDb.Tests.csproj"/>
         <Project Path="tests/Testcontainers.AspireDashboard.Tests/Testcontainers.AspireDashboard.Tests.csproj"/>
+        <Project Path="tests/Testcontainers.AwsEmulator.Tests/Testcontainers.AwsEmulator.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Azurite.Tests/Testcontainers.Azurite.Tests.csproj"/>
         <Project Path="tests/Testcontainers.BigQuery.Tests/Testcontainers.BigQuery.Tests.csproj"/>
         <Project Path="tests/Testcontainers.Bigtable.Tests/Testcontainers.Bigtable.Tests.csproj"/>
