@@ -4,8 +4,18 @@ public sealed class BuildContext(ICakeContext context) : FrostingContext(context
 {
     internal BuildParameters Parameters { get; } = BuildParameters.Instance(context);
 
+    /// <summary>
+    /// Runs the tests of a test project and writes the TRX report and the code coverage to the test results directory.
+    /// </summary>
+    /// <param name="project">The test project.</param>
     public void DotNetTest(SolutionProject project)
     {
+        if (UsesTestingPlatform(project))
+        {
+            DotNetTestWithTestingPlatform(project);
+            return;
+        }
+
         this.DotNetTest(project.Path.FullPath, new DotNetTestSettings
         {
             Configuration = Parameters.Configuration,
@@ -20,6 +30,64 @@ public sealed class BuildContext(ICakeContext context) : FrostingContext(context
                 // servercore:ltsc2025 image takes significantly longer.
                 .AppendSwitchQuoted("--blame-hang-timeout", "10m"),
         });
+    }
+
+    /// <summary>
+    /// Runs the tests of a Microsoft.Testing.Platform test project (e.g. TUnit).
+    /// </summary>
+    /// <remarks>
+    /// These projects cannot run through the VSTest mode of <c>dotnet test</c> on the .NET 10 SDK and later.
+    /// The project is run directly instead, with the platform's equivalents of the VSTest options:
+    /// TRX report, code coverage, results directory, and test filter.
+    /// </remarks>
+    /// <param name="project">The test project.</param>
+    private void DotNetTestWithTestingPlatform(SolutionProject project)
+    {
+        var resultsDirectoryPath = this.MakeAbsolute(Parameters.Paths.Directories.TestResultsDirectoryPath);
+
+        var arguments = new ProcessArgumentBuilder()
+            .Append("--report-trx")
+            .AppendSwitchQuoted("--report-trx-filename", $"{project.Name}.trx")
+            .Append("--coverage")
+            .AppendSwitch("--coverage-output-format", "xml")
+            .AppendSwitchQuoted("--coverage-output", $"{project.Name}.coverage.xml")
+            .AppendSwitchQuoted("--results-directory", resultsDirectoryPath.FullPath);
+
+        if (!string.IsNullOrEmpty(Parameters.TestFilter))
+        {
+            arguments.AppendSwitchQuoted("--treenode-filter", Parameters.TestFilter);
+        }
+
+        // Cake appends the verbosity after the '--' separator, which the test application does not understand.
+        this.DotNetRun(project.Path.FullPath, arguments, new DotNetRunSettings
+        {
+            Configuration = Parameters.Configuration,
+            NoRestore = true,
+            NoBuild = true,
+        });
+    }
+
+    /// <summary>
+    /// Determines whether a test project opts into running through Microsoft.Testing.Platform instead of VSTest.
+    /// </summary>
+    /// <remarks>
+    /// The opt-in is the MSBuild property <c>TestingPlatformDotnetTestSupport</c>. TUnit sets it to <c>true</c>; xUnit.net v3 sets it to <c>false</c>.
+    /// </remarks>
+    /// <param name="project">The test project.</param>
+    /// <returns><c>true</c> if the project runs through Microsoft.Testing.Platform; otherwise, <c>false</c>.</returns>
+    private bool UsesTestingPlatform(SolutionProject project)
+    {
+        var processSettings = new ProcessSettings
+        {
+            Arguments = new ProcessArgumentBuilder()
+                .Append("msbuild")
+                .AppendQuoted(project.Path.FullPath)
+                .Append("-getProperty:TestingPlatformDotnetTestSupport"),
+            RedirectStandardOutput = true,
+        };
+
+        var exitCode = this.StartProcess("dotnet", processSettings, out var output);
+        return exitCode == 0 && output.Any(line => "true".Equals(line.Trim(), StringComparison.OrdinalIgnoreCase));
     }
 }
 
@@ -154,6 +222,8 @@ public sealed class SonarBeginTask : FrostingTask<BuildContext>
             OpenCoverReportsPath = $"{context.MakeAbsolute(param.Paths.Directories.TestResultsDirectoryPath)}/**/*.opencover.xml",
             VsTestReportsPath = $"{context.MakeAbsolute(param.Paths.Directories.TestResultsDirectoryPath)}/**/*.trx",
             ArgumentCustomization = args => args
+                // Microsoft.Testing.Platform test projects report code coverage in the Visual Studio coverage XML format.
+                .Append($"/d:sonar.cs.vscoveragexml.reportsPaths=\"{context.MakeAbsolute(param.Paths.Directories.TestResultsDirectoryPath)}/**/*.coverage.xml\"")
                 .Append("/d:sonar.scanner.scanAll=\"false\"")
                 .Append("/d:sonar.scanner.skipJreProvisioning=\"true\""),
         });
