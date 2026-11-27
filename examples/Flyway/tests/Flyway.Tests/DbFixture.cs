@@ -24,13 +24,13 @@ public sealed class DbFixture : IAsyncLifetime
             .WithNetworkAliases(nameof(_postgreSqlContainer))
             .Build();
 
-        // The member `WithResourceMapping(string, string)` copies the SQL migration files
-        // from the test host into the Flyway container before it starts. This ensures that
-        // the files are available as soon as the container starts. Flyway will
-        // automatically pick them up and start the database migration process.
+        // The member `WithResourceMapping(DirectoryPath, DirectoryPath)` copies the SQL
+        // migration files from the test host into the Flyway container before it starts.
+        // This ensures that the files are available as soon as the container starts.
+        // Flyway will automatically pick them up and start the database migration process.
 
         _flywayContainer = new ContainerBuilder("flyway/flyway:9-alpine")
-            .WithResourceMapping("migrate/", "/flyway/sql/")
+            .WithResourceMapping(DirectoryPath.Of("migrate/"), DirectoryPath.Of("/flyway/sql/"))
             .WithCommand("-url=jdbc:postgresql://" + nameof(_postgreSqlContainer) + "/")
             .WithCommand("-user=" + PostgreSqlBuilder.DefaultUsername)
             .WithCommand("-password=" + PostgreSqlBuilder.DefaultPassword)

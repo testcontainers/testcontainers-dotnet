@@ -49,7 +49,7 @@ Apps or services running inside a container are usually configured either with e
 To configure an ASP.NET Core application, either one or both mechanisms can be used.
 
 ```csharp
-_ = new ContainerBuilder("mcr.microsoft.com/dotnet/aspnet:10.0")
+_ = new ContainerBuilder("mcr.microsoft.com/dotnet/aspnet:11.0")
   .WithEnvironment("ASPNETCORE_URLS", "https://+")
   .WithEnvironment("ASPNETCORE_Kestrel__Certificates__Default__Path", "/app/certificate.pfx")
   .WithEnvironment("ASPNETCORE_Kestrel__Certificates__Default__Password", "password")
