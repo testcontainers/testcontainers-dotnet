@@ -902,6 +902,12 @@ namespace DotNet.Testcontainers.Containers
 
       public override Task<bool> UntilAsync(IContainer container, CancellationToken ct = default)
       {
+        // An exited container has no port bindings. Leave it to the configured wait strategies to decide whether the exit is expected.
+        if (TestcontainersStates.Exited == _parent.State)
+        {
+          return Task.FromResult(true);
+        }
+
         var boundPorts = _parent._container.NetworkSettings.Ports.Values.Where(portBindings => portBindings != null).SelectMany(portBinding => portBinding).Count(portBinding => !string.IsNullOrEmpty(portBinding.HostPort));
         return Task.FromResult(_parent._configuration.PortBindings == null || /* not configured */ _parent._configuration.PortBindings.Count == 0 || /* IPv4 or IPv6 */ _parent._configuration.PortBindings.Count == boundPorts || /* IPv4 and IPv6 */ 2 * _parent._configuration.PortBindings.Count == boundPorts);
       }
