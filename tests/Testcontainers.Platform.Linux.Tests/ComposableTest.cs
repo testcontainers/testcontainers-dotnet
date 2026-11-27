@@ -8,6 +8,12 @@ public sealed class ComposableTest
     private static readonly ComposableEnumerable<string> OverwriteWithSearchArg =
         new OverwriteEnumerable<string>(new[] { "pattern", "*.log" });
 
+    private static readonly ComposableDictionary<string, string> AppendBarVariable =
+        new AppendDictionary<string, string>(new Dictionary<string, string> { { "BAR", "bar" } });
+
+    private static readonly ComposableDictionary<string, string> OverwriteWithBazVariable =
+        new OverwriteDictionary<string, string>(new Dictionary<string, string> { { "BAZ", "baz" } });
+
     [Fact]
     public void AppendsFlagAfterInitialArgument()
     {
@@ -43,60 +49,37 @@ public sealed class ComposableTest
     }
 
     [Fact]
-    public void EnvironmentIsMergedByDefault()
+    public void AppendsVariableAfterInitialVariable()
     {
         var environments = new ComposableContainerBuilder()
-            .WithEnvironment("A", "1")
-            .WithEnvironment(new Dictionary<string, string> { { "A", "2" }, { "B", "3" } })
+            .WithEnvironment("FOO", "foo")
+            .WithEnvironment(AppendBarVariable)
             .GetEnvironments();
 
-        Assert.Equal(new Dictionary<string, string> { { "A", "2" }, { "B", "3" } }, environments);
+        Assert.Equal(new Dictionary<string, string> { { "FOO", "foo" }, { "BAR", "bar" } }, environments);
     }
 
     [Fact]
-    public void EnvironmentIsOverwritten()
+    public void OverwritesVariablesCompletely()
     {
         var environments = new ComposableContainerBuilder()
-            .WithEnvironment("A", "1")
-            .WithEnvironment(new OverwriteDictionary<string, string>(new Dictionary<string, string> { { "B", "2" } }))
-            .WithEnvironment("C", "3")
+            .WithEnvironment("FOO", "foo")
+            .WithEnvironment(OverwriteWithBazVariable)
             .GetEnvironments();
 
-        Assert.Equal(new Dictionary<string, string> { { "B", "2" }, { "C", "3" } }, environments);
+        Assert.Equal(new Dictionary<string, string> { { "BAZ", "baz" } }, environments);
     }
 
     [Fact]
-    public void EnvironmentIsClearedByEmptyOverwrite()
+    public void OverwritesThenAppendsVariable()
     {
         var environments = new ComposableContainerBuilder()
-            .WithEnvironment("A", "1")
-            .WithEnvironment(new OverwriteDictionary<string, string>(new Dictionary<string, string>()))
+            .WithEnvironment("FOO", "foo")
+            .WithEnvironment(OverwriteWithBazVariable)
+            .WithEnvironment(AppendBarVariable)
             .GetEnvironments();
 
-        Assert.Empty(environments);
-    }
-
-    [Fact]
-    public void EnvironmentKeyIsRemoved()
-    {
-        var environments = new ComposableContainerBuilder()
-            .WithEnvironment("A", "1")
-            .WithEnvironment("ingest.geoip.downloader.enabled", "false")
-            .WithEnvironment(new RemoveKey("ingest.geoip.downloader.enabled"))
-            .GetEnvironments();
-
-        Assert.Equal(new Dictionary<string, string> { { "A", "1" } }, environments);
-    }
-
-    private sealed class RemoveKey : ComposableDictionary<string, string>
-    {
-        private readonly string _key;
-
-        public RemoveKey(string key) : base(null)
-            => _key = key;
-
-        public override ComposableDictionary<string, string> Compose(IReadOnlyDictionary<string, string> other)
-            => new AppendDictionary<string, string>(other.Where(item => !_key.Equals(item.Key, StringComparison.Ordinal)).ToDictionary(item => item.Key, item => item.Value));
+        Assert.Equal(new Dictionary<string, string> { { "BAZ", "baz" }, { "BAR", "bar" } }, environments);
     }
 
     private sealed class ComposableContainerBuilder : ContainerBuilder<ComposableContainerBuilder, DockerContainer, ContainerConfiguration>

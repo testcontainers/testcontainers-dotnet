@@ -183,13 +183,13 @@ _ = new ContainerBuilder("alpine:3.20.0")
 
 The static class `Consume` offers pre-configured implementations of the `IOutputConsumer` interface for common use cases. If you need additional functionalities beyond those provided by the default implementations, you can create your own implementations of `IOutputConsumer`.
 
-## Composing command arguments
+## Composing builder configurations
 
-Testcontainers for .NET provides the `WithCommand(ComposableEnumerable<string>)` API to give you flexible control over container command arguments. While currently used for container commands, the `ComposableEnumerable<T>` abstraction is designed to support other builder APIs in the future, allowing similar composition and override functionality.
+Testcontainers for .NET provides builder APIs that accept a `ComposableEnumerable<T>` or `ComposableDictionary<TKey, TValue>`, such as `WithCommand(ComposableEnumerable<string>)` or `WithEnvironment(ComposableDictionary<string, string>)`, to give you flexible control over container configurations.
 
 Because our [builders are immutable](builder_configurations.md#builders-are-immutable), this feature allows you to extend or override pre-configured configurations, such as those in Testcontainers [modules](../modules/index.md), without modifying the original builder.
 
-`ComposableEnumerable<T>` lets you decide how new API arguments should be combined with existing ones. You can choose to append, overwrite, or apply other strategies based on your needs.
+`ComposableEnumerable<T>` and `ComposableDictionary<TKey, TValue>` let you decide how new API arguments should be combined with existing ones. You can choose to append, overwrite, or apply other strategies based on your needs.
 
 If a module applies default commands and you need to override or remove them entirely, you can do this e.g. by explicitly resetting the command list:
 
@@ -212,35 +212,7 @@ Using `OverwriteEnumerable<string>(Array.Empty<string>())` removes all default c
 
 !!! tip
 
-    You can create your own `ComposableEnumerable<T>` implementation to control exactly how configuration values are composed or modified.
-
-## Composing environment variables
-
-`WithEnvironment` adds environment variables and replaces values with the same name. It keeps the variables a module already set. To change that, pass a `ComposableDictionary<string, string>` to `WithEnvironment(IReadOnlyDictionary<string, string>)`. `OverwriteDictionary<string, string>` replaces all previously set environment variables, and `AppendDictionary<string, string>` keeps the default behavior.
-
-!!! warning
-
-    `OverwriteDictionary<string, string>` also removes the environment variables a module needs, for example credentials or single-node settings. To drop one variable, remove only that one.
-
-To remove a single environment variable, implement your own `ComposableDictionary<string, string>`:
-
-```csharp title="Removing an environment variable"
-var elasticsearchContainer = new ElasticsearchBuilder("elasticsearch:8.18.0")
-  .WithEnvironment(new RemoveEnvironment("ingest.geoip.downloader.enabled"))
-  .Build();
-
-public sealed class RemoveEnvironment : ComposableDictionary<string, string>
-{
-  private readonly string _name;
-
-  public RemoveEnvironment(string name) : base(null) => _name = name;
-
-  public override ComposableDictionary<string, string> Compose(IReadOnlyDictionary<string, string> other)
-    => new AppendDictionary<string, string>(other
-      .Where(item => !_name.Equals(item.Key, StringComparison.Ordinal))
-      .ToDictionary(item => item.Key, item => item.Value));
-}
-```
+    You can create your own `ComposableEnumerable<T>` or `ComposableDictionary<TKey, TValue>` implementation to control exactly how configuration values are composed or modified.
 
 ## Reusing builder configurations
 

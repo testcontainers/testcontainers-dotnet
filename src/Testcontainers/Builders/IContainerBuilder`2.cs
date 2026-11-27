@@ -172,7 +172,7 @@ namespace DotNet.Testcontainers.Builders
     /// with <see cref="OverwriteEnumerable{T}" />.
     ///
     /// For more information and examples, see
-    /// <seealso href="https://dotnet.testcontainers.org/api/create_docker_container/#composing-command-arguments">Composing command arguments</seealso>.
+    /// <seealso href="https://dotnet.testcontainers.org/api/create_docker_container/#composing-builder-configurations">Composing builder configurations</seealso>.
     /// </remarks>
     /// <param name="command">A list of commands, "executable", "param1", "param2" or "param1", "param2".</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
@@ -190,7 +190,7 @@ namespace DotNet.Testcontainers.Builders
     /// overwrite or replace an already pre-configured command.
     ///
     /// For more information and examples, see
-    /// <seealso href="https://dotnet.testcontainers.org/api/create_docker_container/#composing-command-arguments">Composing command arguments</seealso>.
+    /// <seealso href="https://dotnet.testcontainers.org/api/create_docker_container/#composing-builder-configurations">Composing builder configurations</seealso>.
     /// </remarks>
     /// <param name="command">A list of commands, "executable", "param1", "param2" or "param1", "param2".</param>
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
@@ -213,6 +213,24 @@ namespace DotNet.Testcontainers.Builders
     /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
     [PublicAPI]
     TBuilderEntity WithEnvironment(IReadOnlyDictionary<string, string> environments);
+
+    /// <summary>
+    /// Sets the environment variable.
+    /// </summary>
+    /// <remarks>
+    /// The <see cref="ComposableDictionary{TKey, TValue}" /> parameter controls how the specified environment variables
+    /// are composed with the existing container configuration.
+    ///
+    /// Use <see cref="AppendDictionary{TKey, TValue}" /> to append environment variables, or
+    /// <see cref="OverwriteDictionary{TKey, TValue}" /> to overwrite or replace already pre-configured environment variables.
+    ///
+    /// For more information and examples, see
+    /// <seealso href="https://dotnet.testcontainers.org/api/create_docker_container/#composing-builder-configurations">Composing builder configurations</seealso>.
+    /// </remarks>
+    /// <param name="environments">A dictionary of environment variables.</param>
+    /// <returns>A configured instance of <typeparamref name="TBuilderEntity" />.</returns>
+    [PublicAPI]
+    TBuilderEntity WithEnvironment(ComposableDictionary<string, string> environments);
 
     /// <summary>
     /// Exposes the port without publishing it to the host system's interfaces.

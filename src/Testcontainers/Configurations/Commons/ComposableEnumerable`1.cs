@@ -11,7 +11,7 @@ namespace DotNet.Testcontainers.Configurations
   /// intended to be inherited by implementations that specify how two collections
   /// should be combined.
   /// </summary>
-  /// <typeparam name="T">The type of the elements in the collection.</typeparam>
+  /// <typeparam name="T">The type of elements in the collection.</typeparam>
   [PublicAPI]
   public abstract class ComposableEnumerable<T> : IEnumerable<T>
   {
