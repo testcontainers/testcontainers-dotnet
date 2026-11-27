@@ -162,11 +162,18 @@ namespace DotNet.Testcontainers.Builders
     public TBuilderEntity WithEnvironment(string name, string value)
     {
       var environments = new Dictionary<string, string> { { name, value } };
-      return Clone(new ContainerConfiguration(environments: environments));
+      return WithEnvironment(environments);
     }
 
     /// <inheritdoc />
     public TBuilderEntity WithEnvironment(IReadOnlyDictionary<string, string> environments)
+    {
+      var composable = new AppendDictionary<string, string>(environments);
+      return WithEnvironment(composable);
+    }
+
+    /// <inheritdoc />
+    public TBuilderEntity WithEnvironment(ComposableDictionary<string, string> environments)
     {
       return Clone(new ContainerConfiguration(environments: environments));
     }

@@ -69,7 +69,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Gets a dictionary of environment variables.
     /// </summary>
-    IReadOnlyDictionary<string, string> Environments { get; }
+    ComposableDictionary<string, string> Environments { get; }
 
     /// <summary>
     /// Gets a dictionary of exposed ports.

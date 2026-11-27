@@ -8,6 +8,12 @@ public sealed class ComposableTest
     private static readonly ComposableEnumerable<string> OverwriteWithSearchArg =
         new OverwriteEnumerable<string>(new[] { "pattern", "*.log" });
 
+    private static readonly ComposableDictionary<string, string> AppendBarVariable =
+        new AppendDictionary<string, string>(new Dictionary<string, string> { { "BAR", "bar" } });
+
+    private static readonly ComposableDictionary<string, string> OverwriteWithBazVariable =
+        new OverwriteDictionary<string, string>(new Dictionary<string, string> { { "BAZ", "baz" } });
+
     [Fact]
     public void AppendsFlagAfterInitialArgument()
     {
@@ -42,6 +48,40 @@ public sealed class ComposableTest
         Assert.Equal(new[] { "pattern", "*.log", "-l" }, command);
     }
 
+    [Fact]
+    public void AppendsVariableAfterInitialVariable()
+    {
+        var environments = new ComposableContainerBuilder()
+            .WithEnvironment("FOO", "foo")
+            .WithEnvironment(AppendBarVariable)
+            .GetEnvironments();
+
+        Assert.Equal(new Dictionary<string, string> { { "FOO", "foo" }, { "BAR", "bar" } }, environments);
+    }
+
+    [Fact]
+    public void OverwritesVariablesCompletely()
+    {
+        var environments = new ComposableContainerBuilder()
+            .WithEnvironment("FOO", "foo")
+            .WithEnvironment(OverwriteWithBazVariable)
+            .GetEnvironments();
+
+        Assert.Equal(new Dictionary<string, string> { { "BAZ", "baz" } }, environments);
+    }
+
+    [Fact]
+    public void OverwritesThenAppendsVariable()
+    {
+        var environments = new ComposableContainerBuilder()
+            .WithEnvironment("FOO", "foo")
+            .WithEnvironment(OverwriteWithBazVariable)
+            .WithEnvironment(AppendBarVariable)
+            .GetEnvironments();
+
+        Assert.Equal(new Dictionary<string, string> { { "BAZ", "baz" }, { "BAR", "bar" } }, environments);
+    }
+
     private sealed class ComposableContainerBuilder : ContainerBuilder<ComposableContainerBuilder, DockerContainer, ContainerConfiguration>
     {
         public ComposableContainerBuilder() : this(new ContainerConfiguration())
@@ -54,6 +94,9 @@ public sealed class ComposableTest
 
         public IEnumerable<string> GetCommand()
             => DockerResourceConfiguration.Command;
+
+        public IReadOnlyDictionary<string, string> GetEnvironments()
+            => DockerResourceConfiguration.Environments;
 
         public override DockerContainer Build()
             => new(DockerResourceConfiguration);

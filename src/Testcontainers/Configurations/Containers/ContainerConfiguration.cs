@@ -51,7 +51,7 @@ namespace DotNet.Testcontainers.Configurations
       string workingDirectory = null,
       IEnumerable<string> entrypoint = null,
       ComposableEnumerable<string> command = null,
-      IReadOnlyDictionary<string, string> environments = null,
+      ComposableDictionary<string, string> environments = null,
       IReadOnlyDictionary<string, string> exposedPorts = null,
       IReadOnlyDictionary<string, string> portBindings = null,
       IEnumerable<IResourceMapping> resourceMappings = null,
@@ -180,7 +180,7 @@ namespace DotNet.Testcontainers.Configurations
     public ComposableEnumerable<string> Command { get; }
 
     /// <inheritdoc />
-    public IReadOnlyDictionary<string, string> Environments { get; }
+    public ComposableDictionary<string, string> Environments { get; }
 
     /// <inheritdoc />
     public IReadOnlyDictionary<string, string> ExposedPorts { get; }

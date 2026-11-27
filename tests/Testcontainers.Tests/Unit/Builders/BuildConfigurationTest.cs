@@ -68,6 +68,17 @@ namespace DotNet.Testcontainers.Tests.Unit
     }
 
     [Theory]
+    [ClassData(typeof(ComposableDictionaryCombinationTestData))]
+    public void CombineComposableDictionaries(
+      ComposableDictionary<string, string> oldValue,
+      ComposableDictionary<string, string> newValue,
+      IReadOnlyDictionary<string, string> expected)
+    {
+      var actual = BuildConfiguration.Combine(oldValue, newValue);
+      Assert.Equal(expected, actual);
+    }
+
+    [Theory]
     [ClassData(typeof(AppendEnumerableTestData))]
     public void AppendEnumerableCompose(
       IEnumerable<string> oldValue,
@@ -256,6 +267,37 @@ namespace DotNet.Testcontainers.Tests.Unit
         Add(new AppendEnumerable<string>(new[] { "1", "2", "3" }),
             new AppendEnumerable<string>(new[] { "4", "5" }),
             new[] { "1", "2", "3", "4", "5" });
+      }
+    }
+
+    private sealed class ComposableDictionaryCombinationTestData
+      : TheoryData<
+          ComposableDictionary<string, string>,
+          ComposableDictionary<string, string>,
+          IReadOnlyDictionary<string, string>
+        >
+    {
+      public ComposableDictionaryCombinationTestData()
+      {
+        Add(null,
+            null,
+            new Dictionary<string, string>());
+
+        Add(null,
+            new AppendDictionary<string, string>(new Dictionary<string, string> { ["B"] = "B" }),
+            new Dictionary<string, string> { ["B"] = "B" });
+
+        Add(new AppendDictionary<string, string>(new Dictionary<string, string> { ["A"] = "A" }),
+            null,
+            new Dictionary<string, string> { ["A"] = "A" });
+
+        Add(new AppendDictionary<string, string>(new Dictionary<string, string> { ["A"] = "old", ["B"] = "B" }),
+            new AppendDictionary<string, string>(new Dictionary<string, string> { ["A"] = "new" }),
+            new Dictionary<string, string> { ["A"] = "new", ["B"] = "B" });
+
+        Add(new AppendDictionary<string, string>(new Dictionary<string, string> { ["A"] = "old", ["B"] = "B" }),
+            new OverwriteDictionary<string, string>(new Dictionary<string, string> { ["C"] = "C" }),
+            new Dictionary<string, string> { ["C"] = "C" });
       }
     }
 

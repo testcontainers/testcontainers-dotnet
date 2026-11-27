@@ -12,7 +12,7 @@ When you call a builder method more than once, or call a method that a module ha
 
 - A method that sets a single value, such as the image, name, wait strategy, or startup callback, replaces the previously configured value.
 - Methods that configure lists and dictionaries, such as environment variables, labels, port bindings, or mounts, append new values to the existing ones. A dictionary entry with an existing key replaces the previous entry.
-- You cannot remove existing list and dictionary values. The exceptions are builder methods that accept a `ComposableEnumerable<T>`, which let you decide how new values combine with existing ones, for example to overwrite them. See [composing command arguments](create_docker_container.md#composing-command-arguments).
+- You cannot remove existing list and dictionary values. The exceptions are builder methods that accept a `ComposableEnumerable<T>` or `ComposableDictionary<TKey, TValue>`, which let you decide how new values combine with existing ones, for example to overwrite them. See [composing builder configurations](create_docker_container.md#composing-builder-configurations).
 
 ## Validation happens on build
 

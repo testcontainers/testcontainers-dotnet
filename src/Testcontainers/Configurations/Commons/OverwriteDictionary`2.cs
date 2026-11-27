@@ -15,7 +15,7 @@ namespace DotNet.Testcontainers.Configurations
     /// <summary>
     /// Initializes a new instance of the <see cref="OverwriteDictionary{TKey, TValue}" /> class.
     /// </summary>
-    /// <param name="dictionary">The dictionary whose elements are copied to the new dictionary.</param>
+    /// <param name="dictionary">The dictionary of items. If <c>null</c>, an empty dictionary is used.</param>
     public OverwriteDictionary(IReadOnlyDictionary<TKey, TValue> dictionary)
       : base(dictionary)
     {

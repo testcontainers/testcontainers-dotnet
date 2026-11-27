@@ -24,6 +24,12 @@ namespace DotNet.Testcontainers.Builders
         = new ReadOnlyDictionary<TKey, TValue>(new Dictionary<TKey, TValue>());
     }
 
+    private static class EmptyComposableDictionaryCache<TKey, TValue>
+    {
+      internal static readonly ComposableDictionary<TKey, TValue> Instance
+        = new AppendDictionary<TKey, TValue>(EmptyReadOnlyDictionaryCache<TKey, TValue>.Instance);
+    }
+
     /// <summary>
     /// Returns the updated configuration value. If the new value is <c>null</c> or
     /// <c>default</c>, the old value is returned.
@@ -123,9 +129,9 @@ namespace DotNet.Testcontainers.Builders
     /// the previous configuration is returned.
     /// </summary>
     /// <remarks>
-    /// Uses <see cref="ComposableEnumerable{T}.Compose" /> on <paramref name="newValue" />
-    /// to combine configurations. The existing <paramref name="oldValue" /> is passed as
-    /// an argument to that method.
+    /// Uses <see cref="ComposableEnumerable{T}.Compose" /> on
+    /// <paramref name="newValue" /> to combine configurations. The existing
+    /// <paramref name="oldValue" /> is passed as an argument to that method.
     /// </remarks>
     /// <param name="oldValue">The old configuration.</param>
     /// <param name="newValue">The new configuration.</param>
@@ -135,10 +141,9 @@ namespace DotNet.Testcontainers.Builders
       ComposableEnumerable<T> oldValue,
       ComposableEnumerable<T> newValue)
     {
-      // Creating a new container configuration before merging will follow this branch
-      // and return the default value. If we use the overwrite implementation,
-      // merging will reset the collection, we should either return null or use
-      // the append implementation.
+      // A container configuration created before merging follows this branch.
+      // The default value must be null or an append implementation.
+      // An overwrite implementation resets the collection while merging.
       if (newValue == null && oldValue == null)
       {
         return EmptyComposableEnumerableCache<T>.Instance;
@@ -198,6 +203,40 @@ namespace DotNet.Testcontainers.Builders
       }
 
       return new ReadOnlyDictionary<TKey, TValue>(result);
+    }
+
+    /// <summary>
+    /// Combines all existing and new configuration changes. If there are no changes,
+    /// the previous configuration is returned.
+    /// </summary>
+    /// <remarks>
+    /// Uses <see cref="ComposableDictionary{TKey, TValue}.Compose" /> on
+    /// <paramref name="newValue" /> to combine configurations. The existing
+    /// <paramref name="oldValue" /> is passed as an argument to that method.
+    /// </remarks>
+    /// <param name="oldValue">The old configuration.</param>
+    /// <param name="newValue">The new configuration.</param>
+    /// <typeparam name="TKey">The type of keys in the dictionary.</typeparam>
+    /// <typeparam name="TValue">The type of values in the dictionary.</typeparam>
+    /// <returns>An updated configuration.</returns>
+    public static ComposableDictionary<TKey, TValue> Combine<TKey, TValue>(
+      ComposableDictionary<TKey, TValue> oldValue,
+      ComposableDictionary<TKey, TValue> newValue)
+    {
+      // A container configuration created before merging follows this branch.
+      // The default value must be null or an append implementation.
+      // An overwrite implementation resets the dictionary while merging.
+      if (newValue == null && oldValue == null)
+      {
+        return EmptyComposableDictionaryCache<TKey, TValue>.Instance;
+      }
+
+      if (newValue == null || oldValue == null)
+      {
+        return newValue ?? oldValue;
+      }
+
+      return newValue.Compose(oldValue);
     }
   }
 }
