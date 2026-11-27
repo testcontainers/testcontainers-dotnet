@@ -14,7 +14,7 @@
         <PackageVersion Include="SSH.NET" Version="2026.0.0"/>
         <!-- Cake build: -->
         <PackageVersion Include="Cake.Frosting.Git" Version="5.0.1"/>
-        <PackageVersion Include="Cake.Frosting" Version="6.2.0"/>
+        <PackageVersion Include="Cake.Frosting" Version="7.0.0"/>
         <PackageVersion Include="Cake.Sonar" Version="6.0.1"/>
         <!-- Unit and integration test dependencies: -->
         <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.9.0"/>
@@ -73,7 +73,7 @@
         <PackageVersion Include="MailKitLite" Version="4.17.0"/>
         <PackageVersion Include="Microsoft.Azure.Cosmos" Version="3.62.1"/>
         <PackageVersion Include="Microsoft.Azure.Kusto.Data" Version="14.2.1"/>
-        <PackageVersion Include="Microsoft.Data.SqlClient" Version="7.0.2"/>
+        <PackageVersion Include="Microsoft.Data.SqlClient" Version="7.1.2"/>
         <PackageVersion Include="Microsoft.Playwright" Version="1.62.0"/>
         <PackageVersion Include="Milvus.Client" Version="2.3.0-preview.1"/>
         <PackageVersion Include="MongoDB.Driver" Version="3.11.0"/>
@@ -91,7 +91,7 @@
         <PackageVersion Include="OllamaSharp" Version="5.4.26"/>
         <PackageVersion Include="OpenSearch.Client" Version="2.1.0"/>
         <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.17.0"/>
-        <PackageVersion Include="Oracle.ManagedDataAccess.Core" Version="23.26.300"/>
+        <PackageVersion Include="Oracle.ManagedDataAccess.Core" Version="23.26.401"/>
         <PackageVersion Include="Qdrant.Client" Version="1.19.0"/>
         <PackageVersion Include="RabbitMQ.Client" Version="7.2.2"/>
         <PackageVersion Include="RavenDB.Client" Version="7.2.5"/>

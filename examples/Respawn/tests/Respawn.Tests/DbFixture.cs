@@ -11,7 +11,7 @@ public sealed class DbFixture : IAsyncLifetime
         // to the container before it starts. The PostgreSQL container runs the scripts
         // automatically during startup, creating the database schema.
         _postgreSqlContainer = new PostgreSqlBuilder("postgres:15-alpine")
-            .WithResourceMapping("migrate/", "/docker-entrypoint-initdb.d/")
+            .WithResourceMapping(DirectoryPath.Of("migrate/"), DirectoryPath.Of("/docker-entrypoint-initdb.d/"))
             .Build();
     }
 

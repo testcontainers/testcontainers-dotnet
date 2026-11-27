@@ -39,7 +39,7 @@ namespace DotNet.Testcontainers.Tests.Fixtures
       Add(ignoreAllExceptRootDirectory, "src/Program.cs", true);
       Add(ignoreAllExceptRootDirectory, "README.md", false);
       Add(ignoreNestedFilesAndDirectories, "bin/Debug", false);
-      Add(ignoreNestedFilesAndDirectories, "bin/Debug/net10.0", false);
+      Add(ignoreNestedFilesAndDirectories, "bin/Debug/net11.0", false);
       Add(ignoreNestedFilesAndDirectories, "README.md", true);
       Add(ignoreWildcardFilesAndDirectories, ".gitignore", false);
       Add(ignoreWildcardFilesAndDirectories, ".git/config", false);
