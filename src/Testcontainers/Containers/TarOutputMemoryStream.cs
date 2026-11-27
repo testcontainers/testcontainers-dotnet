@@ -79,13 +79,10 @@ namespace DotNet.Testcontainers.Containers
       await PutNextEntryAsync(tarEntry, ct)
         .ConfigureAwait(false);
 
-#if NETSTANDARD2_0
-      await WriteAsync(fileContent, 0, fileContent.Length, ct)
+      // Keep the explicit `this`. C# binds extension methods only to an explicit
+      // receiver, and .NET Standard 2.0 resolves `WriteAsync` to the polyfill.
+      await this.WriteAsync(fileContent, ct)
         .ConfigureAwait(false);
-#else
-      await WriteAsync(fileContent, ct)
-        .ConfigureAwait(false);
-#endif
 
       await CloseEntryAsync(ct)
         .ConfigureAwait(false);

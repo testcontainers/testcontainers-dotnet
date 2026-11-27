@@ -1,0 +1,11 @@
+global using System;
+global using System.Net;
+global using System.Net.Http;
+global using System.Threading.Tasks;
+global using DotNet.Testcontainers.Commons;
+global using Google.Api.Gax.ResourceNames;
+global using Google.Cloud.Spanner.Admin.Database.V1;
+global using Google.Cloud.Spanner.Admin.Instance.V1;
+global using Google.Cloud.Spanner.Common.V1;
+global using Grpc.Core;
+global using Xunit;

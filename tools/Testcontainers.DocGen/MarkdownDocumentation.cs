@@ -4,9 +4,9 @@ internal static class MarkdownDocumentation
 {
     // Python-Markdown supports backslash escapes for these characters, but
     // not for '<'. The tool replaces it with an entity instead.
-    private static readonly Regex SpecialCharacterPattern = new Regex(@"[\\`*_\[\]]", RegexOptions.None, TimeSpan.FromSeconds(1));
+    private static readonly Regex SpecialCharacterPattern = new Regex(@"[\\`*_\[\]]");
 
-    private static readonly Regex BacktickPattern = new Regex("`+", RegexOptions.None, TimeSpan.FromSeconds(1));
+    private static readonly Regex BacktickPattern = new Regex("`+");
 
     private static readonly Dictionary<string, string> TypeAliases = new Dictionary<string, string>
     {
@@ -68,7 +68,7 @@ internal static class MarkdownDocumentation
     {
         // Render the reference without the namespace and with C# type
         // aliases like the IDE, such as 'PostgreSqlBuilder.WithDatabase(string)'.
-        var match = Regex.Match(cref, @"^[A-Z]:(?<name>[^(]+)(?:\((?<parameters>[^)]*)\))?$", RegexOptions.None, TimeSpan.FromSeconds(1));
+        var match = Regex.Match(cref, @"^[A-Z]:(?<name>[^(]+)(?:\((?<parameters>[^)]*)\))?$");
 
         var name = string.Join(".", match.Groups["name"].Value.Split('.').TakeLast(2));
 

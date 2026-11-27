@@ -66,7 +66,7 @@ namespace DotNet.Testcontainers.Configurations
     {
       using (var httpClient = new HttpClient())
       {
-#if NET6_0_OR_GREATER
+#if NET5_0_OR_GREATER
         return await httpClient.GetByteArrayAsync(_uri, ct)
           .ConfigureAwait(false);
 #else

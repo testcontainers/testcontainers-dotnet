@@ -26,7 +26,7 @@ public sealed class K3sContainerTest : IAsyncLifetime
         kubernetesNamespace.Metadata = new V1ObjectMeta();
         kubernetesNamespace.Metadata.Name = Guid.NewGuid().ToString("D");
 
-        var kubeconfig = await _k3sConainter.GetKubeconfigAsync()
+        var kubeconfig = await _k3sConainter.GetKubeconfigAsync(TestContext.Current.CancellationToken)
             .ConfigureAwait(true);
 
         await kubeconfigStream.WriteAsync(Encoding.Default.GetBytes(kubeconfig), TestContext.Current.CancellationToken)

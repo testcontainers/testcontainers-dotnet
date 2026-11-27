@@ -295,13 +295,13 @@ internal sealed class BuilderDocumentation
         // summary of a private member from the builder source instead. The
         // declaration must follow the documentation, not a line within it.
         var declarationPattern = member is Type ? "class " + Regex.Escape(member.Name) + @"\b" : Regex.Escape(member.Name) + @"\(";
-        var match = Regex.Match(_builderSource, @"(?<doc>(?:^[ \t]*///.*\n)+)(?![ \t]*///)[^\n]*\b" + declarationPattern, RegexOptions.Multiline, TimeSpan.FromSeconds(1));
+        var match = Regex.Match(_builderSource, @"(?<doc>(?:^[ \t]*///.*\n)+)(?![ \t]*///)[^\n]*\b" + declarationPattern, RegexOptions.Multiline);
 
         XElement summary = null;
 
         if (match.Success)
         {
-            var doc = Regex.Replace(match.Groups["doc"].Value, @"^[ \t]*/// ?", string.Empty, RegexOptions.Multiline, TimeSpan.FromSeconds(1));
+            var doc = Regex.Replace(match.Groups["doc"].Value, @"^[ \t]*/// ?", string.Empty, RegexOptions.Multiline);
             summary = XElement.Parse("<doc>" + doc + "</doc>").Element("summary");
         }
 
@@ -322,7 +322,7 @@ internal sealed class BuilderDocumentation
             reference.ReplaceWith(new XElement("c", (string)reference.Attribute("cref") ?? (string)reference.Attribute("name")));
         }
 
-        return Regex.Replace(string.Concat(summary.Nodes()), @"\s+", " ", RegexOptions.None, TimeSpan.FromSeconds(1)).Trim();
+        return Regex.Replace(string.Concat(summary.Nodes()), @"\s+", " ").Trim();
     }
 
     private string GetPortConstantCref(Setting setting)

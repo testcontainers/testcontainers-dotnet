@@ -1,6 +1,5 @@
 namespace DotNet.Testcontainers.Configurations
 {
-  using System;
   using System.Text.RegularExpressions;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Containers;
@@ -10,7 +9,7 @@ namespace DotNet.Testcontainers.Configurations
     private readonly Regex _pattern;
 
     public UntilMessageIsLogged(string pattern)
-      : this(new Regex(pattern, RegexOptions.None, TimeSpan.FromSeconds(5)))
+      : this(new Regex(pattern))
     {
     }
 

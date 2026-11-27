@@ -2,8 +2,6 @@ namespace DotNet.Testcontainers.Commons;
 
 internal sealed class DockerfileParser
 {
-    private static readonly Regex FromLinePattern = new Regex("^FROM\\s+(?<arg>--\\S+\\s)*(?<image>\\S+).*", RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
-
     private readonly string _filePath;
 
     public DockerfileParser(string filePath)
@@ -31,7 +29,7 @@ internal sealed class DockerfileParser
             .ToArray();
 
         var fromMatches = lines
-            .Select(line => FromLinePattern.Match(line))
+            .Select(line => RegexPatterns.DockerfileFromLine().Match(line))
             .Where(match => match.Success)
             .ToArray();
 

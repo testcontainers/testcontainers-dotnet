@@ -5,7 +5,6 @@ namespace DotNet.Testcontainers.Builders
   using System.IO;
   using System.Linq;
   using System.Text;
-  using System.Text.RegularExpressions;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Images;
@@ -44,15 +43,6 @@ namespace DotNet.Testcontainers.Builders
   [PublicAPI]
   public sealed class BuildKitImageFromDockerfileBuilder : AbstractBuilder<BuildKitImageFromDockerfileBuilder, IFutureDockerImage, ImageBuildParameters, IBuildKitImageFromDockerfileConfiguration>, IImageFromDockerfileBuilder<BuildKitImageFromDockerfileBuilder>
   {
-    /// <summary>
-    /// The pattern that a build secret id and an SSH id must match.
-    /// </summary>
-    /// <remarks>
-    /// The id is part of the path of the file that carries the build secret inside the
-    /// Docker CLI container, and part of the Docker CLI argument that references it.
-    /// </remarks>
-    private static readonly Regex IdRegex = new Regex("^[A-Za-z0-9][A-Za-z0-9_.-]*$", RegexOptions.None, TimeSpan.FromSeconds(1));
-
     /// <summary>
     /// Initializes a new instance of the <see cref="BuildKitImageFromDockerfileBuilder" /> class.
     /// </summary>
@@ -120,7 +110,7 @@ namespace DotNet.Testcontainers.Builders
     /// <inheritdoc />
     public BuildKitImageFromDockerfileBuilder WithDockerfile(string dockerfile)
     {
-      var dockerfileFilePath = Regex.Replace(dockerfile, "^\\.(\\/|\\\\)", string.Empty, RegexOptions.None, TimeSpan.FromSeconds(1));
+      var dockerfileFilePath = RegexPatterns.CurrentDirectoryPrefix().Replace(dockerfile, string.Empty);
       return Merge(DockerResourceConfiguration, new BuildKitImageFromDockerfileConfiguration(dockerfile: dockerfileFilePath));
     }
 
@@ -337,7 +327,7 @@ namespace DotNet.Testcontainers.Builders
     /// <returns>True if the id is valid; otherwise, false.</returns>
     private static bool IsIdValid(string id)
     {
-      return !string.IsNullOrEmpty(id) && IdRegex.IsMatch(id);
+      return !string.IsNullOrEmpty(id) && RegexPatterns.BuildSecretId().IsMatch(id);
     }
 
     /// <summary>

@@ -2,7 +2,6 @@ namespace DotNet.Testcontainers.Images
 {
   using System;
   using System.Globalization;
-  using System.Text.RegularExpressions;
   using JetBrains.Annotations;
 
   /// <inheritdoc cref="IImage" />
@@ -186,7 +185,7 @@ namespace DotNet.Testcontainers.Images
         return false;
       }
 
-      var versionMatch = Regex.Match(Tag, "^(\\d+)(\\.\\d+)?(\\.\\d+)?", RegexOptions.None, TimeSpan.FromSeconds(1));
+      var versionMatch = RegexPatterns.ImageTagVersion().Match(Tag);
 
       if (!versionMatch.Success)
       {

@@ -57,11 +57,11 @@ public sealed class WebDriverContainer : DockerContainer
         var bytes = await _ffmpegContainer.ReadFileAsync(WebDriverBuilder.VideoFilePath, ct)
             .ConfigureAwait(false);
 
-#if NETSTANDARD2_1_OR_GREATER || NET6_0_OR_GREATER
+#if NETSTANDARD2_0
+        File.WriteAllBytes(target, bytes);
+#else
         await File.WriteAllBytesAsync(target, bytes, ct)
             .ConfigureAwait(false);
-#else
-        File.WriteAllBytes(target, bytes);
 #endif
     }
 

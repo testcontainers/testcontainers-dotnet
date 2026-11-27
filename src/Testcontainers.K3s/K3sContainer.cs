@@ -16,16 +16,17 @@ public sealed class K3sContainer : DockerContainer
     /// <summary>
     /// Gets the Kubeconfig.
     /// </summary>
+    /// <param name="ct">Cancellation token.</param>
     /// <returns>Task that completes when the Kubeconfig has been read.</returns>
-    public async Task<string> GetKubeconfigAsync()
+    public async Task<string> GetKubeconfigAsync(CancellationToken ct = default)
     {
-        var kubeconfigBytes = await ReadFileAsync("/etc/rancher/k3s/k3s.yaml")
+        var kubeconfigBytes = await ReadFileAsync("/etc/rancher/k3s/k3s.yaml", ct)
             .ConfigureAwait(false);
 
         var kubeconfig = Encoding.Default.GetString(kubeconfigBytes);
 
         var server = new UriBuilder(Uri.UriSchemeHttps, Hostname, GetMappedPublicPort(K3sBuilder.KubeSecurePort)).ToString();
 
-        return Regex.Replace(kubeconfig, "server:\\s?[:/\\.\\d\\w]+", "server: " + server, RegexOptions.None, TimeSpan.FromSeconds(1));
+        return RegexPatterns.KubeconfigServer().Replace(kubeconfig, "server: " + server);
     }
 }

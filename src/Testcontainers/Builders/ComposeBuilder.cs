@@ -4,7 +4,6 @@ namespace DotNet.Testcontainers.Builders
   using System.Collections.Generic;
   using System.IO;
   using System.Linq;
-  using System.Text.RegularExpressions;
   using Docker.DotNet.Models;
   using DotNet.Testcontainers.Configurations;
   using DotNet.Testcontainers.Containers;
@@ -59,8 +58,6 @@ namespace DotNet.Testcontainers.Builders
     /// <see cref="GetPathSeparator" />).
     /// </remarks>
     private static readonly string[] PathSeparators = { ":", ";", "|", "," };
-
-    private static readonly Regex ProjectNameRegex = new Regex("^[a-z0-9][a-z0-9_-]*$", RegexOptions.None, TimeSpan.FromSeconds(1));
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ComposeBuilder" /> class.
@@ -461,7 +458,7 @@ namespace DotNet.Testcontainers.Builders
 
       const string projectNamePrefixInvalid = "The Docker Compose project name prefix must start with a lowercase letter or digit and can only contain lowercase letters, digits, dashes, and underscores.";
       _ = Guard.Argument(DockerResourceConfiguration.ProjectNamePrefix, nameof(DockerResourceConfiguration.ProjectNamePrefix))
-        .ThrowIf(argument => argument.Value != null && !ProjectNameRegex.IsMatch(argument.Value), argument => new ArgumentException(projectNamePrefixInvalid, argument.Name));
+        .ThrowIf(argument => argument.Value != null && !RegexPatterns.ComposeProjectName().IsMatch(argument.Value), argument => new ArgumentException(projectNamePrefixInvalid, argument.Name));
 
       const string projectNamePrefixTooLong = "The Docker Compose project name prefix must not exceed {0} characters, keeping the project name Docker Compose derives from it within the 63-character DNS label limit.";
       _ = Guard.Argument(DockerResourceConfiguration.ProjectNamePrefix, nameof(DockerResourceConfiguration.ProjectNamePrefix))

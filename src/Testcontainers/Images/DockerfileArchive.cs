@@ -5,7 +5,6 @@ namespace DotNet.Testcontainers.Images
   using System.IO;
   using System.Linq;
   using System.Text;
-  using System.Text.RegularExpressions;
   using System.Threading;
   using System.Threading.Tasks;
   using DotNet.Testcontainers.Configurations;
@@ -18,12 +17,6 @@ namespace DotNet.Testcontainers.Images
   /// </summary>
   internal sealed class DockerfileArchive : ITarArchive
   {
-    private static readonly Regex ArgLinePattern = new Regex("^ARG\\s+(?<name>[A-Za-z_][A-Za-z0-9_]*)=(?:\"(?<value>[^\"]*)\"|'(?<value>[^']*)'|(?<value>\\S+))", RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
-
-    private static readonly Regex FromLinePattern = new Regex("^FROM\\s+(?<arg>--\\S+\\s)*(?<image>\\S+).*", RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
-
-    private static readonly Regex VariablePattern = new Regex("\\$(\\{(?<name>[A-Za-z_][A-Za-z0-9_]*)\\}|(?<name>[A-Za-z_][A-Za-z0-9_]*))", RegexOptions.None, TimeSpan.FromSeconds(1));
-
     private readonly DirectoryInfo _contextDirectory;
 
     private readonly DirectoryInfo _dockerfileDirectory;
@@ -150,13 +143,13 @@ namespace DotNet.Testcontainers.Images
       // Only ARG instructions declared before the first FROM instruction are in
       // scope for FROM instructions. Stage-local declarations are not.
       var argMatches = lines
-        .TakeWhile(line => !FromLinePattern.IsMatch(line))
-        .Select(line => ArgLinePattern.Match(line))
+        .TakeWhile(line => !RegexPatterns.DockerfileFromLine().IsMatch(line))
+        .Select(line => RegexPatterns.DockerfileArgLine().Match(line))
         .Where(match => match.Success)
         .ToArray();
 
       var fromMatches = lines
-        .Select(line => FromLinePattern.Match(line))
+        .Select(line => RegexPatterns.DockerfileFromLine().Match(line))
         .Where(match => match.Success)
         .ToArray();
 
@@ -222,7 +215,7 @@ namespace DotNet.Testcontainers.Images
 
       var dockerIgnoreFile = new DockerIgnoreFile(_dockerfileDirectory, dockerIgnoreFileName, _dockerfile.Name, _logger);
 
-      var dockerfileArchiveFileName = Regex.Replace(_image.FullName, "[^a-zA-Z0-9]", "-", RegexOptions.None, TimeSpan.FromSeconds(1)).ToLowerInvariant();
+      var dockerfileArchiveFileName = RegexPatterns.NonAlphanumericCharacter().Replace(_image.FullName, "-").ToLowerInvariant();
 
       // Image builds that run at the same time must not share the tar archive,
       // even if they build the same image.
@@ -376,7 +369,7 @@ namespace DotNet.Testcontainers.Images
         return line;
       }
 
-      return VariablePattern.Replace(line, match =>
+      return RegexPatterns.DockerfileVariable().Replace(line, match =>
       {
         var name = match.Groups[nameGroup].Value;
         return variables.TryGetValue(name, out var value) ? value : match.Value;

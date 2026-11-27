@@ -10,12 +10,15 @@ namespace DotNet.Testcontainers.Containers
   using DotNet.Testcontainers.Configurations;
   using JetBrains.Annotations;
   using Renci.SshNet;
+  using Renci.SshNet.Common;
 
   /// <inheritdoc cref="DockerContainer" />
   [PublicAPI]
   internal sealed class PortForwardingContainer : DockerContainer
   {
     private readonly PortForwardingConfiguration _configuration;
+
+    private SshClient _sshClient;
 
     static PortForwardingContainer()
     {
@@ -43,18 +46,41 @@ namespace DotNet.Testcontainers.Containers
     /// <param name="ports">The host ports to forward.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>A task that completes when the host ports are forwarded.</returns>
-    public Task ExposeHostPortsAsync(IEnumerable<ushort> ports, CancellationToken ct = default)
+    /// <remarks>
+    /// Skips host ports that are already forwarded. The port forwarding stays
+    /// active until the test process exits.
+    /// </remarks>
+    public async Task ExposeHostPortsAsync(IEnumerable<ushort> ports, CancellationToken ct = default)
     {
-      var sshClient = new SshClient(Hostname, GetMappedPublicPort(PortForwardingBuilder.SshdPort), _configuration.Username, _configuration.Password);
-      sshClient.Connect();
+      using var disposable = await AcquireLockAsync(ct)
+        .ConfigureAwait(false);
 
-      foreach (var forwardedPort in ports.Select(port => new ForwardedPortRemote(IPAddress.Loopback, port, IPAddress.Loopback, port)))
+      if (_sshClient == null || !_sshClient.IsConnected)
       {
-        sshClient.AddForwardedPort(forwardedPort);
-        forwardedPort.Start();
+        try
+        {
+          _sshClient?.Dispose();
+        }
+        catch (SshConnectionException)
+        {
+          // Ignore exception for connections that do not exist anymore.
+        }
+
+        _sshClient = new SshClient(Hostname, GetMappedPublicPort(PortForwardingBuilder.SshdPort), _configuration.Username, _configuration.Password);
+        _sshClient.Connect();
       }
 
-      return Task.CompletedTask;
+      var forwardedPorts = _sshClient.ForwardedPorts
+        .OfType<ForwardedPortRemote>()
+        .Where(forwardedPort => forwardedPort.IsStarted)
+        .Select(forwardedPort => (ushort)forwardedPort.BoundPort)
+        .ToArray();
+
+      foreach (var forwardedPort in ports.Except(forwardedPorts).Select(port => new ForwardedPortRemote(IPAddress.Loopback, port, IPAddress.Loopback, port)))
+      {
+        _sshClient.AddForwardedPort(forwardedPort);
+        forwardedPort.Start();
+      }
     }
 
     /// <inheritdoc cref="ContainerBuilder{TBuilderEntity, TContainerEntity, TConfigurationEntity}" />
